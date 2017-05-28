@@ -1,0 +1,5 @@
+name: GuiApiExample
+main: xyz.upperlevel.guiapi.example.Main
+version: 1.0-SNAPSHOT
+author: upperlevel
+depend: [GuiApi]
