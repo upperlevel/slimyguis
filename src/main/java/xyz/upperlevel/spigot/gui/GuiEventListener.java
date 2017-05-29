@@ -33,7 +33,7 @@ public class GuiEventListener implements Listener{
 
         if(e.getClickedInventory() == e.getInventory())  //getInventory returns always the top inv. so it's like saying that the clicked inventory must be the top one
             GuiManager.onClick(e);
-        else if(hotbar != null && hotbar.anyItemLink(e.getCurrentItem(), e.getCursor())) {//TODO use normal slots
+        if(hotbar != null && hotbar.anyItemLink(e.getCurrentItem(), e.getCursor())) {//TODO use normal slots
             e.setCancelled(true);
             ((Player) e.getWhoClicked()).updateInventory();
         } else if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
