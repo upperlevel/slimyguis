@@ -2,14 +2,18 @@ package xyz.upperlevel.spigot.gui.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.gui.GuiUtils;
 import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 import java.util.LinkedHashMap;
@@ -17,14 +21,19 @@ import java.util.Map;
 
 import static xyz.upperlevel.spigot.gui.GuiUtils.itemStack;
 
+@Accessors(fluent = true, chain = true)
 public class FolderGUI extends BaseGUI {
+    public static final ItemStack DEF_BACK_BUTTON = GuiUtils.itemStack(Material.BARRIER, ChatColor.RED + "Back");
+
     private final Map<ItemStack, Link> components;
 
     private final int size;
 
     @Getter
-    @Setter
     private String title;
+
+    @Getter
+    private ItemStack backButton = DEF_BACK_BUTTON;
 
     public FolderGUI(String title, int size) {
         if(size > 0)
@@ -55,17 +64,40 @@ public class FolderGUI extends BaseGUI {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        Link a = components.get(event.getCurrentItem());
-        if(a != null)
-            a.run((Player) event.getWhoClicked());
+        if(backButton != null && backButton.equals(event.getCurrentItem())) {
+            GuiManager.back((Player) event.getWhoClicked());
+        } else {
+            Link a = components.get(event.getCurrentItem());
+            if (a != null)
+                a.run((Player) event.getWhoClicked());
+        }
     }
+
+    public FolderGUI title(String title) {
+        this.title = title;
+        clear(); //Reprint
+        return this;
+    }
+
+    public FolderGUI backButton(ItemStack button) {
+        this.backButton = button;
+        clear(); //Reprint
+        return this;
+    }
+
 
     @Override
     protected Inventory render() {
-        Inventory inv = Bukkit.createInventory(null, size > 0 ? size : GuiSize.min(components.size()), title);
+        final int usedSize = size > 0 ? size : GuiSize.min(components.size() + (backButton != null ? 1 : 0));
+
+        Inventory inv = Bukkit.createInventory(null, usedSize, title);
         int i = 0;
         for(Map.Entry<ItemStack, Link> comp : components.entrySet())
             inv.setItem(i++, comp.getKey());
+
+        if(backButton != null)
+            inv.setItem(usedSize - 1, backButton);
+
         return inv;
     }
 }

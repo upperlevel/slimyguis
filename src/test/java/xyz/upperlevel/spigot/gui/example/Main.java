@@ -24,6 +24,7 @@ import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
 import xyz.upperlevel.spigot.gui.impl.FolderGUI;
 import xyz.upperlevel.spigot.gui.impl.link.Link;
 
+import static xyz.upperlevel.spigot.gui.GuiAction.change;
 import static xyz.upperlevel.spigot.gui.GuiAction.close;
 import static xyz.upperlevel.spigot.gui.GuiUtils.wood;
 import static xyz.upperlevel.spigot.gui.GuiUtils.wool;
@@ -48,7 +49,8 @@ public class Main extends JavaPlugin implements Listener {
                                     ),
                                     BAN_ITEM)
                             .addLink(GuiAction.close().and(Link.consoleCommand("kick <player>")), wool(DyeColor.YELLOW, "Kick"))
-                            .addLink(close().and(Link.consoleCommand("say <player> is STUPID!")), wool(DyeColor.GREEN, "Poke")),
+                            .addLink(close().and(Link.consoleCommand("say <player> is STUPID!")), wool(DyeColor.GREEN, "Poke"))
+                            .addLink(change(new RainbowGUI()), wool(DyeColor.LIGHT_BLUE, "Rainbow :)")), //Example of the stack-like Gui system
                     wood(TreeSpecies.ACACIA, ChatColor.GRAY + "Tools")
             ),
             newLink(new RainbowGUI(), wool(DyeColor.GREEN, "Rainbow!")),
