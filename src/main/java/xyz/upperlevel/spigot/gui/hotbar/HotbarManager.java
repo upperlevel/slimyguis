@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.hotbar;
+package xyz.upperlevel.spigot.gui.hotbar;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.guiapi.hotbar.handlers.HotbarJoiner;
+import xyz.upperlevel.spigot.gui.hotbar.handlers.HotbarJoiner;
 
 import java.util.*;
 import java.util.stream.Stream;

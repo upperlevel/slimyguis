@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.guiapi.hotbar.HotbarManager;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 
 import java.util.Set;
 import java.util.stream.Collectors;

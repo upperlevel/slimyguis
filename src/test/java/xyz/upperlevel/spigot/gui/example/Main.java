@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.example;
+package xyz.upperlevel.spigot.gui.example;
 
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -12,19 +12,22 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.guiapi.*;
-import xyz.upperlevel.guiapi.hotbar.Hotbar;
-import xyz.upperlevel.guiapi.hotbar.HotbarLink;
-import xyz.upperlevel.guiapi.hotbar.HotbarManager;
-import xyz.upperlevel.guiapi.hotbar.handlers.SimpleHotbar;
-import xyz.upperlevel.guiapi.impl.ConfirmGui;
-import xyz.upperlevel.guiapi.impl.FolderGUI;
-import xyz.upperlevel.guiapi.impl.link.Link;
+import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.GuiAction;
+import xyz.upperlevel.spigot.gui.GuiManager;
+import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
+import xyz.upperlevel.spigot.gui.hotbar.handlers.SimpleHotbar;
+import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
+import xyz.upperlevel.spigot.gui.impl.FolderGUI;
+import xyz.upperlevel.spigot.gui.impl.link.Link;
 
-import static xyz.upperlevel.guiapi.GuiAction.close;
-import static xyz.upperlevel.guiapi.GuiUtils.wood;
-import static xyz.upperlevel.guiapi.GuiUtils.wool;
-import static xyz.upperlevel.guiapi.hotbar.HotbarLink.newLink;
+import static xyz.upperlevel.spigot.gui.GuiAction.close;
+import static xyz.upperlevel.spigot.gui.GuiUtils.wood;
+import static xyz.upperlevel.spigot.gui.GuiUtils.wool;
+import static xyz.upperlevel.spigot.gui.hotbar.HotbarLink.newLink;
 
 public class Main extends JavaPlugin implements Listener {
     //Example of creating strange ItemStacks
@@ -54,7 +57,7 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, xyz.upperlevel.guiapi.Main.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     public void openRainbow(Player player) {

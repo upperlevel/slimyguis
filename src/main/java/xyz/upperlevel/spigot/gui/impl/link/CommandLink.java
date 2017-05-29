@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.impl.link;
+package xyz.upperlevel.spigot.gui.impl.link;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;

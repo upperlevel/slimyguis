@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.hotbar.handlers;
+package xyz.upperlevel.spigot.gui.hotbar.handlers;
 
 import lombok.Data;
 import org.bukkit.block.Block;
@@ -6,8 +6,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.guiapi.hotbar.Hotbar;
-import xyz.upperlevel.guiapi.hotbar.HotbarView;
+import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarView;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,8 +1,8 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import xyz.upperlevel.guiapi.impl.link.Link;
+import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 public interface Gui extends Link {
     /**

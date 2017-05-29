@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.hotbar;
+package xyz.upperlevel.spigot.gui.hotbar;
 
 
 import org.bukkit.entity.Player;

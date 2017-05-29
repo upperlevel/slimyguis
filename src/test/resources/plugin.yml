@@ -1,5 +1,5 @@
 name: GuiApiExample
-main: xyz.upperlevel.guiapi.example.Main
+main: xyz.upperlevel.spigot.gui.example.Main
 version: 1.0-SNAPSHOT
 author: upperlevel
 depend: [GuiApi]

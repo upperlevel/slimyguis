@@ -1,4 +1,4 @@
 name: GuiApi
-main: xyz.upperlevel.guiapi.Main
+main: xyz.upperlevel.spigot.gui.Main
 version: 1.0-SNAPSHOT
 author: upperlevel

@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.impl;
+package xyz.upperlevel.spigot.gui.impl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,14 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.guiapi.BaseGUI;
-import xyz.upperlevel.guiapi.GuiSize;
-import xyz.upperlevel.guiapi.impl.link.Link;
+import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static xyz.upperlevel.guiapi.GuiUtils.itemStack;
+import static xyz.upperlevel.spigot.gui.GuiUtils.itemStack;
 
 public class FolderGUI extends BaseGUI {
     private final Map<ItemStack, Link> components;

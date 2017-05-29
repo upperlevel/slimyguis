@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

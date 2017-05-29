@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.hotbar;
+package xyz.upperlevel.spigot.gui.hotbar;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

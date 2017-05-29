@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import lombok.Getter;
 import org.bukkit.event.Listener;

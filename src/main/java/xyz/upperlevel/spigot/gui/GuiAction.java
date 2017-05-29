@@ -1,6 +1,6 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
-import xyz.upperlevel.guiapi.impl.link.Link;
+import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 public class GuiAction {
 

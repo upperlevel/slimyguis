@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

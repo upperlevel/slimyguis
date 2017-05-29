@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi.impl;
+package xyz.upperlevel.spigot.gui.impl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.guiapi.BaseGUI;
-import xyz.upperlevel.guiapi.GuiAction;
-import xyz.upperlevel.guiapi.GuiSize;
-import xyz.upperlevel.guiapi.GuiUtils;
-import xyz.upperlevel.guiapi.impl.link.Link;
+import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.GuiAction;
+import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.gui.GuiUtils;
+import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 @Accessors(fluent = true, chain = true)
 public class ConfirmGui extends BaseGUI {

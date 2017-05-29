@@ -1,4 +1,4 @@
-package xyz.upperlevel.guiapi;
+package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
