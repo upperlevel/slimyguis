@@ -17,22 +17,40 @@ import java.util.stream.StreamSupport;
 
 public class HotbarManager {
     private static Map<Player, HotbarData> players = new HashMap<>();
-    
+
+    /**
+     * Adds the passed Hotbar to the player, reprinting the inventory
+     * @param player the player
+     * @param hotbar the hotbar to add to the player's inventory
+     */
     public static void add(Player player, Hotbar hotbar) {
         getOrCreate(player).addHandler(hotbar);
     }
 
+    /**
+     * Sets the passed Hotbar as the ONLY hotbar that the player has, removing the others set before
+     * @param player the player
+     * @param hotbar the hotbar to set
+     */
     public static void set(Player player, Hotbar hotbar) {
         getOrCreate(player).setHandler(hotbar);
     }
 
+    /**
+     * Removes every Hotbar for the player (and their respective inventory links)
+     * @param player the player
+     */
     public static void remove(Player player) {
         HotbarData data = players.remove(player);
         if(data != null)
-            data.clear();
+            data.remove();
     }
 
-    public static void reload(Player player) {
+    /**
+     * Reprints the player's inventory with the Hotbar links, this should be used only for visual bugs, please report them instead of brute-reprinting the inventory
+     * @param player the player
+     */
+    public static void reprint(Player player) {
         HotbarData data = players.get(player);
         if(data != null)
             data.reprint();
@@ -53,28 +71,61 @@ public class HotbarManager {
         else return data.onClick(item, action, clickedBlock, clickedFace);
     }
 
+    /**
+     * Gets the HotbarData for the passed player
+     * @param player the player
+     * @return the player's HotbarData
+     */
     public static HotbarData get(Player player) {
         return players.get(player);
     }
 
+    /**
+     * Checks if the item held by the player is a link
+     * @param player the player
+     * @return true only if the item he's holding is a link
+     */
     public static boolean hasLinkInHand(Player player) {
         return isInventorySlotLink(player, player.getInventory().getHeldItemSlot());
     }
 
+    /**
+     * Gets all the links in the player's inventory
+     * @param player the player
+     * @return a stream of ItemStacks representing the link's display item
+     */
     public static Stream<ItemStack> getLinks(Player player) {
         final HotbarData data = players.get(player);
         if (data == null) return Stream.empty();
         return data.getLinks();
     }
 
+    /**
+     * Returns true only if the player has a link that is similar to the passed item
+     * @param player the player
+     * @param item the item to check if is similar to any of the links
+     * @return true only if the passed item is similar to the any of the link display items
+     */
     public static boolean isItemSimilarToLink(Player player, ItemStack item) {
         return item != null && getLinks(player).anyMatch(item::isSimilar);
     }
 
+    /**
+     * Returns true only if the passed item is the same as one (or more) of the link's display items
+     * @param player the player
+     * @param item the item to check if is the same as any of the links
+     * @return true only if the passed item is the same to any of the link display items
+     */
     public static boolean isItemLink(Player player, ItemStack item) {
         return item != null && getLinks(player).anyMatch(item::equals);
     }
 
+    /**
+     * Returns true if any of the passed items is the same to any of the links
+     * @param player the player
+     * @param items the items
+     * @return true if any of the passed items is the same to any of the links
+     */
     public static boolean anyItemLink(Player player, ItemStack... items) {
         return getLinks(player).anyMatch(i -> {
             for(ItemStack s : items)
@@ -84,6 +135,12 @@ public class HotbarManager {
         });
     }
 
+    /**
+     * Returns true only if the slot passed is a Link. This works only with the Player's main Inventory (Hotbar: [0; 8])
+     * @param player the player
+     * @param slot the slot to check
+     * @return true only if the slot passed is a link
+     */
     public static boolean isInventorySlotLink(Player player, int slot) {
         HotbarData data = players.get(player);
         return data != null && slot < data.lastSize;
@@ -140,7 +197,7 @@ public class HotbarManager {
             for(ItemStack item : items)
                 inv.setItem(index++, item);//The toolbar is from 0 to 8, so offset: 0
 
-            //clear the items that were in the inventory from the last view, if any
+            //remove the items that were in the inventory from the last view, if any
             for(int i = size; i < lastSize; i++)
                 inv.setItem(i, null);
             player.updateInventory();
@@ -155,7 +212,7 @@ public class HotbarManager {
             return lastPrint.onClick(player, item, player.getInventory().getHeldItemSlot(), action, clickedBlock, clickedFace);
         }
 
-        public void clear() {
+        public void remove() {
             handler = null;
             final Inventory inv = player.getInventory();
             for(int i = 0; i < lastSize; i++)

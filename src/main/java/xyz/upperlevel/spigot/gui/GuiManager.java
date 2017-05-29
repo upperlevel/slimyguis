@@ -24,7 +24,12 @@ public class GuiManager {
     private static Map<Player, LinkedList<Gui>> guis = new HashMap<>();
     private static boolean called = false;
 
-
+    /**
+     * Opens a Gui to a player, adding it to the stack. If the closeOthers parameter is specified it will remove the stack first
+     * @param player the player that is opening the api
+     * @param gui the gui to be opened
+     * @param closeOthers if set to true the GUI history would be cleaned
+     */
     public static void open(Player player, Gui gui, boolean closeOthers) {
         if (called) return;
         called = true;
@@ -44,10 +49,19 @@ public class GuiManager {
         }
     }
 
+    /**
+     * Opens a Gui to a player, adding it to the stack
+     * @param player the player that is opening the api
+     * @param gui the gui to be opened
+     */
     public static void open(Player player, Gui gui) {
         open(player, gui, false);
     }
 
+    /**
+     * Closes *ALL* the player's Guis, clearing his stack history
+     * @param player the player
+     */
     public static void close(Player player) {
         if (called) return;
         called = true;
@@ -63,6 +77,10 @@ public class GuiManager {
         }
     }
 
+    /**
+     * Closes only the currently open Gui, opening the previous Gui in the stack if present, otherwise it will close the player's inventory
+     * @param player the player
+     */
     public static void back(Player player) {
         if (called) return;
         called = true;
@@ -81,6 +99,11 @@ public class GuiManager {
         }
     }
 
+    /**
+     * Changes the last Gui in the player's stack (if any) with the one specified in the arguments, this could be thought as back + open
+     * @param player the player
+     * @param gui the Gui that will be appended instead of the last one
+     */
     public static void change(Player player, Gui gui) {
         if (called) return;
         called = true;
@@ -96,6 +119,10 @@ public class GuiManager {
         }
     }
 
+    /**
+     * Called when a player clicks on the inventory, the filters to check if the Player clicked on the GUi's inventory should be made outside of this method
+     * @param event the click event
+     */
     public static void onClick(InventoryClickEvent event) {
         HumanEntity h = event.getWhoClicked();
         if (!(h instanceof Player))
@@ -111,11 +138,16 @@ public class GuiManager {
         }
     }
 
-    public static LinkedList<Gui> get(Player p) {
-        return guis.get(p);
+    /**
+     * Gets the Gui history (also called stack) of the player. If
+     * @param player the player
+     * @return the player's Gui history
+     */
+    public static LinkedList<Gui> get(Player player) {
+        return guis.get(player);
     }
 
-    private static LinkedList<Gui> getOrCreate(Player p) {
-        return guis.computeIfAbsent(p, (pl) -> new LinkedList<>());
+    private static LinkedList<Gui> getOrCreate(Player player) {
+        return guis.computeIfAbsent(player, (pl) -> new LinkedList<>());
     }
 }

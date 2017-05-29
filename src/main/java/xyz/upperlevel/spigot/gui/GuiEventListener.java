@@ -74,7 +74,7 @@ public class GuiEventListener implements Listener{
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        HotbarManager.reload(e.getPlayer());
+        HotbarManager.reprint(e.getPlayer());
     }
 
     @EventHandler
