@@ -3,7 +3,7 @@ package xyz.upperlevel.spigot.gui;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public abstract class BaseGUI implements Gui {
+public abstract class BaseGui implements Gui {
     protected Inventory buffer = null;
 
     @Override

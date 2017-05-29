@@ -1,7 +1,6 @@
 package xyz.upperlevel.spigot.gui.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.GuiUtils;
@@ -22,7 +21,7 @@ import java.util.Map;
 import static xyz.upperlevel.spigot.gui.GuiUtils.itemStack;
 
 @Accessors(fluent = true, chain = true)
-public class FolderGUI extends BaseGUI {
+public class FolderGui extends BaseGui {
     public static final ItemStack DEF_BACK_BUTTON = GuiUtils.itemStack(Material.BARRIER, ChatColor.RED + "Back");
 
     private final Map<ItemStack, Link> components;
@@ -35,7 +34,7 @@ public class FolderGUI extends BaseGUI {
     @Getter
     private ItemStack backButton = DEF_BACK_BUTTON;
 
-    public FolderGUI(String title, int size) {
+    public FolderGui(String title, int size) {
         if(size > 0)
             components = new LinkedHashMap<>(size);
         else
@@ -44,20 +43,20 @@ public class FolderGUI extends BaseGUI {
         this.title = title;
     }
 
-    public FolderGUI(String title, GuiSize size) {
+    public FolderGui(String title, GuiSize size) {
         this(title, size != null ? size.size() : -1);
     }
 
-    public FolderGUI(String title) {
+    public FolderGui(String title) {
         this(title, -1);
     }
 
-    public FolderGUI addLink(Link link, ItemStack display) {
+    public FolderGui addLink(Link link, ItemStack display) {
         components.put(display, link);
         return this;
     }
 
-    public FolderGUI addLink(Link link, Material mat, String name, String... lores) {
+    public FolderGui addLink(Link link, Material mat, String name, String... lores) {
         addLink(link, itemStack(mat, name, lores));
         return this;
     }
@@ -73,13 +72,13 @@ public class FolderGUI extends BaseGUI {
         }
     }
 
-    public FolderGUI title(String title) {
+    public FolderGui title(String title) {
         this.title = title;
         clear(); //Reprint
         return this;
     }
 
-    public FolderGUI backButton(ItemStack button) {
+    public FolderGui backButton(ItemStack button) {
         this.backButton = button;
         clear(); //Reprint
         return this;

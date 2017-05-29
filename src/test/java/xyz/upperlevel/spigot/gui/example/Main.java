@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiAction;
 import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.GuiSize;
@@ -21,7 +21,7 @@ import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.hotbar.handlers.SimpleHotbar;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
-import xyz.upperlevel.spigot.gui.impl.FolderGUI;
+import xyz.upperlevel.spigot.gui.impl.FolderGui;
 import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 import static xyz.upperlevel.spigot.gui.GuiAction.change;
@@ -39,7 +39,7 @@ public class Main extends JavaPlugin implements Listener {
             newLink(p -> p.sendMessage("pong"), wool(DyeColor.ORANGE, ChatColor.GOLD +"Ping")),
             newLink(Link.command("help"), wool(DyeColor.WHITE, ChatColor.WHITE + "Help")),
             newLink(
-                    new FolderGUI("Tools")
+                    new FolderGui("Tools")
                             .addLink(
                                     GuiAction.change(
                                             new ConfirmGui()
@@ -50,11 +50,11 @@ public class Main extends JavaPlugin implements Listener {
                                     BAN_ITEM)
                             .addLink(GuiAction.close().and(Link.consoleCommand("kick <player>")), wool(DyeColor.YELLOW, "Kick"))
                             .addLink(close().and(Link.consoleCommand("say <player> is STUPID!")), wool(DyeColor.GREEN, "Poke"))
-                            .addLink(change(new RainbowGUI()), wool(DyeColor.LIGHT_BLUE, "Rainbow :)")), //Example of the stack-like Gui system
+                            .addLink(change(new RainbowGui()), wool(DyeColor.LIGHT_BLUE, "Rainbow :)")), //Example of the stack-like Gui system
                     wood(TreeSpecies.ACACIA, ChatColor.GRAY + "Tools")
             ),
-            newLink(new RainbowGUI(), wool(DyeColor.GREEN, "Rainbow!")),
-            newLink(new DispenserGUI(), wool(DyeColor.BLACK, "Dispenser"))
+            newLink(new RainbowGui(), wool(DyeColor.GREEN, "Rainbow!")),
+            newLink(new DispenserGui(), wool(DyeColor.BLACK, "Dispenser"))
     );
 
     @Override
@@ -64,7 +64,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public void openRainbow(Player player) {
         //Example showing that the GUI can be opened or closed without any Hotbar
-        GuiManager.open(player, new RainbowGUI());
+        GuiManager.open(player, new RainbowGui());
     }
 
     @EventHandler
@@ -85,7 +85,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
 
-    private static class RainbowGUI extends BaseGUI {
+    private static class RainbowGui extends BaseGui {
         //Example of a simple GUI
 
         @Override
@@ -105,7 +105,7 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    private static class DispenserGUI extends BaseGUI {
+    private static class DispenserGui extends BaseGui {
         @Override
         public void onClick(InventoryClickEvent event) {
         }

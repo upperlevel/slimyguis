@@ -10,14 +10,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.BaseGUI;
+import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiAction;
 import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.GuiUtils;
 import xyz.upperlevel.spigot.gui.impl.link.Link;
 
 @Accessors(fluent = true, chain = true)
-public class ConfirmGui extends BaseGUI {
+public class ConfirmGui extends BaseGui {
 
     private static final ItemStack ACCEPT = GuiUtils.wool(DyeColor.GREEN, ChatColor.GREEN + "ACCEPT");
     private static final ItemStack DECLINE = GuiUtils.wool(DyeColor.RED, ChatColor.RED + "DECLINE");
