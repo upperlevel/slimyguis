@@ -20,6 +20,7 @@ import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.hotbar.impl.SimpleHotbar;
+import xyz.upperlevel.spigot.gui.impl.anvil.AnvilInputGui;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
 import xyz.upperlevel.spigot.gui.impl.FolderGui;
 import xyz.upperlevel.spigot.gui.link.Link;
@@ -54,7 +55,12 @@ public class Main extends JavaPlugin implements Listener {
                     wood(TreeSpecies.ACACIA, ChatColor.GRAY + "Tools")
             ),
             newLink(new RainbowGui(), wool(DyeColor.GREEN, "Rainbow!")),
-            newLink(new DispenserGui(), wool(DyeColor.BLACK, "Dispenser"))
+            newLink(new DispenserGui(), wool(DyeColor.BLACK, "Dispenser")),
+            newLink(new AnvilInputGui()
+                        .message("Put your age")
+                        .listener(AnvilInputGui.Filter.filterInt((player, age) -> player.sendMessage(age >= 18 ? "You can watch this" : "Go away!"))),
+                    wool(DyeColor.YELLOW, "Check Age")
+            )
     );
 
     @Override
