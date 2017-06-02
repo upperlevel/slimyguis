@@ -1,8 +1,9 @@
-package xyz.upperlevel.spigot.gui.impl.link;
+package xyz.upperlevel.spigot.gui.link.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 @RequiredArgsConstructor
 public class ConsoleCommandLink implements Link {

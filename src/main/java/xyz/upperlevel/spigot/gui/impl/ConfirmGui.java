@@ -14,7 +14,7 @@ import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiAction;
 import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.GuiUtils;
-import xyz.upperlevel.spigot.gui.impl.link.Link;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 @Accessors(fluent = true, chain = true)
 public class ConfirmGui extends BaseGui {

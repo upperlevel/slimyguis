@@ -2,7 +2,7 @@ package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import xyz.upperlevel.spigot.gui.impl.link.Link;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 public interface Gui extends Link {
     /**

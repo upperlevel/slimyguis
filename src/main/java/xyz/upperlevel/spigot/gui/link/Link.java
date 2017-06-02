@@ -1,6 +1,8 @@
-package xyz.upperlevel.spigot.gui.impl.link;
+package xyz.upperlevel.spigot.gui.link;
 
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.link.impl.CommandLink;
+import xyz.upperlevel.spigot.gui.link.impl.ConsoleCommandLink;
 
 public interface Link {
     Link EMPTY = (p) -> {};

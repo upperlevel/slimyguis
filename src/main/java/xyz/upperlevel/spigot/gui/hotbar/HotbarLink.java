@@ -1,7 +1,7 @@
 package xyz.upperlevel.spigot.gui.hotbar;
 
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.impl.link.Link;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 public interface HotbarLink {
     Link getAction();

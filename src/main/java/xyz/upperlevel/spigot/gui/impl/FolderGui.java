@@ -13,7 +13,7 @@ import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.GuiUtils;
-import xyz.upperlevel.spigot.gui.impl.link.Link;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

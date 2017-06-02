@@ -22,7 +22,7 @@ import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.hotbar.handlers.SimpleHotbar;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
 import xyz.upperlevel.spigot.gui.impl.FolderGui;
-import xyz.upperlevel.spigot.gui.impl.link.Link;
+import xyz.upperlevel.spigot.gui.link.Link;
 
 import static xyz.upperlevel.spigot.gui.GuiAction.change;
 import static xyz.upperlevel.spigot.gui.GuiAction.close;
