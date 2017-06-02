@@ -19,7 +19,7 @@ import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
-import xyz.upperlevel.spigot.gui.hotbar.handlers.SimpleHotbar;
+import xyz.upperlevel.spigot.gui.hotbar.impl.SimpleHotbar;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
 import xyz.upperlevel.spigot.gui.impl.FolderGui;
 import xyz.upperlevel.spigot.gui.link.Link;

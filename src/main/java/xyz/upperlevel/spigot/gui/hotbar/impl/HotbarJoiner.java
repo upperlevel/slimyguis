@@ -1,4 +1,4 @@
-package xyz.upperlevel.spigot.gui.hotbar.handlers;
+package xyz.upperlevel.spigot.gui.hotbar.impl;
 
 import lombok.Data;
 import org.bukkit.block.Block;

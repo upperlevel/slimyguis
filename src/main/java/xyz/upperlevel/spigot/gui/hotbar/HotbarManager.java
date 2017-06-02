@@ -9,7 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.hotbar.handlers.HotbarJoiner;
+import xyz.upperlevel.spigot.gui.hotbar.impl.HotbarJoiner;
 
 import java.util.*;
 import java.util.stream.Stream;
