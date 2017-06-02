@@ -35,11 +35,12 @@ public class GuiManager {
         called = true;
         try {
             LinkedList<Gui> g = getOrCreate(player);
-            if (!g.isEmpty())
+            if (!g.isEmpty()) {
                 g.peek().onClose(player);
 
-            if(closeOthers)
-                g.clear();
+                if (closeOthers)
+                    g.clear();
+            }
 
             gui.onOpen(player);
             gui.print(player);
