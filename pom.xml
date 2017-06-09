@@ -87,8 +87,15 @@
         <!-- AnvilGui -->
         <dependency>
             <groupId>xyz.upperlevel.spigot.anvilgui</groupId>
-            <artifactId>anvilgui</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <artifactId>spigot-anvil-gui</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- BookApi -->
+        <dependency>
+            <groupId>xyz.upperlevel.spigot.book</groupId>
+            <artifactId>spigot-book-api</artifactId>
+            <version>1.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

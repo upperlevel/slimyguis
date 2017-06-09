@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.impl.anvil;
 
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -7,14 +8,14 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public final class InputFilters {
-    public static BiFunction<Player, String, String> plain(BiConsumer<Player, String> consumer) {
+    public static AnvilGUI.ClickHandler plain(BiConsumer<Player, String> consumer) {
         return (p, m) -> {
             consumer.accept(p, m);
             return null;
         };
     }
 
-    public static BiFunction<Player, String, String> filterInt(BiConsumer<Player, Integer> consumer) {
+    public static AnvilGUI.ClickHandler filterInt(BiConsumer<Player, Integer> consumer) {
         return (p, m) -> {
             try {
                 consumer.accept(p, Integer.parseInt(m));
@@ -25,7 +26,7 @@ public final class InputFilters {
         };
     }
 
-    public static BiFunction<Player, String, String> filterLong(BiConsumer<Player, Long> consumer) {
+    public static AnvilGUI.ClickHandler filterLong(BiConsumer<Player, Long> consumer) {
         return (p, m) -> {
             try {
                 consumer.accept(p, Long.parseLong(m));
@@ -36,7 +37,7 @@ public final class InputFilters {
         };
     }
 
-    public static BiFunction<Player, String, String> filterFloat(BiConsumer<Player, Float> consumer) {
+    public static AnvilGUI.ClickHandler filterFloat(BiConsumer<Player, Float> consumer) {
         return (p, m) -> {
             try {
                 consumer.accept(p, Float.parseFloat(m));
@@ -47,7 +48,7 @@ public final class InputFilters {
         };
     }
 
-    public static BiFunction<Player, String, String> filterDouble(BiConsumer<Player, Double> consumer) {
+    public static AnvilGUI.ClickHandler filterDouble(BiConsumer<Player, Double> consumer) {
         return (p, m) -> {
             try {
                 consumer.accept(p, Double.parseDouble(m));
@@ -58,7 +59,7 @@ public final class InputFilters {
         };
     }
 
-    public static BiFunction<Player, String, String> filterBoolean(BiConsumer<Player, Boolean> consumer) {
+    public static AnvilGUI.ClickHandler filterBoolean(BiConsumer<Player, Boolean> consumer) {
         return (p, m) -> {
             try {
                 consumer.accept(p, parseBool(m));
@@ -69,7 +70,7 @@ public final class InputFilters {
         };
     }
 
-    public static BiFunction<Player, String, String> filterPlayer(BiConsumer<Player, Player> consumer) {
+    public static AnvilGUI.ClickHandler filterPlayer(BiConsumer<Player, Player> consumer) {
         return (p, m) -> {
             Player player = Bukkit.getPlayer(m);
             if (player != null) {

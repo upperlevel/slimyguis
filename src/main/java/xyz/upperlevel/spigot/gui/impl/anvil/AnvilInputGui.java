@@ -25,7 +25,7 @@ public class AnvilInputGui implements Gui {
 
     @Setter
     @Getter
-    private BiFunction<Player, String, String> listener = (player, input) -> "Not implemented!";
+    private AnvilGUI.ClickHandler listener = (player, input) -> "Not implemented!";
 
 
     @Override
@@ -41,7 +41,7 @@ public class AnvilInputGui implements Gui {
     }
 
     private String onAnvilClick(Player player, String input) {
-        return listener.apply(player, input);
+        return listener.onClick(player, input);
     }
 
     @Override
