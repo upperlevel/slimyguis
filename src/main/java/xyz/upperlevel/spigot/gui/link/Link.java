@@ -5,7 +5,15 @@ import xyz.upperlevel.spigot.gui.link.impl.CommandLink;
 import xyz.upperlevel.spigot.gui.link.impl.ConsoleCommandLink;
 
 public interface Link {
-    Link EMPTY = (p) -> {};
+    Link EMPTY = new Link() {
+        @Override
+        public void run(Player player) {}
+
+        @Override
+        public Link and(Link after) {
+            return after;
+        }
+    };
 
     /**
      * Executed when the link is run
