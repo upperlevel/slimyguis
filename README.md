@@ -1,4 +1,4 @@
-# spigot-command-api
+# spigot-gui-api
 This project is an abstraction of the Spigot Inventories that helps creating games-like GUIs with a stack-like history.
 Follows a brief documentation on how to use it.
 
