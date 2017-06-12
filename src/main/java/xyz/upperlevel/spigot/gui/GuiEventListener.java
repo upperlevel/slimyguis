@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.spigot.book.CustomBookOpenEvent;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 
 import java.util.Set;
@@ -50,8 +52,19 @@ public class GuiEventListener implements Listener{
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     protected void onInventoryClose(InventoryCloseEvent e) {
-        if(e.getPlayer() instanceof Player)
-            GuiManager.back((Player) e.getPlayer());
+        if(e.getPlayer() instanceof Player && !GuiManager.isCalled()) {
+            //Cannot call Inventory actions in an inventory event
+            Bukkit.getScheduler().runTaskLater(
+                    Main.getInstance(),
+                    () ->  GuiManager.back((Player) e.getPlayer()),
+                    0
+            );
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    protected void onCustomBookOpen(CustomBookOpenEvent e) {
+        GuiManager.close(e.getPlayer());
     }
 
     @EventHandler
@@ -68,7 +81,8 @@ public class GuiEventListener implements Listener{
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
-        if(HotbarManager.hasLinkInHand(e.getPlayer()))
+        //if(no inventory is open AND the dropped item is a link) cancel
+        if(e.getPlayer().getOpenInventory() == null && HotbarManager.hasLinkInHand(e.getPlayer()))
             e.setCancelled(true);
     }
 

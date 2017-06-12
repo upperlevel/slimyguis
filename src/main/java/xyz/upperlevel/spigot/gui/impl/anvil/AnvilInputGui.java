@@ -5,16 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.wesjd.anvilgui.AnvilGUI;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.Main;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
@@ -29,7 +23,9 @@ public class AnvilInputGui implements Gui {
 
 
     @Override
-    public void onClick(InventoryClickEvent event) {}//Not working :/
+    public void onClick(InventoryClickEvent event) {
+        event.setCancelled(false);
+    }//Not working :/
 
     @Override
     public void print(Player player) {
@@ -37,11 +33,16 @@ public class AnvilInputGui implements Gui {
                 Main.getInstance(),
                 player,
                 message,
-                this::onAnvilClick);
+                this::onAnvilClick
+        );
     }
 
     private String onAnvilClick(Player player, String input) {
-        return listener.onClick(player, input);
+        //We don't want the GUI to close:
+        //Once we return null the AnvilGui will close the GUI and the GuiManager will listen that close event
+        //all AFTER that the onClick is executed
+        final String str = listener.onClick(player, input);
+        return str == null ? "" : str;
     }
 
     @Override

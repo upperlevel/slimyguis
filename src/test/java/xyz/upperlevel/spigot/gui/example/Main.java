@@ -12,10 +12,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.spigot.gui.BaseGui;
-import xyz.upperlevel.spigot.gui.GuiAction;
-import xyz.upperlevel.spigot.gui.GuiManager;
-import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.book.BookUtil;
+import xyz.upperlevel.spigot.gui.*;
 import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
@@ -28,6 +26,7 @@ import xyz.upperlevel.spigot.gui.link.Link;
 
 import static xyz.upperlevel.spigot.gui.GuiAction.change;
 import static xyz.upperlevel.spigot.gui.GuiAction.close;
+import static xyz.upperlevel.spigot.gui.GuiManager.open;
 import static xyz.upperlevel.spigot.gui.GuiUtils.wood;
 import static xyz.upperlevel.spigot.gui.GuiUtils.wool;
 import static xyz.upperlevel.spigot.gui.hotbar.HotbarLink.newLink;
@@ -59,10 +58,111 @@ public class Main extends JavaPlugin implements Listener {
             newLink(new DispenserGui(), wool(DyeColor.BLACK, "Dispenser")),
             newLink(new AnvilInputGui()
                         .message("Put your age")
-                        .listener(InputFilters.filterInt((player, age) -> player.sendMessage(age >= 18 ? "You can watch this" : "Go away!"))),
+                        .listener(InputFilters.filterInt((player, age) -> {
+                            GuiManager.close(player);
+                            player.sendMessage(age >= 18 ? "You can watch this" : "Go away!");
+                        })),
                     wool(DyeColor.YELLOW, "Check Age")
+            ),
+            newLink(
+                    new FolderGui("Choose anvil")
+                            .addLink(
+                                    new AnvilInputGui()
+                                            .message("Put text")
+                                            .listener(
+                                                    InputFilters.plain((p, t) ->
+                                                            BookUtil.openPlayer(
+                                                                    p,
+                                                                    BookUtil.writtenBook()
+                                                                            .pagesRaw(t)
+                                                                            .build()
+                                                            )
+                                                    )
+                                            ),
+                                    wool(DyeColor.WHITE, "Text")
+                            )
+                            .addLink(
+                                    new AnvilInputGui()
+                                            .message("Put player to kick")
+                                            .listener(
+                                                    InputFilters.filterPlayer((player, selected) -> {
+                                                        GuiManager.change(
+                                                                player,
+                                                                new ConfirmGui()
+                                                                        .title("Do you really wanna kick " + selected.getName())
+                                                                        .onConfirm(close().and(pl -> selected.kickPlayer("You've been kicked by " + pl.getName())))
+                                                        );
+                                                    })
+                                            ),
+                                    wool(DyeColor.RED, "Kick")
+                            )
+                            .addLink(
+                                    new AnvilInputGui()
+                                            .message("Put your age")
+                                            .listener(
+                                                    InputFilters.filterInt((player, age) -> {
+                                                        BookUtil.openPlayer(player, getDrugsBook(age));
+                                                    })
+                                            ),
+                                    wool(DyeColor.GREEN, "Drugs")
+                            ),
+                    GuiUtils.setNameAndLores(new ItemStack(Material.ANVIL), "Anvil tests")
+            ),
+            newLink(
+                    new FolderGui("deep-test")
+                            .addLink(
+                                    new RainbowGui(),
+                                    wool(DyeColor.BROWN, "Deep Rainbow")
+                            ),
+                    wool(DyeColor.BLUE, "Deep shit")
             )
     );
+
+    private static ItemStack getDrugsBook(int age) {
+        if(age < 18) {
+            return BookUtil.writtenBook()
+                    .title(ChatColor.RED + "You're underage!")
+                    .pages(
+                            new BookUtil.PageBuilder()
+                                    .add(
+                                            BookUtil.TextBuilder.of("You're underage!")
+                                                    .color(ChatColor.RED)
+                                                    .style(ChatColor.BOLD)
+                                                    .onHover(BookUtil.HoverAction.showText("age < 18"))
+                                                    .build()
+                                    )
+                                    .newLine()
+                                    .add("Wait another " + (18 - age) + " years and then return here")
+                                    .build()
+                    )
+                    .build();
+        } else
+            return BookUtil.writtenBook()
+                    .title(ChatColor.GREEN + "Drugs book")
+                    .pages(
+                        new BookUtil.PageBuilder()
+                                .add(
+                                        BookUtil.TextBuilder.of("Here's the drug")
+                                                .color(ChatColor.DARK_GREEN)
+                                                .style(ChatColor.BOLD)
+                                                .onHover(BookUtil.HoverAction.showText("Take the drugs!"))
+                                                .onClick(BookUtil.ClickAction.openUrl("https://www.google.it/search?q=drugs"))
+                                                .build()
+                                )
+                                .newLine()
+                                .add("Now run! the ")
+                                .add(
+                                        BookUtil.TextBuilder.of("POLICE")
+                                                .color(ChatColor.BLUE)
+                                                .onHover(BookUtil.HoverAction.showText("RUUUN"))
+                                                .onClick(BookUtil.ClickAction.runCommand("The police caught me :("))
+                                                .build()
+                                )
+                                .add(" is following us")
+                                .build()
+                    )
+                    .build();
+    }
 
     @Override
     public void onEnable() {
@@ -71,7 +171,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public void openRainbow(Player player) {
         //Example showing that the GUI can be opened or closed without any Hotbar
-        GuiManager.open(player, new RainbowGui());
+        open(player, new RainbowGui());
     }
 
     @EventHandler

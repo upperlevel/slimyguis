@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui;
 
+import lombok.Getter;
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -22,6 +23,7 @@ import java.util.Map;
  */
 public class GuiManager {
     private static Map<Player, LinkedList<Gui>> guis = new HashMap<>();
+    @Getter
     private static boolean called = false;
 
     /**
@@ -91,8 +93,9 @@ public class GuiManager {
                 return;
             g.pop().onClose(player);
             if (!g.isEmpty()) {
-                g.peek().onOpen(player);
-                g.peek().print(player);
+                final Gui gui = g.peek();
+                gui.onOpen(player);
+                gui.print(player);
             } else
                 player.closeInventory();
         } finally {
