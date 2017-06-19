@@ -14,6 +14,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.book.CustomBookOpenEvent;
+import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 
 import java.util.Set;
@@ -23,11 +24,11 @@ public class GuiEventListener implements Listener{
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     protected void onPlayerClick(InventoryClickEvent e) {
-        HotbarManager.HotbarData hotbar = HotbarManager.get((Player) e.getWhoClicked());
+        Hotbar hotbar = HotbarManager.get((Player) e.getWhoClicked());
         if(e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
-            //isIndexLink is really fast but it only works with the main player inventory where the first 9 indexes are
+            //isSlotLink is really fast but it only works with the main player inventory where the first 9 indexes are
             //for the hotbar. this isn't exactly the main inventory but it works aswell
-            if(hotbar != null && hotbar.isIndexLink(e.getHotbarButton())) {
+            if(hotbar != null && hotbar.isSlotLink(e.getHotbarButton())) {
                 e.setCancelled(true);
                 return;
             }
@@ -81,8 +82,7 @@ public class GuiEventListener implements Listener{
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
-        //if(no inventory is open AND the dropped item is a link) cancel
-        if(e.getPlayer().getOpenInventory() == null && HotbarManager.hasLinkInHand(e.getPlayer()))
+        if(HotbarManager.isItemLink(e.getPlayer(), e.getItemDrop().getItemStack()))
             e.setCancelled(true);
     }
 
@@ -94,7 +94,7 @@ public class GuiEventListener implements Listener{
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         if(e.getKeepInventory() || e.getDrops().isEmpty()) return;
-        Set<ItemStack> items = HotbarManager.getLinks(e.getEntity()).collect(Collectors.toSet());
+        Set<ItemStack> items = HotbarManager.linkStream(e.getEntity()).collect(Collectors.toSet());
         if(!items.isEmpty())
             e.getDrops().removeIf(items::contains);
     }

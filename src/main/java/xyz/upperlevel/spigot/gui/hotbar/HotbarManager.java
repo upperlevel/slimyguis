@@ -1,49 +1,97 @@
 package xyz.upperlevel.spigot.gui.hotbar;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.hotbar.impl.HotbarJoiner;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class HotbarManager {
-    private static Map<Player, HotbarData> players = new HashMap<>();
+    private static Map<Player, Hotbar> players = new HashMap<>();
 
     /**
-     * Adds the passed Hotbar to the player, reprinting the inventory
+     * Adds the passed HotbarLinks to the player, reprinting the inventory
      * @param player the player
-     * @param hotbar the hotbar to add to the player's inventory
+     * @param links the links to add to the player's hotbar
      */
-    public static void add(Player player, Hotbar hotbar) {
-        getOrCreate(player).addHandler(hotbar);
+    public static void add(Player player, HotbarLink... links) {
+        getOrCreate(player).add(links);
+        player.updateInventory();
+    }
+
+    /**
+     * Adds the passed HotbarLinks to the player, reprinting the inventory
+     * @param player the player
+     * @param links the links to add to the player's hotbar
+     */
+    public static void add(Player player, Collection<HotbarLink> links) {
+        getOrCreate(player).add(links);
+        player.updateInventory();
+    }
+
+
+    /**
+     * Adds the passed HotbarLinks to the player, reprinting the inventory
+     * @param player the player
+     * @param links the links to add to the player's hotbar
+     */
+    public static void remove(Player player, HotbarLink... links) {
+        Hotbar h = get(player);
+        if(h != null) {
+            h.remove(links);
+            player.updateInventory();
+        }
+    }
+
+    /**
+     * Adds the passed HotbarLinks to the player, reprinting the inventory
+     * @param player the player
+     * @param links the links to add to the player's hotbar
+     */
+    public static void remove(Player player, Collection<HotbarLink> links) {
+        Hotbar h = get(player);
+        if(h != null) {
+            h.remove(links);
+            player.updateInventory();
+        }
     }
 
     /**
      * Sets the passed Hotbar as the ONLY hotbar that the player has, removing the others set before
      * @param player the player
-     * @param hotbar the hotbar to set
+     * @param links the links to set
      */
-    public static void set(Player player, Hotbar hotbar) {
-        getOrCreate(player).setHandler(hotbar);
+    public static void set(Player player, HotbarLink... links) {
+        Hotbar hotbar = getOrCreate(player);
+        hotbar.clear();
+        hotbar.add(links);
+        player.updateInventory();
+    }
+
+    /**
+     * Sets the passed Hotbar as the ONLY hotbar that the player has, removing the others set before
+     * @param player the player
+     * @param links the links to set
+     */
+    public static void set(Player player, Collection<HotbarLink> links) {
+        Hotbar hotbar = getOrCreate(player);
+        hotbar.clear();
+        hotbar.add(links);
+        player.updateInventory();
     }
 
     /**
      * Removes every Hotbar for the player (and their respective inventory links)
      * @param player the player
      */
-    public static void remove(Player player) {
-        HotbarData data = players.remove(player);
+    public static void clear(Player player) {
+        Hotbar data = players.remove(player);
         if(data != null)
-            data.remove();
+            data.clear();
+        player.updateInventory();
     }
 
     /**
@@ -51,24 +99,23 @@ public class HotbarManager {
      * @param player the player
      */
     public static void reprint(Player player) {
-        HotbarData data = players.get(player);
+        Hotbar data = players.get(player);
         if(data != null)
             data.reprint();
+        player.updateInventory();
     }
 
     public static void onClick(PlayerInteractEvent event) {
-        HotbarData data = players.get(event.getPlayer());
-        if (data != null) {
-            //event.getItem() may change depending on the hand "used" by the click so we get it directly
-            if (data.onClick(event.getPlayer().getInventory().getItemInMainHand(), event.getAction(), event.getClickedBlock(), event.getBlockFace()))
-                event.setCancelled(true);
-        }
+        onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot());
     }
 
-    public static boolean onClick(Player player, ItemStack item, Action action, Block clickedBlock, BlockFace clickedFace) {
-        HotbarData data = players.get(player);
+    public static boolean onClick(Player player, int slot) {
+        Hotbar data = players.get(player);
         if(data == null) return false;
-        else return data.onClick(item, action, clickedBlock, clickedFace);
+        HotbarLink link = data.getLink(slot);
+        if(link == null) return false;
+        link.getAction().run(player);
+        return true;
     }
 
     /**
@@ -76,7 +123,7 @@ public class HotbarManager {
      * @param player the player
      * @return the player's HotbarData
      */
-    public static HotbarData get(Player player) {
+    public static Hotbar get(Player player) {
         return players.get(player);
     }
 
@@ -86,6 +133,7 @@ public class HotbarManager {
      * @return true only if the item he's holding is a link
      */
     public static boolean hasLinkInHand(Player player) {
+        System.out.println(player.getInventory().getHeldItemSlot());
         return isInventorySlotLink(player, player.getInventory().getHeldItemSlot());
     }
 
@@ -94,10 +142,10 @@ public class HotbarManager {
      * @param player the player
      * @return a stream of ItemStacks representing the link's display item
      */
-    public static Stream<ItemStack> getLinks(Player player) {
-        final HotbarData data = players.get(player);
+    public static Stream<ItemStack> linkStream(Player player) {
+        final Hotbar data = players.get(player);
         if (data == null) return Stream.empty();
-        return data.getLinks();
+        return data.linkStream();
     }
 
     /**
@@ -107,7 +155,7 @@ public class HotbarManager {
      * @return true only if the passed item is similar to the any of the link display items
      */
     public static boolean isItemSimilarToLink(Player player, ItemStack item) {
-        return item != null && getLinks(player).anyMatch(item::isSimilar);
+        return item != null && linkStream(player).anyMatch(item::isSimilar);
     }
 
     /**
@@ -117,7 +165,7 @@ public class HotbarManager {
      * @return true only if the passed item is the same to any of the link display items
      */
     public static boolean isItemLink(Player player, ItemStack item) {
-        return item != null && getLinks(player).anyMatch(item::equals);
+        return item != null && linkStream(player).anyMatch(item::equals);
     }
 
     /**
@@ -127,7 +175,7 @@ public class HotbarManager {
      * @return true if any of the passed items is the same to any of the links
      */
     public static boolean anyItemLink(Player player, ItemStack... items) {
-        return getLinks(player).anyMatch(i -> {
+        return linkStream(player).anyMatch(i -> {
             for(ItemStack s : items)
                 if(s.equals(i))
                     return true;
@@ -142,118 +190,11 @@ public class HotbarManager {
      * @return true only if the slot passed is a link
      */
     public static boolean isInventorySlotLink(Player player, int slot) {
-        HotbarData data = players.get(player);
-        return data != null && slot < data.lastSize;
+        Hotbar data = players.get(player);
+        return data != null && data.isSlotLink(slot);
     }
 
-
-
-
-    private static HotbarData getOrCreate(Player p) {
-        return players.computeIfAbsent(p, HotbarData::new);
-    }
-
-    @RequiredArgsConstructor
-    public static class HotbarData {
-        @Getter
-        private final Player player;
-        private Hotbar handler;
-        private HotbarView lastPrint;
-
-        private int lastSize = -1;
-
-        public void addHandler(Hotbar handler) {
-            if (this.handler == null)
-                this.handler = handler;
-            else if (this.handler instanceof HotbarJoiner)
-                ((HotbarJoiner) this.handler).add(handler);
-            else {
-                this.handler = new HotbarJoiner()
-                        .add(handler)
-                        .add(handler);
-            }
-            reprint();
-        }
-
-        public void setHandler(Hotbar handler) {
-            this.handler = handler;
-            reprint();
-        }
-
-        public void reprint() {
-            if(handler == null) return;
-            HotbarView view = handler.print(player);
-
-            final Inventory inv = player.getInventory();
-
-            Collection<ItemStack> items = view.getItems();//Get the compiled links
-            final int size = items.size();//And save the size of them for later computation
-
-            if(size > 9)//check if the items aren't too many
-                throw new IllegalStateException("Too many links!");
-
-            //copy the links (items) into the real toolbar
-            int index = 0;
-            for(ItemStack item : items)
-                inv.setItem(index++, item);//The toolbar is from 0 to 8, so offset: 0
-
-            //remove the items that were in the inventory from the last view, if any
-            for(int i = size; i < lastSize; i++)
-                inv.setItem(i, null);
-            player.updateInventory();
-            lastPrint = view;
-
-            lastSize = size;//Update the lastSize fot the next reprint
-        }
-
-        public boolean onClick(ItemStack item, Action action, Block clickedBlock, BlockFace clickedFace) {
-            //If there's no print the player could not onClick it (lol)
-            if(lastPrint == null) return false;
-            return lastPrint.onClick(player, item, player.getInventory().getHeldItemSlot(), action, clickedBlock, clickedFace);
-        }
-
-        public void remove() {
-            handler = null;
-            final Inventory inv = player.getInventory();
-            for(int i = 0; i < lastSize; i++)
-                inv.setItem(i, null);
-            player.updateInventory();
-        }
-
-        public boolean isIndexLink(int index) {
-            return index < lastSize;
-        }
-
-        public Stream<ItemStack> getLinks() {
-            final ListIterator<ItemStack> i = player.getInventory().iterator();
-            return StreamSupport.stream(Spliterators.spliterator(new Iterator<ItemStack>() {
-                @Override
-                public boolean hasNext() {
-                    return i.nextIndex() < lastSize;
-                }
-
-                @Override
-                public ItemStack next() {
-                    return i.next();
-                }
-            }, lastSize, 0), false);
-        }
-
-        public boolean isItemLink(ItemStack item) {
-            return getLinks().anyMatch(item::equals);
-        }
-
-        public boolean isItemSimilarToLink(ItemStack item) {
-            return item != null && getLinks().anyMatch(item::isSimilar);
-        }
-
-        public boolean anyItemLink(ItemStack... items) {
-            return getLinks().anyMatch((i) -> {
-                for(ItemStack s : items)
-                    if(s != null && s.equals(i))
-                        return true;
-                return false;
-            });
-        }
+    private static Hotbar getOrCreate(Player p) {
+        return players.computeIfAbsent(p, Hotbar::new);
     }
 }

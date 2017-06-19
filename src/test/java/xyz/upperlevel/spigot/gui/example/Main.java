@@ -14,10 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.book.BookUtil;
 import xyz.upperlevel.spigot.gui.*;
-import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
-import xyz.upperlevel.spigot.gui.hotbar.impl.SimpleHotbar;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
 import xyz.upperlevel.spigot.gui.impl.FolderGui;
 import xyz.upperlevel.spigot.gui.impl.anvil.AnvilInputGui;
@@ -35,9 +33,9 @@ public class Main extends JavaPlugin implements Listener {
     //Example of creating strange ItemStacks
     private static final ItemStack BAN_ITEM = wool(DyeColor.RED, "Ban");
 
-    private static final Hotbar hotbar = SimpleHotbar.of(
+    private static final HotbarLink[] links = new HotbarLink[]{
             HotbarLink.newLink(Link.consoleCommand("kick <player>"), wool(DyeColor.BLUE, ChatColor.BLUE + "Kick")),
-            newLink(p -> p.sendMessage("pong"), wool(DyeColor.ORANGE, ChatColor.GOLD +"Ping")),
+            newLink(p -> p.sendMessage("pong"), wool(DyeColor.ORANGE, ChatColor.GOLD + "Ping")),
             newLink(Link.command("help"), wool(DyeColor.WHITE, ChatColor.WHITE + "Help")),
             newLink(
                     new FolderGui("Tools")
@@ -57,11 +55,11 @@ public class Main extends JavaPlugin implements Listener {
             newLink(new RainbowGui(), wool(DyeColor.GREEN, "Rainbow!")),
             newLink(new DispenserGui(), wool(DyeColor.BLACK, "Dispenser")),
             newLink(new AnvilInputGui()
-                        .message("Put your age")
-                        .listener(InputFilters.filterInt((player, age) -> {
-                            GuiManager.close(player);
-                            player.sendMessage(age >= 18 ? "You can watch this" : "Go away!");
-                        })),
+                            .message("Put your age")
+                            .listener(InputFilters.filterInt((player, age) -> {
+                                GuiManager.close(player);
+                                player.sendMessage(age >= 18 ? "You can watch this" : "Go away!");
+                            })),
                     wool(DyeColor.YELLOW, "Check Age")
             ),
             newLink(
@@ -116,7 +114,7 @@ public class Main extends JavaPlugin implements Listener {
                             ),
                     wool(DyeColor.BLUE, "Deep shit")
             )
-    );
+    };
 
     private static ItemStack getDrugsBook(int age) {
         if(age < 18) {
@@ -179,7 +177,7 @@ public class Main extends JavaPlugin implements Listener {
         //HotbarManager.add adds the Hotbar to the others already applied (if any)
         //were HotbarManager.set would replace the Hotbar without adding it
         //the add-way is more suggested because it can support other plugins
-        HotbarManager.add(event.getPlayer(), hotbar);
+        HotbarManager.add(event.getPlayer(), links);
     }
 
     @Override
