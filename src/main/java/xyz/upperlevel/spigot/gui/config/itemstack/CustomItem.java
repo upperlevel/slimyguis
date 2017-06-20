@@ -9,13 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import xyz.upperlevel.spigot.gui.config.MessageUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -49,8 +47,8 @@ public class CustomItem {
     }
 
     @SuppressWarnings("unchecked")
-    public static CustomItem deserialzie(Map<String, Object> config) {
-        Material mat = (Material) config.get("material");
+    public static CustomItem deserialize(Map<String, Object> config) {
+        Material mat = Material.getMaterial(((String)config.get("material")).replace(" ", "_").toUpperCase(Locale.ENGLISH));//TODO: add id support
         PlaceholderValue<Short> data = PlaceHolderUtil.parseShort(config.getOrDefault("data", 0));
         if(data == null)
             Bukkit.getLogger().severe("Illegal value into CustomItem's \"data\" tag");
@@ -59,16 +57,23 @@ public class CustomItem {
             Bukkit.getLogger().severe("Illegal value into CustomItem's \"amount\" tag");
 
 
-        PlaceholderValue<String> displayName = PlaceholderValue.strValue((String) config.get("name"));
-        List<PlaceholderValue<String>> lores = ((Collection<String>)config.get("lores"))
-                .stream()
-                .map(PlaceholderValue::strValue)
-                .collect(Collectors.toList());
+        PlaceholderValue<String> displayName = MessageUtil.process(((String) config.get("name")));
+        List<PlaceholderValue<String>> lores;
+        if(config.containsKey("lore")) {
+            lores = ((Collection<String>) config.get("lore"))
+                    .stream()
+                    .map(MessageUtil::process)
+                    .collect(Collectors.toList());
+        } else lores = Collections.emptyList();
 
-        List<ItemFlag> flags = ((Collection<String>)config.get("flags"))
-                .stream()
-                .map(ItemFlag::valueOf)
-                .collect(Collectors.toList());
+        List<ItemFlag> flags;
+        if(config.containsKey("flags")) {
+            flags = ((Collection<String>) config.get("flags"))
+                    .stream()
+                    .map(ItemFlag::valueOf)
+                    .collect(Collectors.toList());
+        } else
+            flags = Collections.emptyList();
 
         Map<Enchantment, PlaceholderValue<Integer>> enchantments;
 
@@ -96,6 +101,8 @@ public class CustomItem {
                         mat, data, amount, displayName, lores, flags, enchantments,
                         config
                 );
+            case SKULL:
+                mat = Material.SKULL_ITEM;
             case SKULL_ITEM:
                 return SkullCustomItem.from(
                     mat, data, amount, displayName, lores, flags, enchantments,
@@ -126,11 +133,41 @@ public class CustomItem {
                     mat, data, amount, displayName, lores, flags, enchantments,
                     config
                 );
+            case ENCHANTED_BOOK:
+                return EnchantedBookCustomItem.from(
+                        mat, data, amount, displayName, lores, flags, enchantments,
+                        config
+                );
+            case FIREWORK:
+                return FireworkCustomItem.from(
+                        mat, data, amount, displayName, lores, flags, enchantments,
+                        config
+                );
+            case FIREWORK_CHARGE:
+                return FireworkChargeCustomItem.from(
+                        mat, data, amount, displayName, lores, flags, enchantments,
+                        config
+                );
             default:
                 return new CustomItem(mat, data, amount, displayName, lores, flags, enchantments);
         }
     }
 
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(", ");
+        return '{' + joiner.toString() + '}';
+    }
+
+    protected void addStringDetails(StringJoiner joiner) {
+        joiner.add("material: " + material);
+        joiner.add("data: " + data);
+        joiner.add("amount: " + amount);
+        joiner.add("displayName: " + displayName);
+        joiner.add("lore: " + lore);
+        joiner.add("flags: " + flags);
+        joiner.add("enchantments: " + enchantments);
+    }
 
 
 }

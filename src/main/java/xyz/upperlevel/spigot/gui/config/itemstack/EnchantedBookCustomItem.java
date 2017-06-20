@@ -1,8 +1,6 @@
 package xyz.upperlevel.spigot.gui.config.itemstack;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -44,18 +42,15 @@ public class EnchantedBookCustomItem extends CustomItem {
 
         storedEnchantments = new HashMap<>();
         if (config.containsKey("storedEnchantments")) {
-            Collection<String> enchList = (Collection<String>) config.get("storedEnchantments");
-            for(String e : enchList) {
-                String[] parts = e.split(":");
-                if(parts.length != 2)
-                    Bukkit.getLogger().severe("Invalid book enchantment, correct version: <Enchantment>:<Level>");
-                else {
-                    Enchantment ench = Enchantment.getByName(parts[0].toUpperCase());
-                    if(ench == null)
-                        Bukkit.getLogger().severe("Cannot find enchantment: " + parts[0]);
-                    else
-                        storedEnchantments.put(ench, PlaceholderValue.intValue(parts[1]));
-                }
+            Map<String, Object> stEnch = (Map<String, Object>) config.get("storedEnchantments");
+            for(Map.Entry<String, Object> e : stEnch.entrySet()) {
+
+                int level = ((Number) e.getValue()).intValue();
+                Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase());
+                if (ench == null)
+                    Bukkit.getLogger().severe("Cannot find enchantment: " + e.getKey());
+                else
+                    storedEnchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
             }
         }
         return new EnchantedBookCustomItem(

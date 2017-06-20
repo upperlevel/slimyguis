@@ -1,0 +1,119 @@
+package xyz.upperlevel.spigot.gui.config;
+
+import lombok.Getter;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.link.Link;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ConfigItem {
+    @Getter
+    private int slots[];
+    @Getter
+    private CustomItem item;
+    @Getter
+    private ItemClick click;
+
+    @SuppressWarnings("unchecked")
+    public static ConfigItem deserialize(Map<String, Object> config) {
+        ConfigItem res = new ConfigItem();
+        if(config.containsKey("slots"))
+            res.slots = ((List<Integer>)config.get("slots")).stream().mapToInt(Integer::intValue).toArray();
+        else
+            res.slots = new int[] { (int) config.getOrDefault("slot", -1) };
+        if(config.containsKey("item"))
+            res.item = CustomItem.deserialize((Map<String, Object>) config.get("item"));
+        if(config.containsKey("click"))
+            res.click = ItemClick.deserialize((Map<String, Object>) config.get("click"));
+
+        return res;
+    }
+
+    public static List<ConfigItem> deserialize(Collection<Map<String, Object>> config) {
+        return config.stream().map(ConfigItem::deserialize).collect(Collectors.toList());
+    }
+
+    public static class ItemClick implements Link {
+        private String permission;
+        private PlaceholderValue<String> noPermissionError;
+        private Sound noPermissionSound;
+
+        private int cost;
+        private String economy;
+        private String noMoneyError;
+        private Sound noMoneySound;
+
+        private Action[] actions;
+
+        public boolean checkPermission(Player player) {
+            if(permission != null && !player.hasPermission(permission)) {
+                player.sendMessage(noPermissionError.get(player));
+                player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
+                return false;
+            } else return true;
+        }
+
+        public boolean pay(Player player) {
+            if(cost > 0)
+                throw new NotImplementedException();
+            return true;
+        }
+
+        public void onClick(Player player) {
+            if(checkPermission(player) && pay(player)) {
+                for(Action action : actions)
+                    action.run(player);
+            }
+        }
+
+
+        public static ItemClick deserialize(Map<String, Object> config) {
+            ItemClick res = new ItemClick();
+            res.permission = (String) config.get("permission");
+            res.noPermissionError = MessageUtil.process((String) config.getOrDefault("noPermissionMessage", "You don't have permission!"));
+            if(config.containsKey("noPermissionSound"))
+                res.noPermissionSound = Sound.valueOf(((String)config.getOrDefault("noPermissionSound", "")).toUpperCase());
+
+            res.cost = (int) config.getOrDefault("cost", 0);
+            res.economy = (String) config.getOrDefault("economy", "");
+            res.noMoneyError = (String) config.getOrDefault("noMoneyError", "You don't have enough money");
+            if(config.containsKey("noMoneySound"))
+                res.noMoneySound = Sound.valueOf(((String)config.get("noMoneySound")).toUpperCase());
+
+            List<Object> actions = (List<Object>) config.getOrDefault("actions", null);
+            if(actions == null)
+                res.actions = null;
+            else
+                res.actions = actions.stream().map(ActionType::deserialize).toArray(Action[]::new);
+            return res;
+        }
+
+        @Override
+        public void run(Player player) {
+            onClick(player);
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(", ");
+            joiner.add("permission: " + permission);
+            joiner.add("noPermissionError: " + noPermissionError);
+            joiner.add("noPermissionSound: " + noPermissionSound);
+            joiner.add("coost: " + cost);
+            joiner.add("economy: " + economy);
+            joiner.add("noMoneyError: " + noMoneyError);
+            joiner.add("noMoneySound: " + noMoneySound);
+            return '{' + joiner.toString() + '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "{slots:" + Arrays.toString(slots) + ", item:" + item + ", click:" + click + "}";
+    }
+}

@@ -36,7 +36,7 @@ public class SpawnEggCustomItem extends CustomItem {
                                         Map<String, Object> config) {
         return new SpawnEggCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
-                EntityType.valueOf(((String) config.get("type")).toUpperCase())
+                EntityType.valueOf(((String) config.get("type")).replace(' ', '_').toUpperCase())
         );
     }
 }

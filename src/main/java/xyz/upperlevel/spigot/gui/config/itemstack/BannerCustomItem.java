@@ -17,6 +17,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static xyz.upperlevel.spigot.gui.config.ConfigUtils.parseColor;
+import static xyz.upperlevel.spigot.gui.config.ConfigUtils.parseDye;
+
 public class BannerCustomItem extends CustomItem {
     private DyeColor baseColor;
     private List<Pattern> patterns;
@@ -43,11 +46,11 @@ public class BannerCustomItem extends CustomItem {
                                   PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                   List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                   Map<String, Object> config) {
-        DyeColor baseColor = DyeColor.valueOf((String) config.get("base-color"));
+        DyeColor baseColor = parseDye((String) config.get("color"));
         Collection<Map<String, Object>> rawPatterns = (Collection<Map<String, Object>>) config.get("patterns");
         List<Pattern> patterns = new ArrayList<>();
         for(Map<String, Object> p : rawPatterns) {
-            DyeColor color = DyeColor.valueOf((String) p.get("color"));
+            DyeColor color = parseDye((String) p.get("color"));
             PatternType type = PatternType.getByIdentifier((String) p.get("pattern"));
             if(type == null) {
                 Bukkit.getLogger().severe("Cannot find pattern identifier \"" + p.get("pattern") + "\"");

@@ -1,12 +1,10 @@
 package xyz.upperlevel.spigot.gui.config.itemstack;
 
-import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
@@ -36,7 +34,8 @@ public class FireworkCustomItem extends CustomItem {
         FireworkMeta meta = (FireworkMeta) m;
         meta.clearEffects();
         meta.addEffects(effects);
-        meta.setPower(power.get(player));
+        if(power != null)
+            meta.setPower(power.get(player));
     }
 
     @SuppressWarnings("unchecked")

@@ -194,7 +194,7 @@ public class HotbarManager {
         return data != null && data.isSlotLink(slot);
     }
 
-    private static Hotbar getOrCreate(Player p) {
+    public static Hotbar getOrCreate(Player p) {
         return players.computeIfAbsent(p, Hotbar::new);
     }
 }

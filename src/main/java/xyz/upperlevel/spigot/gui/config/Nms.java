@@ -3,9 +3,12 @@ package xyz.upperlevel.spigot.gui.config;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.wesjd.anvilgui.version.impl.FallbackWrapper;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.command.CommandMap;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -24,6 +27,8 @@ public final class Nms {
     private static final Method itemStackSetTag;
     private static final Constructor nbtTagByteConstructor;
     private static final Method asBukkitCopy;
+
+    private static final Field bukkitCommandMap;
 
     static {
         version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
@@ -44,7 +49,10 @@ public final class Nms {
             itemStackSetTag = itemStack.getMethod("setTag", nbtTagCompound);
             nbtTagByteConstructor = getNMSClass("NBTTagByte").getConstructor(Byte.TYPE);
             asBukkitCopy = craftItemStack.getMethod("asBukkitCopy", itemStack);
-        } catch (NoSuchMethodException e) {
+
+            bukkitCommandMap  = Bukkit.getServer().getClass().getDeclaredField("commandMap");;
+            bukkitCommandMap.setAccessible(true);
+        } catch (NoSuchMethodException | NoSuchFieldException e) {
             throw new UnsupportedVersionException(version, e);
         }
     }
@@ -113,6 +121,15 @@ public final class Nms {
             handleException(e);
         }
         return item;
+    }
+
+    public static CommandMap getCommandMap(Server server) {
+        try {
+            return (CommandMap) bukkitCommandMap.get(server);
+        } catch (IllegalAccessException e) {
+            handleException(e);
+        }
+        return null;
     }
 
 

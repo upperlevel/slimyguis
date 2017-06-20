@@ -1,7 +1,9 @@
 package xyz.upperlevel.spigot.gui.config.actions;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.config.Action;
 import xyz.upperlevel.spigot.gui.config.ActionType;
@@ -21,7 +23,7 @@ public class OpenGuiActionType extends ActionType<OpenGuiActionType.OpenGuiActio
     public OpenGuiAction load(Map<String, Object> config) {
         final String guiId = (String) config.get("id");
         if(guiId == null)
-            throw new IllegalArgumentException("Cannot find field: \"gui\"");
+            throw new IllegalArgumentException("Cannot find field: \"id\" in " + config);
         String clearStack = (String) config.get("clearStack");
         return new OpenGuiAction(guiId, clearStack != null && Boolean.parseBoolean(clearStack));
     }
@@ -49,7 +51,14 @@ public class OpenGuiActionType extends ActionType<OpenGuiActionType.OpenGuiActio
 
         @Override
         public void run(Player player) {
-            GuiManager.open(player, ConfigGuiManager.get(guiId), clearStack);
+            Gui gui =  ConfigGuiManager.get(guiId);
+            if(gui == null) {
+                //TODO: better logging
+                Bukkit.getLogger().severe("Cannot find gui \"" + ID + "\"");
+                return;
+            }
+
+            GuiManager.open(player, gui, clearStack);
         }
     }
 }

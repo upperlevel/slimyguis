@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.config.itemstack;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
@@ -8,13 +9,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.spigot.gui.config.ColorUtil;
+import xyz.upperlevel.spigot.gui.config.ConfigUtils;
+import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static xyz.upperlevel.spigot.gui.config.ConfigUtils.parseFireworkEffectType;
 
 public class FireworkChargeCustomItem extends CustomItem {
     private FireworkEffect effect;
@@ -47,17 +51,23 @@ public class FireworkChargeCustomItem extends CustomItem {
 
     @SuppressWarnings("unchecked")
     public static FireworkEffect parse(Map<String, Object> config) {
-        boolean flicker = (boolean) config.get("flicker");
-        boolean trail = (boolean) config.get("trail");
+        boolean flicker = (Boolean) config.getOrDefault("flicker", false);
+        boolean trail = (Boolean) config.getOrDefault("trail", false);
+        if(!config.containsKey("colors"))
+            throw new InvalidGuiConfigurationException("Missing property \"colors\"");
         List<Color> colors = ((Collection<String>)config.get("colors"))
                 .stream()
-                .map(ColorUtil::parseColor)
+                .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
+        if(!config.containsKey("fadeColors"))
+            throw new InvalidGuiConfigurationException("Missing property \"fadeColors\"");
         List<Color> fadeColors = ((Collection<String>)config.get("fadeColors"))
                 .stream()
-                .map(ColorUtil::parseColor)
+                .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
-        FireworkEffect.Type type = FireworkEffect.Type.valueOf(((String) config.get("type")).toUpperCase());
+        if(!config.containsKey("type"))
+            throw new InvalidGuiConfigurationException("Missing property \"type\"");
+        FireworkEffect.Type type = parseFireworkEffectType((String) config.get("type"));
         return FireworkEffect.builder()
                 .flicker(flicker)
                 .trail(trail)

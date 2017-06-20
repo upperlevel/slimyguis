@@ -1,15 +1,20 @@
 package xyz.upperlevel.spigot.gui.config.placeholders;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.config.ColorUtil;
+import xyz.upperlevel.spigot.gui.config.ConfigUtils;
 import xyz.upperlevel.spigot.gui.config.MessageUtil;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface PlaceholderValue<T> {
     T get(Player player);
+
+    String toString();
 
     static PlaceholderValue<Long> longValue(String l) {
         return value(l, Long::parseLong, (long) -1);
@@ -30,13 +35,13 @@ public interface PlaceholderValue<T> {
     static PlaceholderValue<String> strValue(String str) {
         if(str == null) return null;
         if(MessageUtil.hasPlaceholders(str))
-            return p -> MessageUtil.placeholders(p, str);
+            return new StringPlaceholderValue(str);
         else
-            return p -> str;
+            return new FalsePlaceholderValue<>(str);
     }
 
     static PlaceholderValue<Color> colorValue(String c) {
-        return value(c, ColorUtil::parseColor, Color.BLACK);
+        return value(c, ConfigUtils::parseColor, Color.BLACK);
     }
 
 
@@ -48,15 +53,63 @@ public interface PlaceholderValue<T> {
         } catch (Exception e) {
             if(!MessageUtil.hasPlaceholders(i))
                 Bukkit.getLogger().severe("Invalid value: " + i);
-            return player -> {
-                try {
-                    return parser.apply(MessageUtil.placeholders(player, i));
-                } catch (Exception e1) {
-                    Bukkit.getLogger().severe("Invalid value: " + i);
-                    return onError;
-                }
-            };
+            return new SimplePlaceholderValue<>(i, parser, exc -> Bukkit.getLogger().severe("Invalid value: " + i), onError);
         }
-        return player -> parsed;
+        return new FalsePlaceholderValue<>(parsed);
+    }
+
+    @RequiredArgsConstructor
+    class FalsePlaceholderValue<T> implements PlaceholderValue<T> {
+        @Getter
+        private final T value;
+
+        @Override
+        public T get(Player player) {
+            return value;
+        }
+
+        public String toString() {
+            return String.valueOf(value);
+        }
+    }
+
+    @RequiredArgsConstructor
+    class SimplePlaceholderValue<T> implements PlaceholderValue<T> {
+        @Getter
+        private final String value;
+        @Getter
+        private final Function<String, T> parser;
+        private final Consumer<Exception> exceptionHandler;
+        @Getter
+        private final T onError;
+
+        @Override
+        public T get(Player player) {
+            try {
+                return parser.apply(MessageUtil.placeholders(player, value));
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
+            return onError;
+        }
+
+        public String toString() {
+            return value;
+        }
+    }
+
+    @RequiredArgsConstructor
+    class StringPlaceholderValue implements PlaceholderValue<String> {
+        @Getter
+        private final String value;
+
+        @Override
+        public String get(Player player) {
+            return MessageUtil.placeholders(player, value);
+        }
+
+        public String toString() {
+            return value;
+        }
     }
 }

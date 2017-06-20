@@ -97,20 +97,21 @@ public class Hotbar implements Iterable<HotbarLink>{
      * Sets the link passed as parameter in the specified slot, if empty
      * @param link the link to set
      * @param slot the slot in which the link will go
+     * @return true only if the operation changed the hotbar
      */
-    public void setLink(HotbarLink link, int slot) {
+    public boolean setLink(HotbarLink link, int slot) {
         if(link == null) {
-            remove(slot);
-            return;
+            return remove(slot);
         }
 
         if(links[slot] != null)
-            throw new IllegalArgumentException("Slot already full");
+            return false;
         links[slot] = link;
         reprint(slot);
         size++;
         if(nextFree == slot)
             findNextFree();
+        return true;
     }
 
     /**

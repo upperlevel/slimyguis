@@ -47,7 +47,7 @@ public class PotionCustomItem extends CustomItem {
                                      PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                      List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                      Map<String, Object> config) {
-        PotionType type = PotionType.valueOf((String) config.get("type"));
+        PotionType type = PotionType.valueOf(((String) config.get("type")).replace(' ', '_').toUpperCase());
         String rawColor = (String) config.get("color");
         PlaceholderValue<Color> customColor = rawColor == null ? null : PlaceholderValue.colorValue(rawColor);
         List<PotionEffect> customEffects = new ArrayList<>();
