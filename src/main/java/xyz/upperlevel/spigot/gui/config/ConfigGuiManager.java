@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiManager;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class ConfigGuiManager {
         final String id = file.getName().replaceFirst("[.][^.]+$", "");
         Gui gui;
         try {
-            gui = ConfigGui.deserialize(config.getValues(true), id);
+            gui = ConfigGui.deserialize(Config.wrap(config), id);
         } catch (InvalidGuiConfigurationException e) {
             Bukkit.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
             return;

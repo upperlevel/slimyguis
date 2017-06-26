@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,8 +37,10 @@ public class PotionCustomItem extends CustomItem {
     public void processMeta(Player player, ItemMeta m) {
         super.processMeta(player, m);
         PotionMeta meta = (PotionMeta) m;
-        meta.setBasePotionData(new PotionData(type));
-        meta.setColor(customColor.get(player));
+        if(type != null)
+            meta.setBasePotionData(new PotionData(type));
+        if(customColor != null)
+            meta.setColor(customColor.get(player));
         meta.clearCustomEffects();
         for(PotionEffect e : customEffects)
             meta.addCustomEffect(e, true);
@@ -46,14 +49,16 @@ public class PotionCustomItem extends CustomItem {
     public static PotionCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                      PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                      List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                     Map<String, Object> config) {
-        PotionType type = PotionType.valueOf(((String) config.get("type")).replace(' ', '_').toUpperCase());
-        String rawColor = (String) config.get("color");
+                                     Config config) {
+        PotionType type = config.getEnum("type", PotionType.class);
+        String rawColor = config.getString("color");
         PlaceholderValue<Color> customColor = rawColor == null ? null : PlaceholderValue.colorValue(rawColor);
         List<PotionEffect> customEffects = new ArrayList<>();
-        Collection<Map<String, Object>> rawEffects = (Collection<Map<String, Object>>) config.get("effects");
-        for(Map<String, Object> e : rawEffects)
-            customEffects.add(new PotionEffect(e));
+        Collection<Map<String, Object>> rawEffects = (Collection<Map<String, Object>>) config.getCollection("effects");
+        if(rawEffects != null) {
+            for (Map<String, Object> e : rawEffects)
+                customEffects.add(new PotionEffect(e));
+        }
         return new PotionCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 type, customColor, customEffects

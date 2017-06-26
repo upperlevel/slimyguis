@@ -6,9 +6,13 @@ import org.bukkit.entity.Player;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 import xyz.upperlevel.spigot.gui.link.Link;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class ConfigItem {
@@ -20,21 +24,21 @@ public class ConfigItem {
     private ItemClick click;
 
     @SuppressWarnings("unchecked")
-    public static ConfigItem deserialize(Map<String, Object> config) {
+    public static ConfigItem deserialize(Config config) {
         ConfigItem res = new ConfigItem();
-        if(config.containsKey("slots"))
+        if(config.has("slots"))
             res.slots = ((List<Integer>)config.get("slots")).stream().mapToInt(Integer::intValue).toArray();
         else
-            res.slots = new int[] { (int) config.getOrDefault("slot", -1) };
-        if(config.containsKey("item"))
-            res.item = CustomItem.deserialize((Map<String, Object>) config.get("item"));
-        if(config.containsKey("click"))
-            res.click = ItemClick.deserialize((Map<String, Object>) config.get("click"));
+            res.slots = new int[] {config.getInt("slot", -1)};
+        if(config.has("item"))
+            res.item = CustomItem.deserialize(config.getConfig("item"));
+        if(config.has("click"))
+            res.click = ItemClick.deserialize(config.getConfig("click"));
 
         return res;
     }
 
-    public static List<ConfigItem> deserialize(Collection<Map<String, Object>> config) {
+    public static List<ConfigItem> deserialize(Collection<Config> config) {
         return config.stream().map(ConfigItem::deserialize).collect(Collectors.toList());
     }
 
@@ -45,7 +49,7 @@ public class ConfigItem {
 
         private int cost;
         private String economy;
-        private String noMoneyError;
+        private PlaceholderValue<String> noMoneyError;
         private Sound noMoneySound;
 
         private Action[] actions;
@@ -72,20 +76,18 @@ public class ConfigItem {
         }
 
 
-        public static ItemClick deserialize(Map<String, Object> config) {
+        public static ItemClick deserialize(Config config) {
             ItemClick res = new ItemClick();
             res.permission = (String) config.get("permission");
-            res.noPermissionError = MessageUtil.process((String) config.getOrDefault("noPermissionMessage", "You don't have permission!"));
-            if(config.containsKey("noPermissionSound"))
-                res.noPermissionSound = Sound.valueOf(((String)config.getOrDefault("noPermissionSound", "")).toUpperCase());
+            res.noPermissionError = config.getMessage("noPermissionMessage", "You don't have permission!");
+            res.noPermissionSound = config.getSound("noPermissionSound");
 
-            res.cost = (int) config.getOrDefault("cost", 0);
-            res.economy = (String) config.getOrDefault("economy", "");
-            res.noMoneyError = (String) config.getOrDefault("noMoneyError", "You don't have enough money");
-            if(config.containsKey("noMoneySound"))
-                res.noMoneySound = Sound.valueOf(((String)config.get("noMoneySound")).toUpperCase());
+            res.cost = config.getInt("cost", 0);
+            res.economy = config.getString("economy", "");
+            res.noMoneyError = config.getMessage("noMoneyError", "You don't have enough money");
+            res.noMoneySound = config.getSound("noMoneySound");
 
-            List<Object> actions = (List<Object>) config.getOrDefault("actions", null);
+            List<Object> actions = (List<Object>) config.get("actions");
             if(actions == null)
                 res.actions = null;
             else

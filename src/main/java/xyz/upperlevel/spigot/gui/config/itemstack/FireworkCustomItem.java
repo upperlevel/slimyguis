@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,12 +43,12 @@ public class FireworkCustomItem extends CustomItem {
     public static FireworkCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                      PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                      List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                     Map<String, Object> config) {
-        List<FireworkEffect> effects = ((Collection<Map<String, Object>>)config.get("effects"))
+                                     Config config) {
+        List<FireworkEffect> effects = ((Collection<Map<String, Object>>)config.getCollectionRequired("effects"))
                 .stream()
-                .map(FireworkChargeCustomItem::parse)
+                .map(c -> FireworkChargeCustomItem.parse(Config.wrap(c)))
                 .collect(Collectors.toList());
-        PlaceholderValue<Integer> power = PlaceHolderUtil.parseInt(config.get("power"));
+        PlaceholderValue<Integer> power = PlaceHolderUtil.parseInt(config.getStringRequired("power"));
         return new FireworkCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 effects, power

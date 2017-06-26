@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.List;
 import java.util.Map;
@@ -27,14 +28,15 @@ public class LeatherArmorCustomItem extends CustomItem {
     public void processMeta(Player player, ItemMeta m) {
         super.processMeta(player, m);
         LeatherArmorMeta meta = (LeatherArmorMeta) m;
-        meta.setColor(color.get(player));
+        if(color != null)
+            meta.setColor(color.get(player));
     }
 
     public static LeatherArmorCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                       Map<String, Object> config) {
-        PlaceholderValue<Color> color = PlaceholderValue.colorValue((String) config.get("color"));
+                                       Config config) {
+        PlaceholderValue<Color> color = PlaceholderValue.colorValue(config.getString("color"));
         return new LeatherArmorCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 color

@@ -8,10 +8,11 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EnchantedBookCustomItem extends CustomItem {
@@ -37,16 +38,14 @@ public class EnchantedBookCustomItem extends CustomItem {
     public static EnchantedBookCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Map<String, Object> config) {
+                                              Config config) {
         Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
         storedEnchantments = new HashMap<>();
-        if (config.containsKey("storedEnchantments")) {
-            Map<String, Object> stEnch = (Map<String, Object>) config.get("storedEnchantments");
+        if (config.has("storedEnchantments")) {
+            Map<String, Object> stEnch = config.getSection("storedEnchantments");
             for(Map.Entry<String, Object> e : stEnch.entrySet()) {
-
-                int level = ((Number) e.getValue()).intValue();
-                Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase());
+                Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 if (ench == null)
                     Bukkit.getLogger().severe("Cannot find enchantment: " + e.getKey());
                 else

@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.config.MessageUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,28 +48,24 @@ public class CustomItem {
     }
 
     @SuppressWarnings("unchecked")
-    public static CustomItem deserialize(Map<String, Object> config) {
-        Material mat = Material.getMaterial(((String)config.get("material")).replace(" ", "_").toUpperCase(Locale.ENGLISH));//TODO: add id support
-        PlaceholderValue<Short> data = PlaceHolderUtil.parseShort(config.getOrDefault("data", 0));
-        if(data == null)
-            Bukkit.getLogger().severe("Illegal value into CustomItem's \"data\" tag");
-        PlaceholderValue<Integer> amount = PlaceHolderUtil.parseInt(config.getOrDefault("amount", 1));
-        if(amount == null)
-            Bukkit.getLogger().severe("Illegal value into CustomItem's \"amount\" tag");
+    public static CustomItem deserialize(Config config) {
+        Material mat = config.getMaterialRequired("material");
+        PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
+        PlaceholderValue<Integer> amount = PlaceHolderUtil.parseInt(config.getString("amount", "1"));
 
 
-        PlaceholderValue<String> displayName = MessageUtil.process(((String) config.get("name")));
+        PlaceholderValue<String> displayName = config.getMessage("name");
         List<PlaceholderValue<String>> lores;
-        if(config.containsKey("lore")) {
-            lores = ((Collection<String>) config.get("lore"))
+        if(config.has("lore")) {
+            lores = ((Collection<String>)config.getCollection("lore"))
                     .stream()
                     .map(MessageUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
 
         List<ItemFlag> flags;
-        if(config.containsKey("flags")) {
-            flags = ((Collection<String>) config.get("flags"))
+        if(config.has("flags")) {
+            flags = ((Collection<String>) config.getCollection("flags"))
                     .stream()
                     .map(ItemFlag::valueOf)
                     .collect(Collectors.toList());
@@ -78,8 +75,8 @@ public class CustomItem {
         Map<Enchantment, PlaceholderValue<Integer>> enchantments;
 
         enchantments = new HashMap<>();
-        if (config.containsKey("enchantments")) {
-            Collection<String> enchList = (Collection<String>) config.get("enchantments");
+        if (config.has("enchantments")) {
+            Collection<String> enchList = (Collection<String>) config.getCollection("enchantments");
             for(String e : enchList) {
                 String[] parts = e.split(":");
                 if(parts.length != 2)

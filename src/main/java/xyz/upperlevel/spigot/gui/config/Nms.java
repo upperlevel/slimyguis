@@ -1,6 +1,5 @@
 package xyz.upperlevel.spigot.gui.config;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.wesjd.anvilgui.version.impl.FallbackWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -9,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class Nms {

@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.config.ConfigUtils;
 import xyz.upperlevel.spigot.gui.config.MessageUtil;
+import xyz.upperlevel.spigot.gui.config.util.ConfigUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

@@ -6,9 +6,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.List;
 import java.util.Map;
@@ -34,17 +34,19 @@ public class MapCustomItem extends CustomItem {
         super.processMeta(player, m);
         MapMeta meta = (MapMeta) m;
         meta.setScaling(scaling);
-        meta.setLocationName(displayLocName.get(player));
-        meta.setColor(displayMapColor.get(player));
+        if(displayLocName != null)
+            meta.setLocationName(displayLocName.get(player));
+        if(displayMapColor != null)
+            meta.setColor(displayMapColor.get(player));
     }
 
     public static MapCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Map<String, Object> config) {
-        boolean scaling = (boolean)config.get("scaling");
-        PlaceholderValue<String> displayLocName = PlaceholderValue.strValue((String) config.get("locName"));
-        PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue((String) config.get("mapColor"));
+                                              Config config) {
+        boolean scaling = config.getBool("scaling", false);
+        PlaceholderValue<String> displayLocName = PlaceholderValue.strValue(config.getString("locName"));
+        PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue(config.getString("mapColor"));
         return new MapCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 scaling, displayLocName, displayMapColor

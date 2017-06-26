@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.List;
 import java.util.Map;
@@ -26,14 +27,15 @@ public class SkullCustomItem extends CustomItem {
     public void processMeta(Player player, ItemMeta m) {
         super.processMeta(player, m);
         SkullMeta meta = (SkullMeta) m;
-        meta.setOwner(skullOwner.get(player));
+        if(skullOwner != null)
+            meta.setOwner(skullOwner.get(player));
     }
 
     public static SkullCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                             Map<String, Object> config) {
-        PlaceholderValue<String> skullOwner = PlaceholderValue.strValue((String) config.get("owner"));
+                             Config config) {
+        PlaceholderValue<String> skullOwner = PlaceholderValue.strValue(config.getString("owner"));
         return new SkullCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 skullOwner

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,10 @@ public class SpawnEggCustomItem extends CustomItem {
     public static SpawnEggCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                         PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                         List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                        Map<String, Object> config) {
+                                        Config config) {
         return new SpawnEggCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
-                EntityType.valueOf(((String) config.get("type")).replace(' ', '_').toUpperCase())
+                config.getEnum("type", EntityType.class)
         );
     }
 }

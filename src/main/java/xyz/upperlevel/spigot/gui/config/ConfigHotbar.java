@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
@@ -16,7 +17,6 @@ import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,9 +70,9 @@ public class ConfigHotbar {
     }
 
     @SuppressWarnings("unchecked")
-    public static void load(Map<String, Object> config) {
+    public static void load(Config config) {
         String permission = (String) config.get("permission");
-        List<ConfigItem> items = ConfigItem.deserialize((List<Map<String, Object>>) config.get("items"));
+        List<ConfigItem> items = ConfigItem.deserialize(config.getConfigList("items"));
         hotbars.add(new ConfigHotbar(permission, items));
     }
 
@@ -88,7 +88,7 @@ public class ConfigHotbar {
                 for(File file : files) {
                     FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                     try {
-                        load(config.getValues(true));
+                        load(Config.wrap(config));
                     } catch (InvalidGuiConfigurationException e) {
                         Bukkit.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
                     } catch (Exception e) {

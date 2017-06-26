@@ -8,9 +8,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.Gui;
+import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.commands.CommandUtil;
 import xyz.upperlevel.spigot.gui.config.ConfigItem.ItemClick;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,33 +48,37 @@ public class ConfigGui implements Gui {//TODO better error handling
 
 
     @SuppressWarnings("unchecked")
-    public static ConfigGui deserialize(Map<String, Object> config, String id) {
-        ConfigItem[] items = ((Collection<Map<String, Object>>)config.get("items"))
+    public static ConfigGui deserialize(Config config, String id) {
+        ConfigItem[] items = ((Collection<Map<String, Object>>)config.getCollection("items"))
                 .stream()
-                .map(ConfigItem::deserialize)
+                .map(c -> ConfigItem.deserialize(Config.wrap(c)))
                 .toArray(ConfigItem[]::new);
 
         List<String> commands;
-        if(config.containsKey("openCommands")) {
-            commands = (List<String>) config.get("openCommands");
-        } else if(config.containsKey("openCommand")) {
-            commands = Collections.singletonList((String) config.get("openCommand"));
+        if(config.has("openCommands")) {
+            commands = (List<String>) config.getCollection("openCommands");
+        } else if(config.has("openCommand")) {
+            commands = Collections.singletonList(config.getString("openCommand"));
         } else commands = Collections.emptyList();
 
         InventoryType type;
         int size;
 
-        if(config.containsKey("type")) {
-            type = InventoryType.valueOf(((String)config.get("type")).toUpperCase());
+        if(config.has("type")) {
+            type = config.getEnum("type", InventoryType.class);
             size = -1;
-        } else if(config.containsKey("size")) {
+        } else if(config.has("size")) {
             type = null;
-            size = ((Number)config.get("size")).intValue();
+            size = config.getInt("size");
+            if(size % 9 != 0) {
+                Bukkit.getLogger().severe("Error in gui " + id + ": size must be a multiple of 9");
+                size = GuiSize.min(size);
+            }
         } else {
             Bukkit.getLogger().severe("Error in gui " + id + ": both \"type\" and \"size\" are empty!");
             return null;
         }
-        PlaceholderValue<String> title = MessageUtil.process((String) config.get("title"));
+        PlaceholderValue<String> title = config.getMessage("title");
         if(title == null) {
             Bukkit.getLogger().severe("Error in gui " + id + ": the title cannot be empty!");
             return null;

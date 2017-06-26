@@ -1,8 +1,9 @@
-package xyz.upperlevel.spigot.gui.config;
+package xyz.upperlevel.spigot.gui.config.util;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
+import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 
 import java.util.Locale;
 

@@ -11,14 +11,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static xyz.upperlevel.spigot.gui.config.ConfigUtils.parseColor;
-import static xyz.upperlevel.spigot.gui.config.ConfigUtils.parseDye;
 
 public class BannerCustomItem extends CustomItem {
     private DyeColor baseColor;
@@ -45,18 +43,21 @@ public class BannerCustomItem extends CustomItem {
     public static BannerCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                   PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                   List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                  Map<String, Object> config) {
-        DyeColor baseColor = parseDye((String) config.get("color"));
-        Collection<Map<String, Object>> rawPatterns = (Collection<Map<String, Object>>) config.get("patterns");
+                                  Config config) {
+        DyeColor baseColor = config.getDye("color");
+        Collection<Map<String, Object>> rawPatterns = (Collection<Map<String, Object>>) config.getCollection("patterns");
         List<Pattern> patterns = new ArrayList<>();
-        for(Map<String, Object> p : rawPatterns) {
-            DyeColor color = parseDye((String) p.get("color"));
-            PatternType type = PatternType.getByIdentifier((String) p.get("pattern"));
-            if(type == null) {
-                Bukkit.getLogger().severe("Cannot find pattern identifier \"" + p.get("pattern") + "\"");
-                type = PatternType.BASE;
+        if(rawPatterns != null) {
+            for (Map<String, Object> p : rawPatterns) {
+                Config sub = Config.wrap(p);
+                DyeColor color = sub.getDyeRequired("color");
+                PatternType type = PatternType.getByIdentifier(sub.getStringRequired("pattern"));
+                if (type == null) {
+                    Bukkit.getLogger().severe("Cannot find pattern identifier \"" + p.get("pattern") + "\"");
+                    type = PatternType.BASE;
+                }
+                patterns.add(new Pattern(color, type));
             }
-            patterns.add(new Pattern(color, type));
         }
         return new BannerCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,

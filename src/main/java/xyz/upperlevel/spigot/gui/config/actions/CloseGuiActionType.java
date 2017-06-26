@@ -5,7 +5,6 @@ import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.config.Action;
 import xyz.upperlevel.spigot.gui.config.ActionType;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
