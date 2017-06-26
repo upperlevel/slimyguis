@@ -35,4 +35,8 @@ public class InvalidGuiConfigurationException extends RuntimeException{
         return initialMessage;
     }
 
+    public void addLocalizer(String localizer) {
+        localizers.add(localizer);
+    }
+
 }

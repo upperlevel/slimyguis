@@ -50,7 +50,7 @@ public interface Config {
             try {
                 return ConfigUtils.parseDye(raw);
             } catch (InvalidGuiConfigurationException e) {
-                e.getLocalizers().add("in property \"" + key + "\"");
+                e.addLocalizer("in property \"" + key + "\"");
                 throw e;
             }
         }
@@ -265,7 +265,7 @@ public interface Config {
             try {
                 return ConfigUtils.parseColor(raw);
             } catch (InvalidGuiConfigurationException e) {
-                e.getLocalizers().add("in property \"" + key + "\"");
+                e.addLocalizer("in property \"" + key + "\"");
                 throw e;
             }
         }

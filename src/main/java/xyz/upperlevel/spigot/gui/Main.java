@@ -7,6 +7,7 @@ import xyz.upperlevel.spigot.gui.config.ConfigGuiManager;
 import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 public class Main extends JavaPlugin implements Listener {
     @Getter
@@ -23,5 +24,9 @@ public class Main extends JavaPlugin implements Listener {
 
         ConfigGuiManager.onLoad(new File(getDataFolder(), "guis"));
         ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
+    }
+
+    public static Logger logger() {
+        return instance.getLogger();
     }
 }

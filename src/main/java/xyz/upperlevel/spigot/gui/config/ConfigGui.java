@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiSize;
+import xyz.upperlevel.spigot.gui.Main;
 import xyz.upperlevel.spigot.gui.commands.CommandUtil;
 import xyz.upperlevel.spigot.gui.config.ConfigItem.ItemClick;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
@@ -49,46 +50,47 @@ public class ConfigGui implements Gui {//TODO better error handling
 
     @SuppressWarnings("unchecked")
     public static ConfigGui deserialize(Config config, String id) {
-        ConfigItem[] items = ((Collection<Map<String, Object>>)config.getCollection("items"))
-                .stream()
-                .map(c -> ConfigItem.deserialize(Config.wrap(c)))
-                .toArray(ConfigItem[]::new);
+        try {
+            ConfigItem[] items;
+            items = ((Collection<Map<String, Object>>) config.getCollection("items"))
+                    .stream()
+                    .map(c -> ConfigItem.deserialize(Config.wrap(c)))
+                    .toArray(ConfigItem[]::new);
 
-        List<String> commands;
-        if(config.has("openCommands")) {
-            commands = (List<String>) config.getCollection("openCommands");
-        } else if(config.has("openCommand")) {
-            commands = Collections.singletonList(config.getString("openCommand"));
-        } else commands = Collections.emptyList();
+            List<String> commands;
+            if (config.has("openCommands")) {
+                commands = (List<String>) config.getCollection("openCommands");
+            } else if (config.has("openCommand")) {
+                commands = Collections.singletonList(config.getString("openCommand"));
+            } else commands = Collections.emptyList();
 
-        InventoryType type;
-        int size;
+            InventoryType type;
+            int size;
 
-        if(config.has("type")) {
-            type = config.getEnum("type", InventoryType.class);
-            size = -1;
-        } else if(config.has("size")) {
-            type = null;
-            size = config.getInt("size");
-            if(size % 9 != 0) {
-                Bukkit.getLogger().severe("Error in gui " + id + ": size must be a multiple of 9");
-                size = GuiSize.min(size);
+            if (config.has("type")) {
+                type = config.getEnum("type", InventoryType.class);
+                size = -1;
+            } else if (config.has("size")) {
+                type = null;
+                size = config.getInt("size");
+                if (size % 9 != 0) {
+                    Main.logger().warning("In gui " + id + ": size must be a multiple of 9");
+                    size = GuiSize.min(size);
+                }
+            } else {
+                throw new InvalidGuiConfigurationException("both both \"type\" and \"size\" are empty!");
             }
-        } else {
-            Bukkit.getLogger().severe("Error in gui " + id + ": both \"type\" and \"size\" are empty!");
-            return null;
+            PlaceholderValue<String> title = config.getMessageRequired("title");
+
+            ConfigGui gui = new ConfigGui(id, items, type, size, title);
+
+            CommandUtil.register(new OpenGuiCommand(commands, gui));
+
+            return gui;
+        } catch (InvalidGuiConfigurationException e) {
+            e.addLocalizer("in gui " + id);
+            throw e;
         }
-        PlaceholderValue<String> title = config.getMessage("title");
-        if(title == null) {
-            Bukkit.getLogger().severe("Error in gui " + id + ": the title cannot be empty!");
-            return null;
-        }
-
-        ConfigGui gui = new ConfigGui(id, items, type, size, title);
-
-        CommandUtil.register(new OpenGuiCommand(commands, gui));
-
-        return gui;
     }
 
     @Override

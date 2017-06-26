@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiManager;
+import xyz.upperlevel.spigot.gui.Main;
 import xyz.upperlevel.spigot.gui.config.Action;
 import xyz.upperlevel.spigot.gui.config.ActionType;
 import xyz.upperlevel.spigot.gui.config.ConfigGuiManager;
@@ -53,8 +54,7 @@ public class OpenGuiActionType extends ActionType<OpenGuiActionType.OpenGuiActio
         public void run(Player player) {
             Gui gui =  ConfigGuiManager.get(guiId);
             if(gui == null) {
-                //TODO: better logging
-                Bukkit.getLogger().severe("Cannot find gui \"" + ID + "\"");
+                Main.logger().severe("Cannot find gui \"" + ID + "\"");
                 return;
             }
 

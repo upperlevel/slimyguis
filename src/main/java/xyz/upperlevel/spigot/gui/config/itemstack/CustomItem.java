@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.MessageUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
@@ -80,11 +82,11 @@ public class CustomItem {
             for(String e : enchList) {
                 String[] parts = e.split(":");
                 if(parts.length != 2)
-                    Bukkit.getLogger().severe("Invalid enchantment, correct version: <Enchantment>:<Level>");
+                    throw new InvalidGuiConfigurationException("Invalid enchantment, correct version: <Enchantment>:<Level>");
                 else {
                     Enchantment ench = Enchantment.getByName(parts[0].toUpperCase());
                     if(ench == null)
-                        Bukkit.getLogger().severe("Cannot find enchantment: " + parts[0]);
+                        Main.logger().severe("Cannot find enchantment: " + parts[0]);
                     else
                         enchantments.put(ench, PlaceholderValue.intValue(parts[1]));
                 }

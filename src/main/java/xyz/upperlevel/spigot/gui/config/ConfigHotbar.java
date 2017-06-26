@@ -32,17 +32,16 @@ public class ConfigHotbar {
             return;
 
         Hotbar hotbar = HotbarManager.getOrCreate(player);
-        Logger logger = Bukkit.getLogger();//TODO better logging
         for(ConfigItem item : items) {
             for (int slot : item.getSlots()) {
                 if(hotbar.isFull()) {
-                    logger.severe("Hotbar full, cannot add item " + item);
+                    Main.logger().severe("Hotbar full, cannot add item " + item);
                     return;
                 }
                 HotbarLink link = HotbarLink.of(item.getClick(), item.getItem().toItemStack(player));
                 if(slot > 0) {
                     if(!hotbar.setLink(link, slot))
-                        logger.severe("Slot " + slot + " already occupied, cannot add item " + item);
+                        Main.logger().severe("Slot " + slot + " already occupied, cannot add item " + item);
                 } else
                     hotbar.add(link);
             }
@@ -82,7 +81,7 @@ public class ConfigHotbar {
             if(folder.isDirectory()) {
                 File[] files = folder.listFiles();
                 if(files == null) {
-                    Bukkit.getLogger().severe("Error while reading " + folder + " files");
+                    Main.logger().severe("Error while reading " + folder + " files");
                     return;
                 }
                 for(File file : files) {
@@ -90,20 +89,19 @@ public class ConfigHotbar {
                     try {
                         load(Config.wrap(config));
                     } catch (InvalidGuiConfigurationException e) {
-                        Bukkit.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
+                        Main.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
                     } catch (Exception e) {
-                        Bukkit.getLogger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"");
+                        Main.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"");
                     }
                 }
             } else {
-                //TODO: better logging
-                Bukkit.getLogger().severe("\"" + folder.getName() + "\" isn't a folder!");
+                Main.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
             }
         } else {
             try {
                 folder.mkdirs();
             } catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
+                Main.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
             }
         }
     }

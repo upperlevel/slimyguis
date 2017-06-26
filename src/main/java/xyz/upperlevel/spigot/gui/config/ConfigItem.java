@@ -26,16 +26,24 @@ public class ConfigItem {
     @SuppressWarnings("unchecked")
     public static ConfigItem deserialize(Config config) {
         ConfigItem res = new ConfigItem();
-        if(config.has("slots"))
-            res.slots = ((List<Integer>)config.get("slots")).stream().mapToInt(Integer::intValue).toArray();
-        else
-            res.slots = new int[] {config.getInt("slot", -1)};
-        if(config.has("item"))
-            res.item = CustomItem.deserialize(config.getConfig("item"));
-        if(config.has("click"))
-            res.click = ItemClick.deserialize(config.getConfig("click"));
+        try {
+            if (config.has("slots"))
+                res.slots = ((List<Integer>) config.get("slots")).stream().mapToInt(Integer::intValue).toArray();
+            else
+                res.slots = new int[]{config.getInt("slot", -1)};
+            if (config.has("item"))
+                res.item = CustomItem.deserialize(config.getConfig("item"));
+            if (config.has("click"))
+                res.click = ItemClick.deserialize(config.getConfig("click"));
 
-        return res;
+            return res;
+        } catch (InvalidGuiConfigurationException e) {
+            if(res.slots != null)
+                e.addLocalizer("in slot " + Arrays.toString(res.slots));
+            else
+                e.addLocalizer("In gui item");
+            throw e;
+        }
     }
 
     public static List<ConfigItem> deserialize(Collection<Config> config) {
