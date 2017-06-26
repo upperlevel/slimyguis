@@ -18,7 +18,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @AllArgsConstructor
 public class ConfigHotbar {
@@ -28,7 +27,7 @@ public class ConfigHotbar {
     private List<ConfigItem> items;
 
     public void print(Player player) {
-        if(!player.hasPermission(permission))
+        if(permission != null && !player.hasPermission(permission))
             return;
 
         Hotbar hotbar = HotbarManager.getOrCreate(player);
@@ -91,7 +90,7 @@ public class ConfigHotbar {
                     } catch (InvalidGuiConfigurationException e) {
                         Main.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
                     } catch (Exception e) {
-                        Main.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"");
+                        Main.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
                     }
                 }
             } else {

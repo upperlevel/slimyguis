@@ -94,6 +94,15 @@ public class HotbarManager {
         player.updateInventory();
     }
 
+
+    public static void clearAll() {
+        for(Map.Entry<Player, Hotbar> e : players.entrySet()) {
+            e.getValue().clear();
+            e.getKey().updateInventory();
+        }
+        players.clear();
+    }
+
     /**
      * Reprints the player's inventory with the Hotbar links, this should be used only for visual bugs, please report them instead of brute-reprinting the inventory
      * @param player the player

@@ -27,7 +27,7 @@ public abstract class ActionType<T extends Action> {
 
 
     public static void addActionType(ActionType<?> type) {
-        types.put(type.getType(), type);
+        types.put(type.getType().toLowerCase(), type);
     }
 
     public static void removeActionType(ActionType<?> type) {
@@ -56,7 +56,7 @@ public abstract class ActionType<T extends Action> {
             String type = actiion.getKey();
             if (type == null)
                 throw new IllegalArgumentException("Field \"type\" needed");
-            ActionType t = types.get(type);
+            ActionType t = types.get(type.toLowerCase());
             if (t == null)
                 throw new IllegalArgumentException("Cannot find action \"" + type + "\"");
             return t.load((Map<String, Object>) actiion.getValue());

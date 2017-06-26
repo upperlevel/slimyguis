@@ -6,9 +6,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This manager is the class that manages the player guis in a stack-like system
@@ -75,6 +73,18 @@ public class GuiManager {
             g.peek().onClose(player);
             player.closeInventory();
             g.clear();
+        } finally {
+            called = false;
+        }
+    }
+
+    public static void closeAll() {
+        if (called) return;
+        called = true;
+        try {
+           for(Player player : guis.keySet())
+               player.closeInventory();
+           guis.clear();
         } finally {
             called = false;
         }
