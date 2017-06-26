@@ -41,6 +41,8 @@ public abstract class ActionType<T extends Action> {
         addActionType(new MessageActionType());
         addActionType(new OpenGuiActionType());
         addActionType(new RequireActionType());
+        addActionType(new VaultGiveActionType());
+        addActionType(new VaultTakeActionType());
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {
