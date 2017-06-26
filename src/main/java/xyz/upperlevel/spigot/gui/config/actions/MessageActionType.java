@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.config.Action;
 import xyz.upperlevel.spigot.gui.config.ActionType;
-import xyz.upperlevel.spigot.gui.config.MessageUtil;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class MessageActionType extends ActionType<MessageActionType.MessageActio
 
     @Override
     public MessageAction load(Map<String, Object> config) {
-        final PlaceholderValue<String> message = MessageUtil.process((String) config.get("message"));
+        final PlaceholderValue<String> message = PlaceHolderUtil.process((String) config.get("message"));
         if(message == null)
             throw new IllegalArgumentException("Cannot find field: \"message\"");
         return new MessageAction(message);

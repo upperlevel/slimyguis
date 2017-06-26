@@ -2,7 +2,6 @@ package xyz.upperlevel.spigot.gui.config.itemstack;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -11,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.Main;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.spigot.gui.config.MessageUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
@@ -42,7 +40,8 @@ public class CustomItem {
     }
 
     public void processMeta(Player player, ItemMeta meta) {
-        meta.setDisplayName(displayName.get(player));
+        if(displayName != null)
+            meta.setDisplayName(displayName.get(player));
         meta.setLore(lore.stream().map(m -> m.get(player)).collect(Collectors.toList()));
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
         for(Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : enchantments.entrySet())
@@ -61,7 +60,7 @@ public class CustomItem {
         if(config.has("lore")) {
             lores = ((Collection<String>)config.getCollection("lore"))
                     .stream()
-                    .map(MessageUtil::process)
+                    .map(PlaceHolderUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
 

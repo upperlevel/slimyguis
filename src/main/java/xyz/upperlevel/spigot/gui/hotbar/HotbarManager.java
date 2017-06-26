@@ -106,7 +106,8 @@ public class HotbarManager {
     }
 
     public static void onClick(PlayerInteractEvent event) {
-        onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot());
+        if(onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot()))
+            event.setCancelled(true);
     }
 
     public static boolean onClick(Player player, int slot) {

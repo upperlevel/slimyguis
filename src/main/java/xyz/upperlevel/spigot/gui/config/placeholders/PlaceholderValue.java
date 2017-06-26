@@ -2,11 +2,9 @@ package xyz.upperlevel.spigot.gui.config.placeholders;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Main;
-import xyz.upperlevel.spigot.gui.config.MessageUtil;
 import xyz.upperlevel.spigot.gui.config.util.ConfigUtils;
 
 import java.util.function.Consumer;
@@ -35,9 +33,10 @@ public interface PlaceholderValue<T> {
 
     static PlaceholderValue<String> strValue(String str) {
         if(str == null) return null;
-        if(MessageUtil.hasPlaceholders(str))
+        if(PlaceHolderUtil.hasPlaceholders(str)) {
+            System.out.println("placehodlers found!");
             return new StringPlaceholderValue(str);
-        else
+        } else
             return new FalsePlaceholderValue<>(str);
     }
 
@@ -52,7 +51,7 @@ public interface PlaceholderValue<T> {
         try {
             parsed = parser.apply(i);
         } catch (Exception e) {
-            if(!MessageUtil.hasPlaceholders(i))
+            if(!PlaceHolderUtil.hasPlaceholders(i))
                 Main.logger().severe("Invalid value: " + i);
             return new SimplePlaceholderValue<>(i, parser, exc -> Main.logger().severe("Cannot parse value: \"" + i + "\""), onError);
         }
@@ -87,7 +86,7 @@ public interface PlaceholderValue<T> {
         @Override
         public T get(Player player) {
             try {
-                return parser.apply(MessageUtil.placeholders(player, value));
+                return parser.apply(PlaceHolderUtil.placeholders(player, value));
             } catch (Exception e) {
                 exceptionHandler.accept(e);
             }
@@ -106,7 +105,7 @@ public interface PlaceholderValue<T> {
 
         @Override
         public String get(Player player) {
-            return MessageUtil.placeholders(player, value);
+            return PlaceHolderUtil.placeholders(player, value);
         }
 
         public String toString() {

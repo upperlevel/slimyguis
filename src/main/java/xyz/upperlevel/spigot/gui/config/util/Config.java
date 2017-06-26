@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.spigot.gui.config.MessageUtil;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
 import java.util.Collection;
@@ -95,7 +95,7 @@ public interface Config {
 
     default PlaceholderValue<String> getMessage(String key, String def) {
         String message = getString(key, def);
-        return message == null ? null : MessageUtil.process(message);
+        return message == null ? null : PlaceHolderUtil.process(message);
     }
 
     default PlaceholderValue<String> getMessage(String key) {
@@ -103,7 +103,7 @@ public interface Config {
     }
 
     default PlaceholderValue<String> getMessageRequired(String key) {
-        return MessageUtil.process(getStringRequired(key));
+        return PlaceHolderUtil.process(getStringRequired(key));
     }
 
 
@@ -316,26 +316,17 @@ public interface Config {
     //------------------------Material
 
     default Material getMaterial(String key, Material def) {
-        String raw;
-        try {
-            raw = (String)get(key);
-        } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
-        }
+        Object raw = get(key);
         if(raw == null)
             return def;
         else {
             Material res;
-            int id = -1;
-            try {
-                id = Integer.parseInt(raw);
-            } catch (NumberFormatException e) {
-            }
-            if(id != -1) {
-                res = Material.getMaterial(id);
-            } else {
-                res = Material.getMaterial(raw.replace(' ', '_').toUpperCase(Locale.ENGLISH));
-            }
+            if(raw instanceof Number)
+                res = Material.getMaterial(((Number) raw).intValue());
+            else if(raw instanceof String)
+                res = Material.getMaterial(((String)raw).replace(' ', '_').toUpperCase(Locale.ENGLISH));
+            else
+                throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
             if(res == null)
                 throw new InvalidGuiConfigurationException("Cannot find material \"" + raw + "\"");
             else return res;

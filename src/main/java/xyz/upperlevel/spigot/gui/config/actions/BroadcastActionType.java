@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.config.Action;
 import xyz.upperlevel.spigot.gui.config.ActionType;
-import xyz.upperlevel.spigot.gui.config.MessageUtil;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class BroadcastActionType extends ActionType<BroadcastActionType.Broadcas
         if(message == null)
             throw new IllegalArgumentException("Cannot find field: \"message\"");
         String permission = (String) config.get("permission");
-        return new BroadcastAction(MessageUtil.process(message), permission);
+        return new BroadcastAction(PlaceHolderUtil.process(message), permission);
     }
 
     @Override

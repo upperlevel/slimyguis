@@ -1,6 +1,14 @@
 package xyz.upperlevel.spigot.gui.config.placeholders;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.config.placeholders.managers.CustomPlaceholderManager;
+import xyz.upperlevel.spigot.gui.config.placeholders.managers.OfficialPlaceholderManager;
+
 public final class PlaceHolderUtil {
+    private static PlaceholderManager manager = null;
 
 
     public static PlaceholderValue<Long> parseLong(Object obj) {
@@ -38,6 +46,31 @@ public final class PlaceHolderUtil {
         } else if(obj instanceof String)
             return PlaceholderValue.byteValue((String) obj);
         else return null;
+    }
+
+
+    public static void tryHook() {
+        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            manager = new OfficialPlaceholderManager();
+            Main.logger().info("Successfully hooked into PlaceholderAPI");
+        } else {
+            manager = new CustomPlaceholderManager();
+            Main.logger().warning("Cannot find PlaceholderAPI");
+        }
+    }
+
+    public static PlaceholderValue<String> process(String message) {
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return PlaceholderValue.strValue(message);
+    }
+
+
+    public static String placeholders(Player player, String str) {
+        return manager.apply(player, str);
+    }
+
+    public static boolean hasPlaceholders(String str) {
+        return manager.hasPlaceholders(str);
     }
 
 
