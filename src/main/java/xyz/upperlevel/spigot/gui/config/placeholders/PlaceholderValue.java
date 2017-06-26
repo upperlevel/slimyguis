@@ -16,7 +16,7 @@ public interface PlaceholderValue<T> {
     String toString();
 
     static PlaceholderValue<Long> longValue(String l) {
-        return value(l, Long::parseLong, (long) -1);
+        return value(l, Long::parseLong, -1L);
     }
 
     static PlaceholderValue<Integer> intValue(String i) {
@@ -31,12 +31,19 @@ public interface PlaceholderValue<T> {
         return value(b, Byte::parseByte, (byte) -1);
     }
 
+    static PlaceholderValue<Float> floatValue(String b) {
+        return value(b, Float::parseFloat, -1.0f);
+    }
+
+    static PlaceholderValue<Double> doubleValue(String b) {
+        return value(b, Double::parseDouble, -1.0);
+    }
+
     static PlaceholderValue<String> strValue(String str) {
         if(str == null) return null;
-        if(PlaceHolderUtil.hasPlaceholders(str)) {
-            System.out.println("placehodlers found!");
+        if(PlaceHolderUtil.hasPlaceholders(str))
             return new StringPlaceholderValue(str);
-        } else
+        else
             return new FalsePlaceholderValue<>(str);
     }
 

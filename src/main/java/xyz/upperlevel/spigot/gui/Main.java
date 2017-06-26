@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.gui.config.ConfigGuiManager;
 import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
+import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 
@@ -25,6 +26,7 @@ public class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new GuiEventListener(), this);
 
         PlaceHolderUtil.tryHook();
+        EconomyManager.enable();
         ConfigGuiManager.onLoad(new File(getDataFolder(), "guis"));
         ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
     }

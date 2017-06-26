@@ -1,9 +1,14 @@
 package xyz.upperlevel.spigot.gui.config;
 
 import lombok.Getter;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
@@ -55,8 +60,7 @@ public class ConfigItem {
         private PlaceholderValue<String> noPermissionError;
         private Sound noPermissionSound;
 
-        private int cost;
-        private String economy;
+        private PlaceholderValue<Double> cost;
         private PlaceholderValue<String> noMoneyError;
         private Sound noMoneySound;
 
@@ -65,14 +69,29 @@ public class ConfigItem {
         public boolean checkPermission(Player player) {
             if(permission != null && !player.hasPermission(permission)) {
                 player.sendMessage(noPermissionError.get(player));
-                player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
+                if(noPermissionSound != null)
+                    player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
                 return false;
             } else return true;
         }
 
         public boolean pay(Player player) {
-            if(cost > 0)
-                throw new NotImplementedException();
+            double c = cost.get(player);
+            if(c > 0) {
+                final Economy economy = EconomyManager.getEconomy();
+                if(economy == null) {
+                    Main.logger().severe("Cannot use economy: vault not found!");
+                    return true;
+                }
+                EconomyResponse res = economy.withdrawPlayer(player, c);
+                if(!res.transactionSuccess()) {
+                    player.sendMessage(noMoneyError.get(player));
+                    if(noMoneySound != null)
+                        player.playSound(player.getLocation(), noMoneySound, 1.0f, 1.0f);
+                    System.out.println(res.errorMessage);
+                    return false;
+                } else return true;
+            }
             return true;
         }
 
@@ -90,8 +109,7 @@ public class ConfigItem {
             res.noPermissionError = config.getMessage("noPermissionMessage", "You don't have permission!");
             res.noPermissionSound = config.getSound("noPermissionSound");
 
-            res.cost = config.getInt("cost", 0);
-            res.economy = config.getString("economy", "");
+            res.cost = PlaceholderValue.doubleValue(config.getString("cost", "0"));
             res.noMoneyError = config.getMessage("noMoneyError", "You don't have enough money");
             res.noMoneySound = config.getSound("noMoneySound");
 
@@ -114,8 +132,7 @@ public class ConfigItem {
             joiner.add("permission: " + permission);
             joiner.add("noPermissionError: " + noPermissionError);
             joiner.add("noPermissionSound: " + noPermissionSound);
-            joiner.add("coost: " + cost);
-            joiner.add("economy: " + economy);
+            joiner.add("cost: " + cost);
             joiner.add("noMoneyError: " + noMoneyError);
             joiner.add("noMoneySound: " + noMoneySound);
             return '{' + joiner.toString() + '}';
