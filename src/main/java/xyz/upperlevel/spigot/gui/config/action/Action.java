@@ -1,4 +1,4 @@
-package xyz.upperlevel.spigot.gui.config;
+package xyz.upperlevel.spigot.gui.config.action;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

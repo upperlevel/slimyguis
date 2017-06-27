@@ -1,13 +1,16 @@
-package xyz.upperlevel.spigot.gui.config;
+package xyz.upperlevel.spigot.gui.config.action;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import xyz.upperlevel.spigot.gui.config.actions.*;
+import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.spigot.gui.config.action.actions.*;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -21,9 +24,9 @@ public abstract class ActionType<T extends Action> {
     @Getter
     private final String type;
 
-    public abstract T load(Map<String, Object> config);
+    public abstract T load(Object config);
 
-    public abstract Map<String, Object> save(T action);
+    public abstract Object save(T action);
 
 
     public static void addActionType(ActionType<?> type) {
@@ -35,14 +38,14 @@ public abstract class ActionType<T extends Action> {
     }
 
     private static void registerDefaults() {
-        addActionType(new BackGuiActionType());
-        addActionType(new BroadcastActionType());
-        addActionType(new CloseGuiActionType());
-        addActionType(new MessageActionType());
-        addActionType(new OpenGuiActionType());
-        addActionType(new RequireActionType());
-        addActionType(new VaultGiveActionType());
-        addActionType(new VaultTakeActionType());
+        addActionType(BackGuiAction.TYPE);
+        addActionType(BroadcastAction.TYPE);
+        addActionType(CloseGuiAction.TYPE);
+        addActionType(MessageAction.TYPE);
+        addActionType(OpenGuiAction.TYPE);
+        addActionType(RequireAction.TYPE);
+        addActionType(VaultGiveAction.TYPE);
+        addActionType(VaultTakeAction.TYPE);
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {
@@ -54,19 +57,19 @@ public abstract class ActionType<T extends Action> {
             Map<String, Object> c = (Map<String, Object>) config;
             if (c.size() > 1)
                 throw new InvalidGuiConfigurationException("cannot have more than one action for now");
-            Map.Entry<String, Object> actiion = c.entrySet().iterator().next();
-            String type = actiion.getKey();
+            Map.Entry<String, Object> action = c.entrySet().iterator().next();
+            String type = action.getKey();
             if (type == null)
                 throw new IllegalArgumentException("Field \"type\" needed");
             ActionType t = types.get(type.toLowerCase());
             if (t == null)
-                throw new IllegalArgumentException("Cannot find action \"" + type + "\"");
-            return t.load((Map<String, Object>) actiion.getValue());
+                throw new IllegalArgumentException("Cannot find action \"" + type + "\" in " + types.keySet());
+            return t.load(action.getValue());
         } else if(config instanceof String) {
             String type = (String) config;
-            ActionType t = types.get(type);
+            ActionType t = types.get(type.toLowerCase());
             if (t == null)
-                throw new IllegalArgumentException("Cannot find action \"" + type + "\"");
+                throw new IllegalArgumentException("Cannot find action \"" + type + "\" in " + types.keySet());
             return t.load(null);//No argument
         } else
             throw new InvalidGuiConfigurationException("Invalid value type");
@@ -74,8 +77,14 @@ public abstract class ActionType<T extends Action> {
 
     public static <T extends Action<T>> Map<String, Object> serialize(T action) {
         ActionType<T> type = action.getType();
-        Map<String, Object> obj = type.save(action);
-        obj.put("type", type.getType());
-        return obj;
+        Object obj = type.save(action);
+        return ImmutableMap.of(type.getType(), obj);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Map<String, Object>> serialize(List<Action> s) {
+        return s.stream()
+                .map((Function<Action, Map<String, Object>>) ActionType::serialize)
+                .collect(Collectors.toList());
     }
 }
