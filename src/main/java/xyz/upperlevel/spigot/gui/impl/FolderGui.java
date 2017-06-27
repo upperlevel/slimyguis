@@ -1,6 +1,7 @@
 package xyz.upperlevel.spigot.gui.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,35 +11,28 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.BaseGui;
-import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.GuiSize;
 import xyz.upperlevel.spigot.gui.GuiUtils;
 import xyz.upperlevel.spigot.gui.link.Link;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import static xyz.upperlevel.spigot.gui.GuiUtils.itemStack;
 
 @Accessors(fluent = true, chain = true)
 public class FolderGui extends BaseGui {
-    public static final ItemStack DEF_BACK_BUTTON = GuiUtils.itemStack(Material.BARRIER, ChatColor.RED + "Back");
+    public static final ItemStack BACK_BUTTON = GuiUtils.itemStack(Material.BARRIER, ChatColor.RED + "Back");
 
-    private final Map<ItemStack, Link> components;
+    private Map<Integer, Item> items = new HashMap<>();
+    private int nextFreeSlot = 0;
 
     private final int size;
 
     @Getter
     private String title;
 
-    @Getter
-    private ItemStack backButton = DEF_BACK_BUTTON;
-
     public FolderGui(String title, int size) {
-        if(size > 0)
-            components = new LinkedHashMap<>(size);
-        else
-            components = new LinkedHashMap<>();
         this.size = size;
         this.title = title;
     }
@@ -52,7 +46,10 @@ public class FolderGui extends BaseGui {
     }
 
     public FolderGui addLink(Link link, ItemStack display) {
-        components.put(display, link);
+        Item item = new Item(link, display);
+        item.slot = nextFreeSlot;
+        findNextFree();
+        items.put(item.slot, item);
         return this;
     }
 
@@ -61,15 +58,31 @@ public class FolderGui extends BaseGui {
         return this;
     }
 
+    public FolderGui setLink(Link link, int slot, ItemStack display) {
+        Item item = new Item(link, display);
+        item.slot = slot;
+        if(slot < 0 || (slot > size && size > 0))
+            throw new IllegalArgumentException("slot out of borders!");
+        if(slot == nextFreeSlot)
+            findNextFree();
+        items.put(item.slot, item);
+        return this;
+    }
+
+    public FolderGui setLink(Link link, int slot, Material mat, String name, String... lores) {
+        setLink(link, slot, itemStack(mat, name, lores));
+        return this;
+    }
+
+    protected void findNextFree() {
+        while(items.containsKey(++nextFreeSlot) && (size < 0 ||  nextFreeSlot < size));
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
-        if(backButton != null && backButton.equals(event.getCurrentItem())) {
-            GuiManager.back((Player) event.getWhoClicked());
-        } else {
-            Link a = components.get(event.getCurrentItem());
-            if (a != null)
-                a.run((Player) event.getWhoClicked());
-        }
+        Item a = items.get(event.getSlot());
+        if (a != null)
+            a.link.run((Player) event.getWhoClicked());
     }
 
     public FolderGui title(String title) {
@@ -78,25 +91,21 @@ public class FolderGui extends BaseGui {
         return this;
     }
 
-    public FolderGui backButton(ItemStack button) {
-        this.backButton = button;
-        clear(); //Reprint
-        return this;
-    }
-
-
     @Override
     protected Inventory render() {
-        final int usedSize = size > 0 ? size : GuiSize.min(components.size() + (backButton != null ? 1 : 0));
+        final int usedSize = size > 0 ? size : GuiSize.min(items.values().stream().mapToInt(i -> i.slot).max().orElse(8) + 1);
 
         Inventory inv = Bukkit.createInventory(null, usedSize, title);
-        int i = 0;
-        for(Map.Entry<ItemStack, Link> comp : components.entrySet())
-            inv.setItem(i++, comp.getKey());
-
-        if(backButton != null)
-            inv.setItem(usedSize - 1, backButton);
+        for(Item item : items.values())
+            inv.setItem(item.slot, item.display);
 
         return inv;
+    }
+
+    @RequiredArgsConstructor
+    public static class Item {
+        public final Link link;
+        public final ItemStack display;
+        public int slot;
     }
 }
