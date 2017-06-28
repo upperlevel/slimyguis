@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.book.BookUtil;
 import xyz.upperlevel.spigot.gui.*;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderManager;
+import xyz.upperlevel.spigot.gui.events.*;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
@@ -254,5 +254,30 @@ public class SlimyGuisTest extends JavaPlugin implements Listener {
         @Override
         public void onClick(InventoryClickEvent event) {
         }
+    }
+
+    @EventHandler
+    public void onGuiBack(GuiBackEvent e) {
+        System.out.println("Back: gui:" + e.getGui() + ", old:" + e.getOldGui());
+    }
+
+    @EventHandler
+    public void onGuiChange(GuiChangeEvent e) {
+        System.out.println("Change: gui:" + e.getGui() + ", old:" + e.getOldGui());
+    }
+
+    @EventHandler
+    public void onGuiClick(GuiClickEvent e) {
+        System.out.println("Click: gui:" + e.getGui() + ", click:" + e.getClick());
+    }
+
+    @EventHandler
+    public void onGuiClose(GuiCloseEvent e) {
+        System.out.println("Close: old:" + e.getOldGui());
+    }
+
+    @EventHandler
+    public void onGuiOpen(GuiOpenEvent e) {
+        System.out.println("Open: gui:" + e.getGui() + ", old:" + e.getOldGui() + ", closeOthers" + e.isCloseOthers());
     }
 }

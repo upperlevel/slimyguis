@@ -59,7 +59,7 @@ public class Hotbar implements Iterable<HotbarLink>{
      * @return true only if the player has one or more links
      */
     public boolean isEmpty() {
-        return nextFree == 0;
+        return size == 0;
     }
 
     /**
@@ -117,9 +117,11 @@ public class Hotbar implements Iterable<HotbarLink>{
     /**
      * Removes any link matching the predicate
      * @param predicate the predicate that decides which item to remove
+     * @return true if the hotbar changed
      */
-    public void remove(Predicate<HotbarLink> predicate) {
+    public boolean remove(Predicate<HotbarLink> predicate) {
         final Inventory inv = player.getInventory();
+        int initialSize = size;
         for(int i = 0; i < 9; i++) {
             if(predicate.test(links[i])) {
                 links[i] = null;
@@ -127,6 +129,7 @@ public class Hotbar implements Iterable<HotbarLink>{
                 inv.setItem(i, null);
             }
         }
+        return size != initialSize;
     }
 
     /**

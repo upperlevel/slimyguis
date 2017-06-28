@@ -1,6 +1,5 @@
 package xyz.upperlevel.spigot.gui.config.action;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
@@ -115,6 +114,10 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
         setParameters(Arrays.asList(parameters));
     }
 
+    public Collection<Parameter> getParameters() {
+        return Collections.unmodifiableCollection(parameters.values());
+    }
+
     public static class Parameter<T> {
         @Getter
         private final String name;
@@ -153,6 +156,22 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
 
         public static <T> Parameter<T> of(String name, Parser<T> parser) {
             return new Parameter<>(name, parser);
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(", ");
+            fillToString(joiner);
+            return '{' + joiner.toString() + '}';
+        }
+
+        protected void fillToString(StringJoiner joiner) {
+            joiner.add("name: " + name);
+            joiner.add("parser: " + parser.getClass().getSimpleName());
+            if(defValue != null)
+                joiner.add("def: " + defValue);
+            if(required)
+                joiner.add("required");
         }
     }
 }

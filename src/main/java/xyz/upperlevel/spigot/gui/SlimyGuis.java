@@ -27,8 +27,9 @@ public class SlimyGuis extends JavaPlugin implements Listener {
 
         PlaceHolderUtil.tryHook();
         EconomyManager.enable();
-        ConfigGuiManager.onLoad(new File(getDataFolder(), "guis"));
-        ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
+        // todo delete config things
+        //ConfigGuiManager.onLoad(new File(getDataFolder(), "guis"));
+        //ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
     }
 
     @Override

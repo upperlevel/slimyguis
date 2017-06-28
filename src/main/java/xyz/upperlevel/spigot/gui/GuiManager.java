@@ -1,6 +1,7 @@
 package xyz.upperlevel.spigot.gui;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,14 +9,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import xyz.upperlevel.spigot.gui.config.ConfigGui;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.util.Config;
-import xyz.upperlevel.spigot.gui.impl.FolderGui;
+import xyz.upperlevel.spigot.gui.events.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -158,12 +160,20 @@ public class GuiManager {
         called = true;
         try {
             LinkedList<Gui> g = getOrCreate(player);
-            if (!g.isEmpty()) {
-                g.peek().onClose(player);
-
-                if (closeOthers)
-                    g.clear();
+            Gui oldGui = g.peek();
+            GuiOpenEvent e = new GuiOpenEvent(player, gui, oldGui);
+            e.setCloseOthers(closeOthers);
+            Bukkit.getPluginManager().callEvent(e);
+            if (e.isCancelled()) {
+                if (g.isEmpty())
+                    histories.remove(player);
+                return;
             }
+            closeOthers = e.isCloseOthers();
+            if (oldGui != null)
+                oldGui.onClose(player);
+            if (closeOthers)
+                g.clear();
 
             gui.onOpen(player);
             gui.print(player);
@@ -195,7 +205,18 @@ public class GuiManager {
             LinkedList<Gui> g = histories.remove(player);
             if (g == null || g.isEmpty())
                 return;
-            g.peek().onClose(player);
+
+            Gui oldGui = g.peek();
+
+            GuiCloseEvent e = new GuiCloseEvent(player, oldGui);
+            Bukkit.getPluginManager().callEvent(e);
+
+            if (e.isCancelled()) {
+                histories.put(player, g);
+                return;
+            }
+
+            oldGui.onClose(player);
             player.closeInventory();
             g.clear();
         } finally {
@@ -227,9 +248,20 @@ public class GuiManager {
             LinkedList<Gui> g = histories.get(player);
             if (g == null || g.isEmpty())
                 return;
-            g.pop().onClose(player);
+
+            Gui oldGui = g.pop();
+            Gui gui = g.peek();
+
+            GuiBackEvent event = new GuiBackEvent(player, gui, oldGui);
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                g.push(oldGui);
+                return;
+            }
+
+            oldGui.onClose(player);
             if (!g.isEmpty()) {
-                final Gui gui = g.peek();
                 gui.onOpen(player);
                 gui.print(player);
             } else
@@ -250,8 +282,20 @@ public class GuiManager {
         called = true;
         try {
             LinkedList<Gui> g = getOrCreate(player);
+            Gui oldGui;
             if (!g.isEmpty())
-                g.pop().onClose(player);
+                oldGui = g.pop();
+            else oldGui = null;
+
+            GuiChangeEvent e = new GuiChangeEvent(player, gui, oldGui);
+            Bukkit.getPluginManager().callEvent(e);
+            if (e.isCancelled()) {
+                if (oldGui != null)
+                    g.push(oldGui);
+                return;
+            }
+            if (oldGui != null)
+                oldGui.onClose(player);
             g.push(gui);
             gui.onOpen(player);
             gui.print(player);
@@ -271,9 +315,15 @@ public class GuiManager {
             return;
         LinkedList<Gui> g = histories.get(h);
         if (g != null && !g.isEmpty()) {
+            Gui gui = g.peek();
+            GuiClickEvent e = new GuiClickEvent(event, (Player) h, gui);
+            Bukkit.getPluginManager().callEvent(e);
+            if (e.isCancelled())
+                return;
+
             //Event cancelled BEFORE the method call to permit the un-cancelling
             event.setCancelled(true);
-            g.peek().onClick(event);
+            gui.onClick(event);
             //Creative idiots could copy the items
             if (event.isShiftClick() && event.getWhoClicked().getGameMode() == GameMode.CREATIVE)
                 ((Player) event.getWhoClicked()).updateInventory();

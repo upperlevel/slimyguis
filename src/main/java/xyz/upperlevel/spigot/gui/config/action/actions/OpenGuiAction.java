@@ -31,7 +31,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
 
     @Override
     public void run(Player player) {
-        Gui gui =  ConfigGuiManager.get(guiId.get(player));
+        Gui gui =  GuiManager.get(guiId.get(player));
         if(gui == null) {
             SlimyGuis.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;

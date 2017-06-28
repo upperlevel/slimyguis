@@ -46,6 +46,8 @@ public abstract class ActionType<T extends Action> {
         addActionType(RequireAction.TYPE);
         addActionType(VaultGiveAction.TYPE);
         addActionType(VaultTakeAction.TYPE);
+        addActionType(HotbarGiveAction.TYPE);
+        addActionType(HotbarRemoveAction.TYPE);
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {
