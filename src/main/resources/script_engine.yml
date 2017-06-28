@@ -1,4 +1,4 @@
 #Do NOT change unless you know what you're doing!
 engines:
-  js: nashorn
+  js: javascript
   py: python

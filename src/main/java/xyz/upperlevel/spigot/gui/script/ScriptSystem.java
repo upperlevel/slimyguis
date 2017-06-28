@@ -17,6 +17,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -116,5 +118,9 @@ public class ScriptSystem {
 
     public Script get(String id) {
         return scripts.get(id);
+    }
+
+    public Collection<Script> get() {
+        return Collections.unmodifiableCollection(scripts.values());
     }
 }
