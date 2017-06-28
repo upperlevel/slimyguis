@@ -1,5 +1,10 @@
 package xyz.upperlevel.spigot.gui.config.action;
 
+import org.bukkit.inventory.ItemStack;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import xyz.upperlevel.spigot.gui.config.ConfigItem;
+import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 import xyz.upperlevel.spigot.gui.script.Script;
 
 import java.util.Collection;
@@ -162,6 +167,26 @@ public interface Parser<T> {
             @Override
             public Object save(List<Action> s) {
                 return ActionType.serialize(s);
+            }
+        };
+    }
+
+    static Parser<CustomItem> itemValue() {
+        return new Parser<CustomItem>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public CustomItem load(Object o) {
+                if(o instanceof ItemStack)
+                    return new CustomItem((ItemStack) o);
+                else if(o instanceof Map)
+                    return CustomItem.deserialize(Config.wrap((Map<String, Object>) o));
+                else
+                    throw new IllegalArgumentException("Cannot parse " + o + " as Item");
+            }
+
+            @Override
+            public Object save(CustomItem customItem) {
+                throw new NotImplementedException();
             }
         };
     }
