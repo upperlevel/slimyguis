@@ -44,7 +44,7 @@ public class RequireAction extends Action<RequireAction> {
         public RequireActionType() {
             super("require");
             setParameters(
-                    Parameter.of("permission", Parser.strValue(), true),
+                    Parameter.of("permission", Parser.strValue(), false),
                     Parameter.of("actions", Parser.actionsValue(), true),
                     Parameter.of("fail", Parser.actionsValue(), Collections.emptyList(),false)
             );

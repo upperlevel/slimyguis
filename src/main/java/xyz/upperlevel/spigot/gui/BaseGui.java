@@ -1,40 +1,27 @@
 package xyz.upperlevel.spigot.gui;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
-public abstract class BaseGui implements Gui {
-    protected Inventory buffer = null;
+public interface BaseGui extends Gui {
+
+    Inventory create(Player player);
 
     @Override
-    public void print(Player player) {
-        player.openInventory(needsUpdate() ? (buffer = render()) : buffer);
-    }
-
-    /**
-     * this methods returns true oly if the next reprint should re-render the inventory
-     * @return true oly if the next reprint should re-render the inventory
-     */
-    protected boolean needsUpdate() {
-        return buffer == null;
-    }
-
-    /**
-     * clears the buffer forcing a re-renderization at the next reprint
-     */
-    public void clear() {
-        buffer = null;
+    default void print(Player player) {
+        player.openInventory(create(player));
     }
 
     @Override
-    public void onOpen(Player player){}
+    default void onOpen(Player player) {
+    }
 
     @Override
-    public void onClose(Player player){}
+    default void onClick(InventoryClickEvent e) {
+    }
 
-    /**
-     * renders the Inventory
-     * @return the inventory to open at the player
-     */
-    protected abstract Inventory render();
+    @Override
+    default void onClose(Player player) {
+    }
 }

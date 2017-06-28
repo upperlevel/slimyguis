@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
@@ -20,14 +20,30 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public class CustomItem {
+
     private Material material;
     private PlaceholderValue<Short> data;
     private PlaceholderValue<Integer> amount;
-    //Meta
+
+    // meta
     private PlaceholderValue<String> displayName;
     private List<PlaceholderValue<String>> lore;
     private List<ItemFlag> flags;
-    private Map<Enchantment, PlaceholderValue<Integer>> enchantments;
+    private Map<Enchantment, PlaceholderValue<Integer>> enchantments = new HashMap<>();
+
+    public CustomItem(ItemStack item) {
+        material = item.getType();
+        data = PlaceholderValue.shortValue(String.valueOf(item.getData().getData()));
+        amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
+
+        ItemMeta meta = item.getItemMeta();
+        displayName = meta.hasDisplayName() ? PlaceholderValue.strValue(meta.getDisplayName()) : null;
+        lore = meta.hasLore() ? meta.getLore().stream().map(PlaceholderValue::strValue).collect(Collectors.toList()) : new ArrayList<>();
+        flags = new ArrayList<>(meta.getItemFlags());
+        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
+            enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
+    }
+
 
     public ItemStack toItemStack(Player player) {
         ItemStack item = new ItemStack(material, amount.get(player), data.get(player));
@@ -40,11 +56,11 @@ public class CustomItem {
     }
 
     public void processMeta(Player player, ItemMeta meta) {
-        if(displayName != null)
+        if (displayName != null)
             meta.setDisplayName(displayName.get(player));
         meta.setLore(lore.stream().map(m -> m.get(player)).collect(Collectors.toList()));
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
-        for(Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : enchantments.entrySet())
+        for (Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : enchantments.entrySet())
             meta.addEnchant(ench.getKey(), ench.getValue().get(player), true);
     }
 
@@ -57,15 +73,15 @@ public class CustomItem {
 
         PlaceholderValue<String> displayName = config.getMessage("name");
         List<PlaceholderValue<String>> lores;
-        if(config.has("lore")) {
-            lores = ((Collection<String>)config.getCollection("lore"))
+        if (config.has("lore")) {
+            lores = ((Collection<String>) config.getCollection("lore"))
                     .stream()
                     .map(PlaceHolderUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
 
         List<ItemFlag> flags;
-        if(config.has("flags")) {
+        if (config.has("flags")) {
             flags = ((Collection<String>) config.getCollection("flags"))
                     .stream()
                     .map(ItemFlag::valueOf)
@@ -78,14 +94,14 @@ public class CustomItem {
         enchantments = new HashMap<>();
         if (config.has("enchantments")) {
             Collection<String> enchList = (Collection<String>) config.getCollection("enchantments");
-            for(String e : enchList) {
+            for (String e : enchList) {
                 String[] parts = e.split(":");
-                if(parts.length != 2)
+                if (parts.length != 2)
                     throw new InvalidGuiConfigurationException("Invalid enchantment, correct version: <Enchantment>:<Level>");
                 else {
                     Enchantment ench = Enchantment.getByName(parts[0].toUpperCase());
-                    if(ench == null)
-                        Main.logger().severe("Cannot find enchantment: " + parts[0]);
+                    if (ench == null)
+                        SlimyGuis.logger().severe("Cannot find enchantment: " + parts[0]);
                     else
                         enchantments.put(ench, PlaceholderValue.intValue(parts[1]));
                 }
@@ -103,8 +119,8 @@ public class CustomItem {
                 mat = Material.SKULL_ITEM;
             case SKULL_ITEM:
                 return SkullCustomItem.from(
-                    mat, data, amount, displayName, lores, flags, enchantments,
-                    config
+                        mat, data, amount, displayName, lores, flags, enchantments,
+                        config
                 );
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
@@ -128,8 +144,8 @@ public class CustomItem {
                 );
             case MONSTER_EGG:
                 return SpawnEggCustomItem.from(
-                    mat, data, amount, displayName, lores, flags, enchantments,
-                    config
+                        mat, data, amount, displayName, lores, flags, enchantments,
+                        config
                 );
             case ENCHANTED_BOOK:
                 return EnchantedBookCustomItem.from(

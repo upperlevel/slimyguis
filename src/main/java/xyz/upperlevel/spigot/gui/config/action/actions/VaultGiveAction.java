@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 import xyz.upperlevel.spigot.gui.config.action.Parser;
@@ -27,7 +27,7 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
     public void run(Player player) {
         final Economy economy = EconomyManager.getEconomy();
         if(economy == null) {
-            Main.logger().severe("Cannot find vault's economy!");
+            SlimyGuis.logger().severe("Cannot find vault's economy!");
             return;
         }
         economy.depositPlayer(player, value.get(player));

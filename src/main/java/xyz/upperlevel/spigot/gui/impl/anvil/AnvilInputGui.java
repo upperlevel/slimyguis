@@ -8,11 +8,17 @@ import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.upperlevel.spigot.gui.Gui;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true, chain = true)
 public class AnvilInputGui implements Gui {
+
+    @Getter
+    @Accessors()
+    private String id = null;
+
+
     @Getter
     @Setter
     private String message;
@@ -20,7 +26,6 @@ public class AnvilInputGui implements Gui {
     @Setter
     @Getter
     private AnvilGUI.ClickHandler listener = (player, input) -> "Not implemented!";
-
 
     @Override
     public void onClick(InventoryClickEvent event) {
@@ -30,7 +35,7 @@ public class AnvilInputGui implements Gui {
     @Override
     public void print(Player player) {
         new AnvilGUI(
-                Main.getInstance(),
+                SlimyGuis.getInstance(),
                 player,
                 message,
                 this::onAnvilClick

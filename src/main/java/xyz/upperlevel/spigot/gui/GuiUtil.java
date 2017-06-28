@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 import static org.bukkit.ChatColor.RED;
 
-public final class GuiUtils {
+public final class GuiUtil {
 
     public static ItemStack wool(DyeColor color, String name, String... lores) {
         return setNameAndLores(new Wool(color).toItemStack(1), name, lores);
@@ -64,5 +64,5 @@ public final class GuiUtils {
         player.playSound(player.getLocation(), sound, 1, 1);
     }
 
-    private GuiUtils() {}
+    private GuiUtil() {}
 }

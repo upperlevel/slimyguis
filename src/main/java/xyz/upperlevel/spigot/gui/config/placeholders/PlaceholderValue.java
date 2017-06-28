@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.util.ConfigUtils;
 
 import java.util.function.Consumer;
@@ -59,8 +59,8 @@ public interface PlaceholderValue<T> {
             parsed = parser.apply(i);
         } catch (Exception e) {
             if(!PlaceHolderUtil.hasPlaceholders(i))
-                Main.logger().severe("Invalid value: " + i);
-            return new SimplePlaceholderValue<>(i, parser, exc -> Main.logger().severe("Cannot parse value: \"" + i + "\""), onError);
+                SlimyGuis.logger().severe("Invalid value: " + i);
+            return new SimplePlaceholderValue<>(i, parser, exc -> SlimyGuis.logger().severe("Cannot parse value: \"" + i + "\""), onError);
         }
         return new FalsePlaceholderValue<>(parsed);
     }

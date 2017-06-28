@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiManager;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.ConfigGuiManager;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
@@ -33,7 +33,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
     public void run(Player player) {
         Gui gui =  ConfigGuiManager.get(guiId.get(player));
         if(gui == null) {
-            Main.logger().severe("Cannot find gui \"" + guiId + "\"");
+            SlimyGuis.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
 

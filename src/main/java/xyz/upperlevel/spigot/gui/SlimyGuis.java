@@ -12,11 +12,11 @@ import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import java.io.File;
 import java.util.logging.Logger;
 
-public class Main extends JavaPlugin implements Listener {
+public class SlimyGuis extends JavaPlugin implements Listener {
     @Getter
-    private static Main instance;
+    private static SlimyGuis instance;
 
-    public Main() {
+    public SlimyGuis() {
         if(instance == null)
             instance = this;
     }

@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiSize;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.commands.CommandUtil;
 import xyz.upperlevel.spigot.gui.config.ConfigItem.ItemClick;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
@@ -26,27 +26,27 @@ public class ConfigGui implements Gui {//TODO better error handling
     @Getter
     private final String id;
     private ConfigItem[] items;
+
     @Getter
     private InventoryType type;
+
     @Getter
     private PlaceholderValue<String> title;
-    private ConfigItem[] slotMapped;
+
     @Getter
     private int size;
 
     public ConfigGui(String id, ConfigItem[] items, InventoryType type, int size, PlaceholderValue<String> title) {
         this.id = id;
-        this.items = items;
         this.type = type;
         this.title = title;
 
         this.size = type != null ? type.getDefaultSize() : size;
-        this.slotMapped = new ConfigItem[size];
-        for(ConfigItem item : items)
-            for(int slot : item.getSlots())
-                slotMapped[slot] = item;
+        this.items = new ConfigItem[size];
+        for (ConfigItem item : items)
+            for (int slot : item.getSlots())
+                this.items[slot] = item;
     }
-
 
     @SuppressWarnings("unchecked")
     public static ConfigGui deserialize(Config config, String id) {
@@ -74,7 +74,7 @@ public class ConfigGui implements Gui {//TODO better error handling
                 type = null;
                 size = config.getInt("size");
                 if (size % 9 != 0) {
-                    Main.logger().warning("In gui " + id + ": size must be a multiple of 9");
+                    SlimyGuis.logger().warning("In gui " + id + ": size must be a multiple of 9");
                     size = GuiSize.min(size);
                 }
             } else {
@@ -95,10 +95,10 @@ public class ConfigGui implements Gui {//TODO better error handling
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        ConfigItem item = slotMapped[event.getSlot()];
-        if(item != null) {
+        ConfigItem item = items[event.getSlot()];
+        if (item != null) {
             ItemClick clickHandler = item.getClick();
-            if(clickHandler != null)
+            if (clickHandler != null)
                 clickHandler.onClick((Player) event.getWhoClicked());
         }
     }
@@ -106,7 +106,7 @@ public class ConfigGui implements Gui {//TODO better error handling
     @Override
     public void print(Player player) {
         Inventory inv;
-        if(type != null)
+        if (type != null)
             inv = Bukkit.createInventory(player, type, title.get(player));
         else
             inv = Bukkit.createInventory(player, size, title.get(player));
@@ -121,8 +121,10 @@ public class ConfigGui implements Gui {//TODO better error handling
     }
 
     @Override
-    public void onOpen(Player player) {}
+    public void onOpen(Player player) {
+    }
 
     @Override
-    public void onClose(Player player) {}
+    public void onClose(Player player) {
+    }
 }

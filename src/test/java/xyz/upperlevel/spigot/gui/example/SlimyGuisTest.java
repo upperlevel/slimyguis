@@ -6,14 +6,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.book.BookUtil;
 import xyz.upperlevel.spigot.gui.*;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderManager;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.impl.ConfirmGui;
@@ -22,16 +24,24 @@ import xyz.upperlevel.spigot.gui.impl.anvil.AnvilInputGui;
 import xyz.upperlevel.spigot.gui.impl.anvil.InputFilters;
 import xyz.upperlevel.spigot.gui.link.Link;
 
+import java.io.File;
+import java.util.logging.Level;
+
 import static xyz.upperlevel.spigot.gui.GuiAction.change;
 import static xyz.upperlevel.spigot.gui.GuiAction.close;
 import static xyz.upperlevel.spigot.gui.GuiManager.open;
-import static xyz.upperlevel.spigot.gui.GuiUtils.wood;
-import static xyz.upperlevel.spigot.gui.GuiUtils.wool;
+import static xyz.upperlevel.spigot.gui.GuiUtil.wood;
+import static xyz.upperlevel.spigot.gui.GuiUtil.wool;
 import static xyz.upperlevel.spigot.gui.hotbar.HotbarLink.newLink;
 
-public class Main extends JavaPlugin implements Listener {
+public class SlimyGuisTest extends JavaPlugin implements Listener {
     //Example of creating strange ItemStacks
     private static final ItemStack BAN_ITEM = wool(DyeColor.RED, "Ban");
+
+    static {
+        // Hooks a placeholder handler
+        PlaceHolderUtil.tryHook();
+    }
 
     private static final HotbarLink[] links = new HotbarLink[]{
             HotbarLink.newLink(Link.consoleCommand("kick <player>"), wool(DyeColor.BLUE, ChatColor.BLUE + "Kick")),
@@ -104,7 +114,7 @@ public class Main extends JavaPlugin implements Listener {
                                             ),
                                     wool(DyeColor.GREEN, "Drugs")
                             ),
-                    GuiUtils.setNameAndLores(new ItemStack(Material.ANVIL), "Anvil tests")
+                    GuiUtil.setNameAndLores(new ItemStack(Material.ANVIL), "Anvil tests")
             ),
             newLink(
                     new FolderGui("deep-test")
@@ -117,7 +127,7 @@ public class Main extends JavaPlugin implements Listener {
     };
 
     private static ItemStack getDrugsBook(int age) {
-        if(age < 18) {
+        if (age < 18) {
             return BookUtil.writtenBook()
                     .title(ChatColor.RED + "You're underage!")
                     .pages(
@@ -138,26 +148,26 @@ public class Main extends JavaPlugin implements Listener {
             return BookUtil.writtenBook()
                     .title(ChatColor.GREEN + "Drugs book")
                     .pages(
-                        new BookUtil.PageBuilder()
-                                .add(
-                                        BookUtil.TextBuilder.of("Here's the drug")
-                                                .color(ChatColor.DARK_GREEN)
-                                                .style(ChatColor.BOLD)
-                                                .onHover(BookUtil.HoverAction.showText("Take the drugs!"))
-                                                .onClick(BookUtil.ClickAction.openUrl("https://www.google.it/search?q=drugs"))
-                                                .build()
-                                )
-                                .newLine()
-                                .add("Now run! the ")
-                                .add(
-                                        BookUtil.TextBuilder.of("POLICE")
-                                                .color(ChatColor.BLUE)
-                                                .onHover(BookUtil.HoverAction.showText("RUUUN"))
-                                                .onClick(BookUtil.ClickAction.runCommand("The police caught me :("))
-                                                .build()
-                                )
-                                .add(" is following us")
-                                .build()
+                            new BookUtil.PageBuilder()
+                                    .add(
+                                            BookUtil.TextBuilder.of("Here's the drug")
+                                                    .color(ChatColor.DARK_GREEN)
+                                                    .style(ChatColor.BOLD)
+                                                    .onHover(BookUtil.HoverAction.showText("Take the drugs!"))
+                                                    .onClick(BookUtil.ClickAction.openUrl("https://www.google.it/search?q=drugs"))
+                                                    .build()
+                                    )
+                                    .newLine()
+                                    .add("Now run! the ")
+                                    .add(
+                                            BookUtil.TextBuilder.of("POLICE")
+                                                    .color(ChatColor.BLUE)
+                                                    .onHover(BookUtil.HoverAction.showText("RUUUN"))
+                                                    .onClick(BookUtil.ClickAction.runCommand("The police caught me :("))
+                                                    .build()
+                                    )
+                                    .add(" is following us")
+                                    .build()
                     )
                     .build();
     }
@@ -165,6 +175,14 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
+
+        File folder = new File(getDataFolder(), "guis");
+        folder.mkdirs();
+
+        // Loads all the guis files inside the given folder
+        SlimyGuis.logger().log(Level.INFO, "Loading guis...");
+        GuiManager.loadFolder(folder);
+        SlimyGuis.logger().log(Level.INFO, "Configurable guis loaded!");
     }
 
     public void openRainbow(Player player) {
@@ -180,9 +198,24 @@ public class Main extends JavaPlugin implements Listener {
         HotbarManager.add(event.getPlayer(), links);
     }
 
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        // Opens up the gui when player break obsidian block
+        if (e.getBlock().getType() == Material.OBSIDIAN) {
+
+            // Gets a gui that may be loaded from the .yml file
+            Gui gui = GuiManager.get("test");
+            if (gui == null)
+                e.getPlayer().sendMessage("this gui has not been loaded");
+            else
+                // Opens the gui 'test' loaded
+                GuiManager.open(e.getPlayer(), gui);
+        }
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player) {
+        if (sender instanceof Player) {
             openRainbow((Player) sender);
             return true;
         }
@@ -190,37 +223,36 @@ public class Main extends JavaPlugin implements Listener {
     }
 
 
-    private static class RainbowGui extends BaseGui {
-        //Example of a simple GUI
+    //Example of a simple GUI
+    private static class RainbowGui extends CustomGui {
+
+        public RainbowGui() {
+            super("rainbow", GuiSize.min(DyeColor.values().length));
+
+            DyeColor[] colors = DyeColor.values();
+            for (int i = 0; i < DyeColor.values().length; i++)
+                setItem(i, wool(colors[i], colors[i].name().toLowerCase()));
+        }
 
         @Override
         public void onClick(InventoryClickEvent event) {
             //This should process the click
-            if(event.getCurrentItem().getType() != Material.AIR)
+            if (event.getCurrentItem().getType() != Material.AIR)
                 event.getWhoClicked().sendMessage("Clicked: " + DyeColor.getByWoolData(event.getCurrentItem().getData().getData()));
-        }
-
-        @Override
-        protected Inventory render() {
-            DyeColor[] colors = DyeColor.values();
-            Inventory inv = Bukkit.createInventory(null, GuiSize.min(colors.length));
-            for(int i = 0; i < colors.length; i++)
-                inv.setItem(i, wool(colors[i], colors[i].name().toLowerCase()));
-            return inv;
         }
     }
 
-    private static class DispenserGui extends BaseGui {
-        @Override
-        public void onClick(InventoryClickEvent event) {
+    private static class DispenserGui extends CustomGui {
+
+        public DispenserGui() {
+            super("dispenser", InventoryType.DISPENSER);
+
+            for (int i = 0; i < 9; i++)
+                setItem(i, new ItemStack(Material.DIAMOND, 64));
         }
 
         @Override
-        protected Inventory render() {
-            Inventory inv = Bukkit.createInventory(null, InventoryType.DISPENSER);
-            for(int i = 0; i < 9; i++)
-                inv.setItem(i, new ItemStack(Material.DIAMOND, 64));
-            return inv;
+        public void onClick(InventoryClickEvent event) {
         }
     }
 }

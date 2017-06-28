@@ -12,17 +12,22 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.BaseGui;
 import xyz.upperlevel.spigot.gui.GuiSize;
-import xyz.upperlevel.spigot.gui.GuiUtils;
+import xyz.upperlevel.spigot.gui.GuiUtil;
 import xyz.upperlevel.spigot.gui.link.Link;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static xyz.upperlevel.spigot.gui.GuiUtils.itemStack;
+import static xyz.upperlevel.spigot.gui.GuiUtil.itemStack;
 
+@Getter
 @Accessors(fluent = true, chain = true)
-public class FolderGui extends BaseGui {
-    public static final ItemStack BACK_BUTTON = GuiUtils.itemStack(Material.BARRIER, ChatColor.RED + "Back");
+public class FolderGui implements BaseGui {
+    public static final ItemStack BACK_BUTTON = GuiUtil.itemStack(Material.BARRIER, ChatColor.RED + "Back");
+
+    @Getter
+    @Accessors()
+    private String id = null;
 
     private Map<Integer, Item> items = new HashMap<>();
     private int nextFreeSlot = 0;
@@ -61,9 +66,9 @@ public class FolderGui extends BaseGui {
     public FolderGui setLink(Link link, int slot, ItemStack display) {
         Item item = new Item(link, display);
         item.slot = slot;
-        if(slot < 0 || (slot > size && size > 0))
+        if (slot < 0 || (slot > size && size > 0))
             throw new IllegalArgumentException("slot out of borders!");
-        if(slot == nextFreeSlot)
+        if (slot == nextFreeSlot)
             findNextFree();
         items.put(item.slot, item);
         return this;
@@ -75,7 +80,7 @@ public class FolderGui extends BaseGui {
     }
 
     protected void findNextFree() {
-        while(items.containsKey(++nextFreeSlot) && (size < 0 ||  nextFreeSlot < size));
+        while (items.containsKey(++nextFreeSlot) && (size < 0 || nextFreeSlot < size)) ;
     }
 
     @Override
@@ -87,16 +92,15 @@ public class FolderGui extends BaseGui {
 
     public FolderGui title(String title) {
         this.title = title;
-        clear(); //Reprint
         return this;
     }
 
     @Override
-    protected Inventory render() {
+    public Inventory create(Player player) {
         final int usedSize = size > 0 ? size : GuiSize.min(items.values().stream().mapToInt(i -> i.slot).max().orElse(8) + 1);
 
         Inventory inv = Bukkit.createInventory(null, usedSize, title);
-        for(Item item : items.values())
+        for (Item item : items.values())
             inv.setItem(item.slot, item.display);
 
         return inv;
@@ -104,6 +108,7 @@ public class FolderGui extends BaseGui {
 
     @RequiredArgsConstructor
     public static class Item {
+
         public final Link link;
         public final ItemStack display;
         public int slot;

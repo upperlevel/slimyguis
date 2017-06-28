@@ -1,13 +1,12 @@
 package xyz.upperlevel.spigot.gui.config.itemstack;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
@@ -48,7 +47,7 @@ public class EnchantedBookCustomItem extends CustomItem {
             for(Map.Entry<String, Object> e : stEnch.entrySet()) {
                 Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 if (ench == null)
-                    Main.logger().severe("Cannot find enchantment: " + e.getKey());
+                    SlimyGuis.logger().severe("Cannot find enchantment: " + e.getKey());
                 else
                     storedEnchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
             }

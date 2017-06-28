@@ -3,7 +3,7 @@ package xyz.upperlevel.spigot.gui.config.placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.placeholders.managers.CustomPlaceholderManager;
 import xyz.upperlevel.spigot.gui.config.placeholders.managers.OfficialPlaceholderManager;
 
@@ -52,10 +52,10 @@ public final class PlaceHolderUtil {
     public static void tryHook() {
         if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             manager = new OfficialPlaceholderManager();
-            Main.logger().info("Successfully hooked into PlaceholderAPI");
+            SlimyGuis.logger().info("Successfully hooked into PlaceholderAPI");
         } else {
             manager = new CustomPlaceholderManager();
-            Main.logger().warning("Cannot find PlaceholderAPI");
+            SlimyGuis.logger().warning("Cannot find PlaceholderAPI");
         }
     }
 

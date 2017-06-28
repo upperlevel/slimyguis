@@ -1,11 +1,13 @@
-package xyz.upperlevel.spigot.gui.config;
+package xyz.upperlevel.spigot.gui;
 
-import lombok.Getter;
+import lombok.Data;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.spigot.gui.SlimyGuis;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.ActionType;
 import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
@@ -14,45 +16,17 @@ import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 import xyz.upperlevel.spigot.gui.link.Link;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-public class ConfigItem {
-    @Getter
-    private List<Integer> slots;
-    @Getter
-    private CustomItem item;
-    @Getter
-    private ItemClick click;
-
-    @SuppressWarnings("unchecked")
-    public static ConfigItem deserialize(Config config) {
-        ConfigItem res = new ConfigItem();
-        try {
-            if (config.has("slots"))
-                res.slots = (List<Integer>) config.get("slots");
-            else
-                res.slots = Collections.singletonList(config.getInt("slot", -1));
-            if (config.has("item"))
-                res.item = CustomItem.deserialize(config.getConfig("item"));
-            if (config.has("click"))
-                res.click = ItemClick.deserialize(config.getConfig("click"));
-
-            return res;
-        } catch (InvalidGuiConfigurationException e) {
-            if (res.slots != null)
-                e.addLocalizer("in slot " + res.slots.toString());
-            else
-                e.addLocalizer("In gui item");
-            throw e;
-        }
-    }
-
-    public static List<ConfigItem> deserialize(Collection<Config> config) {
-        return config.stream().map(ConfigItem::deserialize).collect(Collectors.toList());
-    }
+@Data
+public class GuiItem {
 
     public static class ItemClick implements Link {
+
         private String permission;
         private PlaceholderValue<String> noPermissionError;
         private Sound noPermissionSound;
@@ -61,7 +35,10 @@ public class ConfigItem {
         private PlaceholderValue<String> noMoneyError;
         private Sound noMoneySound;
 
-        private Action[] actions;
+        private List<Action> actions = new ArrayList<>();
+
+        private ItemClick() {
+        }
 
         public boolean checkPermission(Player player) {
             if (permission != null && !player.hasPermission(permission)) {
@@ -92,35 +69,33 @@ public class ConfigItem {
             return true;
         }
 
-        public void onClick(Player player) {
-            if (checkPermission(player) && pay(player)) {
-                for (Action action : actions)
-                    action.run(player);
-            }
-        }
-
-
+        @SuppressWarnings("unchecked")
         public static ItemClick deserialize(Config config) {
             ItemClick res = new ItemClick();
             res.permission = (String) config.get("permission");
-            res.noPermissionError = config.getMessage("noPermissionMessage", "You don't have permission!");
-            res.noPermissionSound = config.getSound("noPermissionSound");
+            res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
+            res.noPermissionSound = config.getSound("no-permission-sound");
 
             res.cost = PlaceholderValue.doubleValue(config.getString("cost", "0"));
-            res.noMoneyError = config.getMessage("noMoneyError", "You don't have enough money");
-            res.noMoneySound = config.getSound("noMoneySound");
+            res.noMoneyError = config.getMessage("no-money-error", "You don't have enough money");
+            res.noMoneySound = config.getSound("no-money-sound");
 
             List<Object> actions = (List<Object>) config.get("actions");
             if (actions == null)
-                res.actions = null;
+                res.actions = Collections.emptyList();
             else
-                res.actions = actions.stream().map(ActionType::deserialize).toArray(Action[]::new);
+                res.actions = actions.stream()
+                        .map(ActionType::deserialize)
+                        .collect(Collectors.toList());
             return res;
         }
 
         @Override
         public void run(Player player) {
-            onClick(player);
+            if (checkPermission(player) && pay(player)) {
+                for (Action action : actions)
+                    action.run(player);
+            }
         }
 
         @Override
@@ -136,8 +111,64 @@ public class ConfigItem {
         }
     }
 
-    @Override
-    public String toString() {
-        return "{slots:" + slots.toString() + ", item:" + item + ", click:" + click + "}";
+    private int slot;
+    private CustomItem item;
+    private ItemClick click;
+
+    public GuiItem() {
+        slot = -1;
+        item = null;
+        click = null;
+    }
+
+    public GuiItem(int slot, ItemStack item) {
+        this.slot = slot;
+        this.item = new CustomItem(item);
+    }
+
+    public GuiItem(int slot, CustomItem item) {
+        this.slot = slot;
+        this.item = item;
+    }
+
+    public GuiItem(int slot, CustomItem item, ItemClick click) {
+        this.slot = slot;
+        this.item = item;
+        this.click = click;
+
+    }
+
+    public GuiItem(int slot, ItemStack item, ItemClick click) {
+        this.slot = slot;
+        this.item = new CustomItem(item);
+        this.click = click;
+    }
+
+    public void onClick(InventoryClickEvent e) {
+        if (click != null)
+            click.run((Player) e.getWhoClicked());
+    }
+
+    public static GuiItem deserialize(Config config) {
+        GuiItem res = new GuiItem();
+
+        try {
+            if (config.has("slot"))
+                res.slot = config.getInt("slot");
+
+            if (config.has("item"))
+                res.item = CustomItem.deserialize(config.getConfig("item"));
+
+            if (config.has("click"))
+                res.click = ItemClick.deserialize(config.getConfig("click"));
+
+            return res;
+        } catch (InvalidGuiConfigurationException e) {
+            if (res.slot != -1)
+                e.addLocalizer("in slot " + res.slot);
+            else
+                e.addLocalizer("in gui item");
+            throw e;
+        }
     }
 }

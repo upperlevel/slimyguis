@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarLink;
@@ -34,13 +34,13 @@ public class ConfigHotbar {
         for(ConfigItem item : items) {
             for (int slot : item.getSlots()) {
                 if(hotbar.isFull()) {
-                    Main.logger().severe("Hotbar full, cannot add item " + item);
+                    SlimyGuis.logger().severe("Hotbar full, cannot add item " + item);
                     return;
                 }
                 HotbarLink link = HotbarLink.of(item.getClick(), item.getItem().toItemStack(player));
                 if(slot > 0) {
                     if(!hotbar.setLink(link, slot))
-                        Main.logger().severe("Slot " + slot + " already occupied, cannot add item " + item);
+                        SlimyGuis.logger().severe("Slot " + slot + " already occupied, cannot add item " + item);
                 } else
                     hotbar.add(link);
             }
@@ -57,7 +57,7 @@ public class ConfigHotbar {
             public void onPlayerJoin(PlayerJoinEvent event) {
                 printAll(event.getPlayer());
             }
-        }, Main.getInstance());
+        }, SlimyGuis.getInstance());
         for(Player player : Bukkit.getOnlinePlayers())
             printAll(player);
     }
@@ -80,7 +80,7 @@ public class ConfigHotbar {
             if(folder.isDirectory()) {
                 File[] files = folder.listFiles();
                 if(files == null) {
-                    Main.logger().severe("Error while reading " + folder + " files");
+                    SlimyGuis.logger().severe("Error while reading " + folder + " files");
                     return;
                 }
                 for(File file : files) {
@@ -88,19 +88,19 @@ public class ConfigHotbar {
                     try {
                         load(Config.wrap(config));
                     } catch (InvalidGuiConfigurationException e) {
-                        Main.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
+                        SlimyGuis.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
                     } catch (Exception e) {
-                        Main.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
+                        SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
                     }
                 }
             } else {
-                Main.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
+                SlimyGuis.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
             }
         } else {
             try {
                 folder.mkdirs();
             } catch (Exception e) {
-                Main.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
+                SlimyGuis.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
             }
         }
     }

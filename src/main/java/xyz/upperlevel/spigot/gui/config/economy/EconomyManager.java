@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 
 public class EconomyManager {
     @Getter
@@ -13,13 +13,13 @@ public class EconomyManager {
 
     public static void enable() {
         if(Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            Main.logger().severe("Cannot load vault, economy not supported!");
+            SlimyGuis.logger().severe("Cannot load vault, economy not supported!");
             enabled = false;
             return;
         }
         RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
-            Main.logger().severe("Cannot find any economy service, economy not supported");
+            SlimyGuis.logger().severe("Cannot find any economy service, economy not supported");
             enabled = false;
             return;
         }

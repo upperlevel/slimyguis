@@ -5,6 +5,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.upperlevel.spigot.gui.link.Link;
 
 public interface Gui extends Link {
+
+    /**
+     * An unique id for this gui.
+     * @return the unique id
+     */
+    String getId();
+
     /**
      * Called when a player clicks on the inventory
      * The event is cancelled before the call so if someone for some reason wants to re-enable it (idk why) he/she could

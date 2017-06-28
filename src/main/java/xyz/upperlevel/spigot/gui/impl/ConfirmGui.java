@@ -10,17 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.BaseGui;
-import xyz.upperlevel.spigot.gui.GuiAction;
-import xyz.upperlevel.spigot.gui.GuiSize;
-import xyz.upperlevel.spigot.gui.GuiUtils;
+import xyz.upperlevel.spigot.gui.*;
 import xyz.upperlevel.spigot.gui.link.Link;
 
 @Accessors(fluent = true, chain = true)
-public class ConfirmGui extends BaseGui {
+public class ConfirmGui implements BaseGui {
 
-    private static final ItemStack ACCEPT = GuiUtils.wool(DyeColor.GREEN, ChatColor.GREEN + "ACCEPT");
-    private static final ItemStack DECLINE = GuiUtils.wool(DyeColor.RED, ChatColor.RED + "DECLINE");
+    private static final ItemStack ACCEPT = GuiUtil.wool(DyeColor.GREEN, ChatColor.GREEN + "ACCEPT");
+    private static final ItemStack DECLINE = GuiUtil.wool(DyeColor.RED, ChatColor.RED + "DECLINE");
+
+    @Getter
+    @Accessors()
+    private String id = null;
 
     @Getter
     @Setter
@@ -38,29 +39,23 @@ public class ConfirmGui extends BaseGui {
 
     public ConfirmGui title(String title) {
         this.title = title;
-        clear();
         return this;
     }
 
-
     public ConfirmGui acceptItem(ItemStack accept) {
         this.acceptItem = accept;
-        clear();
         return this;
     }
 
     public ConfirmGui declineItem(ItemStack decline) {
         this.declineItem = decline;
-        clear();
         return this;
     }
 
     public ConfirmGui descriptionItem(ItemStack confirm) {
         this.descriptionItem = confirm;
-        clear();
         return this;
     }
-
 
     @Override
     public void onClick(InventoryClickEvent event) {
@@ -80,7 +75,7 @@ public class ConfirmGui extends BaseGui {
     }
 
     @Override
-    protected Inventory render() {
+    public Inventory create(Player player) {
         Inventory inv = Bukkit.createInventory(null, GuiSize.DOUBLE.size(), title);
         inv.setItem(4, descriptionItem);
 

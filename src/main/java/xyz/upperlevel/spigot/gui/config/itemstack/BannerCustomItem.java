@@ -1,6 +1,5 @@
 package xyz.upperlevel.spigot.gui.config.itemstack;
 
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
@@ -10,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.spigot.gui.Main;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
@@ -54,7 +53,7 @@ public class BannerCustomItem extends CustomItem {
                 DyeColor color = sub.getDyeRequired("color");
                 PatternType type = PatternType.getByIdentifier(sub.getStringRequired("pattern"));
                 if (type == null) {
-                    Main.logger().severe("Cannot find pattern identifier \"" + p.get("pattern") + "\"");
+                    SlimyGuis.logger().severe("Cannot find pattern identifier \"" + p.get("pattern") + "\"");
                     type = PatternType.BASE;
                 }
                 patterns.add(new Pattern(color, type));
