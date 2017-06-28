@@ -1,6 +1,6 @@
 package xyz.upperlevel.spigot.gui.config.action;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import xyz.upperlevel.spigot.gui.script.Script;
 
 import java.util.Collection;
 import java.util.List;

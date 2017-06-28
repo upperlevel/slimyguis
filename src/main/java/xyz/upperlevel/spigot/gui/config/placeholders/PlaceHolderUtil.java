@@ -65,7 +65,11 @@ public final class PlaceHolderUtil {
     }
 
 
-    public static String placeholders(Player player, String str) {
+    public static String resolvePlaceholders(Player player, String str) {
+        return manager.apply(player, str);
+    }
+
+    public static String placeholder(Player player, String str) {
         return manager.apply(player, str);
     }
 

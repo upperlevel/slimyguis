@@ -3,6 +3,7 @@ package xyz.upperlevel.spigot.gui.config.economy;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 
@@ -29,5 +30,9 @@ public class EconomyManager {
 
     public static Economy getEconomy() {
         return enabled ? economy : null;
+    }
+
+    public static Balance get(OfflinePlayer player) {
+        return economy == null ? null : new Balance(player);
     }
 }

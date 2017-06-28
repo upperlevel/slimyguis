@@ -93,7 +93,7 @@ public interface PlaceholderValue<T> {
         @Override
         public T get(Player player) {
             try {
-                return parser.apply(PlaceHolderUtil.placeholders(player, value));
+                return parser.apply(PlaceHolderUtil.resolvePlaceholders(player, value));
             } catch (Exception e) {
                 exceptionHandler.accept(e);
             }
@@ -112,7 +112,7 @@ public interface PlaceholderValue<T> {
 
         @Override
         public String get(Player player) {
-            return PlaceHolderUtil.placeholders(player, value);
+            return PlaceHolderUtil.resolvePlaceholders(player, value);
         }
 
         public String toString() {

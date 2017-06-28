@@ -43,6 +43,11 @@ public class CustomPlaceholderManager implements PlaceholderManager {
         return buffer.toString();
     }
 
+    @Override
+    public String single(Player player, String str) {
+        return findReplacement(player, str);
+    }
+
     public String findReplacement(Player player, String key) {
         CustomPlaceholder pl = placeholders.get(key.toLowerCase());
         return pl != null ? pl.get(player) : null;
