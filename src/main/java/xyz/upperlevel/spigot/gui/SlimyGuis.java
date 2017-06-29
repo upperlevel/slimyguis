@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.upperlevel.spigot.gui.commands.impl.GuiCommand;
 import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
 import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
@@ -56,6 +57,8 @@ public class SlimyGuis extends JavaPlugin implements Listener {
         GuiManager.loadFolder(new File(getDataFolder(), "guis"));
         ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
 
+        new GuiCommand(null).registerBukkit();
+
         setupCustomDatas();
     }
 
@@ -64,7 +67,7 @@ public class SlimyGuis extends JavaPlugin implements Listener {
 
             @Override
             public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
-                Map<String, Long> counts = scriptSystem.get()
+                Map<String, Long> counts = scriptSystem.get().values()
                         .stream()
                         .collect(
                                 Collectors.groupingBy(s -> s.getEngine().getClass().getSimpleName()

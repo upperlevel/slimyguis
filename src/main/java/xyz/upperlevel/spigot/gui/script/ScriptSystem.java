@@ -150,7 +150,7 @@ public class ScriptSystem {
         return scripts.get(id);
     }
 
-    public Collection<Script> get() {
-        return Collections.unmodifiableCollection(scripts.values());
+    public Map<String, Script> get() {
+        return Collections.unmodifiableMap(scripts);
     }
 }

@@ -15,9 +15,7 @@ import xyz.upperlevel.spigot.gui.events.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -126,6 +124,15 @@ public class GuiManager {
      */
     public static Gui get(String id) {
         return guis.get(id);
+    }
+
+    /**
+     * Gets all the registered guis
+     *
+     * @return a unmodifiable collection representing all the guis
+     */
+    public static Collection<Gui> getGuis() {
+        return Collections.unmodifiableCollection(guis.values());
     }
 
     /**

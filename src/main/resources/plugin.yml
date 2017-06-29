@@ -3,3 +3,31 @@ main: xyz.upperlevel.spigot.gui.SlimyGuis
 version: 1.1
 author: upperlevel
 softdepend: [PlaceholderAPI, Vault]
+commands:
+  gui:
+    description: Commands for SlimyGuis
+permissions:
+  slimyguis.*:
+    description: Gives access to all SlimyGuis features
+    children:
+      slimyguis.command.*: true
+
+
+  slimyguis.command.*:
+    description: Gives access to all SlimyGuis commands
+    children:
+      slimyguis.command.open: true
+      slimyguis.command.list: true
+      slimyguis.command.scripts: true
+
+  slimyguis.command.open:
+    description: Allows you to open the guis by command
+    default: true
+
+  slimyguis.command.list:
+    description: Allows you to list all the registered guis
+    default: op
+
+  slimyguis.command.scripts:
+    description: Allows you to list all the loaded scripts
+    default: op
