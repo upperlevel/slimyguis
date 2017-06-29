@@ -14,6 +14,7 @@ import xyz.upperlevel.spigot.gui.script.ScriptSystem;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -65,8 +66,13 @@ public class SlimyGuis extends JavaPlugin implements Listener {
             public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
                 Map<String, Long> counts = scriptSystem.get()
                         .stream()
-                        .collect(Collectors.groupingBy(s -> s.getEngine().getClass().getSimpleName(), Collectors.counting()));
-                for(Map.Entry<String, Long> e : counts.entrySet())
+                        .collect(
+                                Collectors.groupingBy(s -> s.getEngine().getClass().getSimpleName()
+                                                .replaceFirst("ScriptEngine", "")
+                                                .toLowerCase(Locale.ENGLISH),
+                                        Collectors.counting())
+                        );
+                for (Map.Entry<String, Long> e : counts.entrySet())
                     map.put(e.getKey(), Math.toIntExact(e.getValue()));
                 return map;
             }

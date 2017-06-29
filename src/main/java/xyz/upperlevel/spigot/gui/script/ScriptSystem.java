@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
@@ -17,10 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class ScriptSystem {
@@ -32,16 +30,48 @@ public class ScriptSystem {
 
     public ScriptSystem(File classPath, File scriptEngineConfig) {
         this.classPath = classPath;
-        try {
-            loader = new URLClassLoader(new URL[]{classPath.toURI().toURL()}, getClass().getClassLoader());
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Cannot find classpath: " + classPath);
+        {//Create loader
+            File[] files = classPath.listFiles();
+            URL[] urls;
+            if (files == null)
+                urls = new URL[]{};
+            else
+                urls = Arrays.stream(files)
+                        .map(f -> {
+                            try {
+                                return f.toURI().toURL();
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
+                        .toArray(URL[]::new);
+
+            loader = new URLClassLoader(urls, getClass().getClassLoader());
         }
         engineManager = new ScriptEngineManager(loader);
+        {//Print found engines
+            List<ScriptEngineFactory> factories = engineManager.getEngineFactories();
+            SlimyGuis.logger().info("Engines found: " + factories.size());
+            if (factories.size() > 0) {
+                System.out.println("-----------------------------------------------");
+                for (ScriptEngineFactory f : factories) {
+                    System.out.println("engine name:" + f.getEngineName());
+                    System.out.println("engine version:" + f.getEngineVersion());
+                    System.out.println("language name:" + f.getLanguageName());
+                    System.out.println("language version:" + f.getLanguageVersion());
+                    System.out.println("names:" + f.getNames());
+                    System.out.println("mime:" + f.getMimeTypes());
+                    System.out.println("extension:" + f.getExtensions());
+                    System.out.println("-----------------------------------------------");
+                }
+            }
+        }
         engineManager.put("Bukkit", Bukkit.getServer());
         try {
             ScriptEngine engine = engineManager.getEngineByName("js");
-            engine.eval("Bukkit.getLogger().info(\"JS engine works!\")");
+            engine.eval("Java.type(\"xyz.upperlevel.spigot.gui.SlimyGuis\").logger().info(\"JS engine works!\")");
         } catch (ScriptException e) {
             e.printStackTrace();
         }
