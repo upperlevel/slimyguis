@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- * This manager is the class that manages the player histories in a stack-like system
+ * This manager is the class that manages the player chronology in a stack-like system
  * it has multiple operations for interacting with the Gui stack:
  * open: appends the gui to the stack
  * close: clears the stack
@@ -33,7 +33,7 @@ public class GuiManager {
 
     private static Map<String, Gui> guis = new HashMap<>();
 
-    private static Map<Player, LinkedList<Gui>> histories = new HashMap<>();
+    private static Map<Player, LinkedList<Gui>> chronology = new HashMap<>();
 
     @Getter
     private static boolean called = false;
@@ -173,7 +173,7 @@ public class GuiManager {
             Bukkit.getPluginManager().callEvent(e);
             if (e.isCancelled()) {
                 if (g.isEmpty())
-                    histories.remove(player);
+                    chronology.remove(player);
                 return;
             }
             closeOthers = e.isCloseOthers();
@@ -209,7 +209,7 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = histories.remove(player);
+            LinkedList<Gui> g = chronology.remove(player);
             if (g == null || g.isEmpty())
                 return;
 
@@ -219,7 +219,7 @@ public class GuiManager {
             Bukkit.getPluginManager().callEvent(e);
 
             if (e.isCancelled()) {
-                histories.put(player, g);
+                chronology.put(player, g);
                 return;
             }
 
@@ -235,9 +235,9 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            for (Player player : histories.keySet())
+            for (Player player : chronology.keySet())
                 player.closeInventory();
-            histories.clear();
+            chronology.clear();
         } finally {
             called = false;
         }
@@ -252,7 +252,7 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = histories.get(player);
+            LinkedList<Gui> g = chronology.get(player);
             if (g == null || g.isEmpty())
                 return;
 
@@ -320,7 +320,7 @@ public class GuiManager {
         HumanEntity h = event.getWhoClicked();
         if (!(h instanceof Player))
             return;
-        LinkedList<Gui> g = histories.get(h);
+        LinkedList<Gui> g = chronology.get(h);
         if (g != null && !g.isEmpty()) {
             Gui gui = g.peek();
             GuiClickEvent e = new GuiClickEvent(event, (Player) h, gui);
@@ -337,6 +337,21 @@ public class GuiManager {
         }
     }
 
+    public static void reprint(Player player) {
+        if (called) return;
+        called = true;
+        try {
+            LinkedList<Gui> g = get(player);
+            if(g == null)
+                return;
+            Gui gui = g.peek();
+            if(gui != null)
+                gui.show(player);
+        } finally {
+            called = false;
+        }
+    }
+
     /**
      * Gets the Gui history (also called stack) of the player. If
      *
@@ -344,10 +359,14 @@ public class GuiManager {
      * @return the player's Gui history
      */
     public static LinkedList<Gui> get(Player player) {
-        return histories.get(player);
+        return chronology.get(player);
     }
 
     private static LinkedList<Gui> getOrCreate(Player player) {
-        return histories.computeIfAbsent(player, (pl) -> new LinkedList<>());
+        return chronology.computeIfAbsent(player, (pl) -> new LinkedList<>());
+    }
+
+    public static Map<Player, LinkedList<Gui>> getChronology() {
+        return Collections.unmodifiableMap(chronology);
     }
 }

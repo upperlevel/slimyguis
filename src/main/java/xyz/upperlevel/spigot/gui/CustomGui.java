@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.spigot.gui.config.UpdaterTask;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class CustomGui implements Gui {
+    private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
     private final String id;
 
@@ -23,6 +25,8 @@ public class CustomGui implements Gui {
     private int size;
     private InventoryType type;
     private GuiItem[] items;
+
+    private int updateInterval = -1;
 
     // used just when deserialize
     private CustomGui(String id) {
@@ -147,6 +151,29 @@ public class CustomGui implements Gui {
             items[slot] = item;
     }
 
+    public void setUpdateInterval(int updateInterval) {//TODO: Optimize for the first run
+        if(this.updateInterval != updateInterval) {
+            if(updateInterval > 0) {//If this interval is valid
+                if (updaters.size() > 0) {//And there are some players that are updating
+                    updaters.replaceAll((player, old) -> {
+                        old.stop();
+                        UpdaterTask task = new UpdaterTask(updateInterval, () -> onUpdate(player));
+                        task.start();
+                        return task;
+                    });
+                } else if(this.updateInterval < 0) {//If there isn't any updater because the old updateInterval wasn't valid
+                    GuiManager.getChronology().entrySet()
+                            .stream()
+                            .filter(e -> e.getValue().peek() == this)
+                            .forEach((e) -> startUpdateTask(e.getKey()));
+                }
+            } else {
+                updaters.forEach((p, t) -> t.stop());
+                updaters.clear();
+            }
+        }
+    }
+
     /**
      * Gets a list of items non null.
      *
@@ -165,6 +192,18 @@ public class CustomGui implements Gui {
 
     @Override
     public void onOpen(Player player) {
+        if(updateInterval > 0)
+            startUpdateTask(player);
+    }
+
+    protected void startUpdateTask(Player player) {
+        UpdaterTask task = new UpdaterTask(updateInterval, () -> onUpdate(player));
+        updaters.put(player, task);
+        task.start();
+    }
+
+    protected void onUpdate(Player player) {
+        GuiManager.reprint(player);
     }
 
     @Override
@@ -176,6 +215,9 @@ public class CustomGui implements Gui {
 
     @Override
     public void onClose(Player player) {
+        UpdaterTask task = updaters.remove(player);
+        if(task != null)
+            task.stop();
     }
 
     /**
@@ -226,6 +268,8 @@ public class CustomGui implements Gui {
                 res.items = new GuiItem[res.size];
             } else
                 throw new InvalidGuiConfigurationException("Both 'type' and 'size' are empty!");
+
+            res.updateInterval = config.getInt("update-interval", -1);
 
             res.title = config.getMessageRequired("title");
 
@@ -309,6 +353,11 @@ public class CustomGui implements Gui {
 
         public Builder set(int[] slots, GuiItem item) {
             gui.setItem(slots, item);
+            return this;
+        }
+
+        public Builder updateInterval(int interval) {
+            gui.updateInterval = interval;
             return this;
         }
 
