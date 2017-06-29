@@ -38,6 +38,24 @@ public final class PlaceHolderUtil {
         else return null;
     }
 
+    public static PlaceholderValue<Float> parseFloat(Object obj) {
+        if(obj instanceof Number) {
+            final float value = ((Number) obj).floatValue();
+            return p -> value;
+        } else if(obj instanceof String)
+            return PlaceholderValue.floatValue((String) obj);
+        else return null;
+    }
+
+    public static PlaceholderValue<Double> parseDouble(Object obj) {
+        if(obj instanceof Number) {
+            final double value = ((Number) obj).doubleValue();
+            return p -> value;
+        } else if(obj instanceof String)
+            return PlaceholderValue.doubleValue((String) obj);
+        else return null;
+    }
+
 
     public static PlaceholderValue<Byte> parseByte(Object obj) {
         if(obj instanceof Number) {

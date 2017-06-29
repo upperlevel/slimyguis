@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.config.action;
 
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.spigot.gui.config.ConfigItem;
@@ -187,6 +188,25 @@ public interface Parser<T> {
             @Override
             public Object save(CustomItem customItem) {
                 throw new NotImplementedException();
+            }
+        };
+    }
+
+    static Parser<Sound> soundValue() {
+        return new Parser<Sound>() {
+            @Override
+            public Sound load(Object o) {
+                if(o instanceof Sound)
+                    return (Sound) o;
+                else if(o instanceof String)
+                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase());
+                else
+                    throw new IllegalArgumentException("Cannot parse " + o + " as sound");
+            }
+
+            @Override
+            public Object save(Sound sound) {
+                return sound.name();
             }
         };
     }

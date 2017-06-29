@@ -50,6 +50,7 @@ public abstract class ActionType<T extends Action> {
         addActionType(HotbarRemoveAction.TYPE);
         addActionType(ScriptAction.TYPE);
         addActionType(GiveItemAction.TYPE);
+        addActionType(PlaySoundAction.TYPE);
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {
