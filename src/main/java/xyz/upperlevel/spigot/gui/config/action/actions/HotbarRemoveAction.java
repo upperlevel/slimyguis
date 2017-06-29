@@ -37,7 +37,7 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
     public static class HotbarTakeActionType extends BaseActionType<HotbarRemoveAction> {
 
         public HotbarTakeActionType() {
-            super("hotbarRemove");
+            super("hotbar-remove");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true)//TODO: better Placeholder support
             );

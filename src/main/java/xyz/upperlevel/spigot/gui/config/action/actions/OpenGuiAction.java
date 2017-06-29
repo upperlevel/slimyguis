@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Gui;
 import xyz.upperlevel.spigot.gui.GuiManager;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
-import xyz.upperlevel.spigot.gui.config.ConfigGuiManager;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 import xyz.upperlevel.spigot.gui.config.action.Parser;
@@ -44,10 +43,10 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
     public static class OpenGuiActionType extends BaseActionType<OpenGuiAction> {
 
         public OpenGuiActionType() {
-            super("openGui");
+            super("open-gui");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true),
-                    Parameter.of("clearStack", Parser.boolValue(), false, false)
+                    Parameter.of("clear-history", Parser.boolValue(), false, false)
             );
         }
 
@@ -55,7 +54,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
         public OpenGuiAction create(Map<String, Object> pars) {
             return new OpenGuiAction(
                     PlaceHolderUtil.process((String) pars.get("id")),
-                    (Boolean) pars.get("clearStack")
+                    (Boolean) pars.get("clear-history")
             );
         }
 
@@ -63,7 +62,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
         public Map<String, Object> read(OpenGuiAction action) {
             return ImmutableMap.of(
                     "id", action.guiId.toString(),
-                    "clearStack", action.clearStack
+                    "clear-history", action.clearStack
             );
         }
     }

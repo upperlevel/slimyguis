@@ -1,24 +1,18 @@
 package xyz.upperlevel.spigot.gui;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.spigot.gui.config.ConfigItem;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static lombok.AccessLevel.NONE;
 
 @Data
 public class CustomGui implements Gui {
@@ -28,8 +22,6 @@ public class CustomGui implements Gui {
     private PlaceholderValue<String> title;
     private int size;
     private InventoryType type;
-
-    @Getter(NONE)
     private GuiItem[] items;
 
     // used just when deserialize
@@ -61,6 +53,14 @@ public class CustomGui implements Gui {
         items = new GuiItem[type.getDefaultSize()];
     }
 
+    public void setTitle(String title) {
+        this.title = PlaceholderValue.strValue(title);
+    }
+
+    public void setTitle(PlaceholderValue<String> title) {
+        this.title = title;
+    }
+
     /**
      * Gets the item at the given slot.
      *
@@ -71,32 +71,80 @@ public class CustomGui implements Gui {
     }
 
     /**
+     * Returns first slot empty.
+     */
+    public int firstEmpty() {
+        for (int i = 0; i < size; i++)
+            if (items[i] == null)
+                return i;
+        return -1;
+    }
+
+    /**
      * Adds an item in the first slot empty.
      *
      * @param item the item to add
      */
+    public boolean addItem(ItemStack item) {
+        return addItem(new GuiItem(item));
+    }
+
     public boolean addItem(GuiItem item) {
-        for (int i = 0; i < size; i++) {
-            if (items[i] == null) {
-                items[i] = item;
-                return true;
-            }
+        int i = firstEmpty();
+        if (i >= 0) {
+            items[i] = item;
+            return true;
         }
         return false;
     }
 
+    /**
+     * Adds the given items.
+     *
+     * @param items the items to add
+     * @return true if all items have been added, otherwise false
+     */
+    public boolean addItems(ItemStack... items) {
+        for (ItemStack item : items)
+            if (!addItem(item))
+                return false;
+        return true;
+    }
+
+    /**
+     * Adds the given items.
+     *
+     * @param items
+     * @return
+     */
+    public boolean addItems(GuiItem... items) {
+        for (GuiItem item : items)
+            if (!addItem(item))
+                return false;
+        return true;
+    }
+
     public void setItem(int slot, ItemStack item) {
-        setItem(slot, new GuiItem(slot, item, null));
+        setItem(slot, new GuiItem(item));
     }
 
     /**
      * Sets the given item at the given slot.
      *
-     * @param slot the slot to set the item in
+     * @param slot the slot where to set the item
      * @param item the item to set
      */
     public void setItem(int slot, GuiItem item) {
         items[slot] = item;
+    }
+
+    public void setItem(int[] slots, ItemStack item) {
+        setItem(slots, new GuiItem(item));
+    }
+
+    public void setItem(int[] slots, GuiItem item) {
+        for (int slot : slots)
+            items[slot] = item;
     }
 
     /**
@@ -111,7 +159,7 @@ public class CustomGui implements Gui {
     }
 
     @Override
-    public void print(Player player) {
+    public void show(Player player) {
         player.openInventory(create(player));
     }
 
@@ -143,13 +191,20 @@ public class CustomGui implements Gui {
         else
             inv = Bukkit.createInventory(null, size, title.get(player));
 
-        for (GuiItem item : getItems()) {
-            inv.setItem(item.getSlot(), item.getItem().toItemStack(player));
-        }
+        for (int slot = 0; slot < items.length; slot++)
+            if (items[slot] != null)
+                inv.setItem(slot, items[slot].getItem().toItemStack(player));
 
         return inv;
     }
 
+    /**
+     * Loads a gui from id and configuration section.
+     *
+     * @param id     the id of the gui
+     * @param config the config where to load the gui
+     * @return the gui created
+     */
     @SuppressWarnings("unchecked")
     public static CustomGui deserialize(String id, Config config) {
         try {
@@ -176,13 +231,89 @@ public class CustomGui implements Gui {
 
             for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("items")) {
                 GuiItem item = GuiItem.deserialize(Config.wrap(data));
-                res.items[item.getSlot()] = item;
+                res.items[(int) data.get("slot")] = item;
             }
 
             return res;
         } catch (InvalidGuiConfigurationException e) {
             e.addLocalizer("in gui " + id);
             throw e;
+        }
+    }
+
+    public static Builder builder(String id) {
+        return new Builder(id);
+    }
+
+    public static class Builder {
+
+        private final CustomGui gui;
+
+        public Builder(String id) {
+            gui = new CustomGui(id);
+        }
+
+        public Builder(CustomGui gui) {
+            this.gui = gui;
+        }
+
+        public Builder type(InventoryType type) {
+            gui.type = type;
+            return this;
+        }
+
+        public Builder size(int size) {
+            gui.size = size;
+            return this;
+        }
+
+        public Builder title(String title) {
+            gui.setTitle(title);
+            return this;
+        }
+
+        public Builder add(ItemStack item) {
+            gui.addItem(item);
+            return this;
+        }
+
+        public Builder add(GuiItem item) {
+            gui.addItem(item);
+            return this;
+        }
+
+        public Builder addAll(ItemStack... items) {
+            gui.addItems(items);
+            return this;
+        }
+
+        public Builder addAll(GuiItem... items) {
+            gui.addItems(items);
+            return this;
+        }
+
+        public Builder set(int slot, ItemStack item) {
+            gui.setItem(slot, item);
+            return this;
+        }
+
+        public Builder set(int slot, GuiItem item) {
+            gui.setItem(slot, item);
+            return this;
+        }
+
+        public Builder set(int[] slots, ItemStack item) {
+            gui.setItem(slots, item);
+            return this;
+        }
+
+        public Builder set(int[] slots, GuiItem item) {
+            gui.setItem(slots, item);
+            return this;
+        }
+
+        public CustomGui build() {
+            return gui;
         }
     }
 }

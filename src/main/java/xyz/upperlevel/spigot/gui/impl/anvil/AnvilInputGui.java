@@ -33,7 +33,7 @@ public class AnvilInputGui implements Gui {
     }//Not working :/
 
     @Override
-    public void print(Player player) {
+    public void show(Player player) {
         new AnvilGUI(
                 SlimyGuis.getInstance(),
                 player,

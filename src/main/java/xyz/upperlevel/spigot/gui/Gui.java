@@ -20,19 +20,19 @@ public interface Gui extends Link {
     void onClick(InventoryClickEvent event);
 
     /**
-     * Prints the Gui to the player that views it
+     * Shows the gui to the player that views it
      * @param player the player that is viewing it
      */
-    void print(Player player);
+    void show(Player player);
 
     /**
-     * Called when a player opens this Gui
-     * @param player the player that is opening the Gui
+     * Called when a player opens this gui
+     * @param player the player that is opening the gui
      */
     void onOpen(Player player);
 
     /**
-     * Called when a player closes this Gui (either by force or normally)
+     * Called when a player closes this gui (either by force or normally)
      * @param player the player that closed the door
      */
     void onClose(Player player);

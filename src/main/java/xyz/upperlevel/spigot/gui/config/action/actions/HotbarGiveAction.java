@@ -45,7 +45,7 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
     public static class HotbarGiveActionType extends BaseActionType<HotbarGiveAction> {
 
         public HotbarGiveActionType() {
-            super("hotbarGive");
+            super("hotbar-give");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true),
                     Parameter.of("actions", Parser.actionsValue(), Collections.emptyList(), false),

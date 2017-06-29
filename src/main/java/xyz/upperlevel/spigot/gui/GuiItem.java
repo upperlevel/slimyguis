@@ -111,64 +111,85 @@ public class GuiItem {
         }
     }
 
-    private int slot;
     private CustomItem item;
-    private ItemClick click;
+    private Link link;
 
     public GuiItem() {
-        slot = -1;
-        item = null;
-        click = null;
     }
 
-    public GuiItem(int slot, ItemStack item) {
-        this.slot = slot;
+    public GuiItem(ItemStack item) {
         this.item = new CustomItem(item);
     }
 
-    public GuiItem(int slot, CustomItem item) {
-        this.slot = slot;
-        this.item = item;
-    }
-
-    public GuiItem(int slot, CustomItem item, ItemClick click) {
-        this.slot = slot;
-        this.item = item;
-        this.click = click;
-
-    }
-
-    public GuiItem(int slot, ItemStack item, ItemClick click) {
-        this.slot = slot;
+    public GuiItem(ItemStack item, Link link) {
         this.item = new CustomItem(item);
-        this.click = click;
+        this.link = link;
+    }
+
+    public GuiItem(CustomItem item, Link link) {
+        this.item = item;
+        this.link = link;
+    }
+
+    public void setItem(ItemStack item) {
+        this.item = new CustomItem(item);
     }
 
     public void onClick(InventoryClickEvent e) {
-        if (click != null)
-            click.run((Player) e.getWhoClicked());
+        if (link != null)
+            link.run((Player) e.getWhoClicked());
     }
 
     public static GuiItem deserialize(Config config) {
-        GuiItem res = new GuiItem();
+        GuiItem result = new GuiItem();
 
         try {
-            if (config.has("slot"))
-                res.slot = config.getInt("slot");
-
             if (config.has("item"))
-                res.item = CustomItem.deserialize(config.getConfig("item"));
+                result.item = CustomItem.deserialize(config.getConfig("item"));
 
             if (config.has("click"))
-                res.click = ItemClick.deserialize(config.getConfig("click"));
+                result.link = ItemClick.deserialize(config.getConfig("click"));
 
-            return res;
+            return result;
         } catch (InvalidGuiConfigurationException e) {
-            if (res.slot != -1)
-                e.addLocalizer("in slot " + res.slot);
-            else
-                e.addLocalizer("in gui item");
+            e.addLocalizer("in gui item");
             throw e;
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private final GuiItem item;
+
+        public Builder() {
+            item = new GuiItem();
+        }
+
+        public Builder(GuiItem item) {
+            this.item = item;
+        }
+
+        public Builder item(ItemStack item) {
+            this.item.setItem(item);
+            return this;
+        }
+
+        public Builder item(CustomItem item) {
+            this.item.item = item;
+            return this;
+        }
+
+        public Builder link(Link link) {
+            item.link = link;
+            return this;
+        }
+
+        public GuiItem build() {
+            return item;
         }
     }
 }

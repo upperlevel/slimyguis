@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
+import xyz.upperlevel.spigot.gui.config.ConfigItem;
+import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -13,7 +16,9 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class Hotbar implements Iterable<HotbarLink>{
+
     private final Player player;
+
     private HotbarLink[] links = new HotbarLink[9];
     private List<HotbarLink> unmodifiableView = Collections.unmodifiableList(Arrays.asList(links));
     private int nextFree = 0;
@@ -330,6 +335,12 @@ public class Hotbar implements Iterable<HotbarLink>{
                 throw new NoSuchElementException();
             Hotbar.this.remove(old);
         }
+    }
+
+    public static Hotbar deserialize(String id, Config config) {
+        String permission = (String) config.get("permission");
+        List<ConfigItem> items = ConfigItem.deserialize(config.getConfigList("items"));
+        hotbars.put(id, new ConfigHotbar(id, permission, items, config.getBool("onJoin", true)));
     }
 
     public static class HotbarOutOfSpaceException extends RuntimeException {

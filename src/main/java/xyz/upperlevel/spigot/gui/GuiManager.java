@@ -176,7 +176,7 @@ public class GuiManager {
                 g.clear();
 
             gui.onOpen(player);
-            gui.print(player);
+            gui.show(player);
             g.push(gui);
         } finally {
             called = false;
@@ -263,7 +263,7 @@ public class GuiManager {
             oldGui.onClose(player);
             if (!g.isEmpty()) {
                 gui.onOpen(player);
-                gui.print(player);
+                gui.show(player);
             } else
                 player.closeInventory();
         } finally {
@@ -298,7 +298,7 @@ public class GuiManager {
                 oldGui.onClose(player);
             g.push(gui);
             gui.onOpen(player);
-            gui.print(player);
+            gui.show(player);
         } finally {
             called = false;
         }

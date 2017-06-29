@@ -50,7 +50,7 @@ public class VaultTakeAction extends Action<VaultTakeAction> {
     public static class VaultTakeActionType extends BaseActionType<VaultTakeAction> {
 
         public VaultTakeActionType() {
-            super("vaultTake");
+            super("vault-take");
             setParameters(
                     Parameter.of("value", Parser.strValue(), true),//TODO: better Placeholder support
                     Parameter.of("actions", Parser.actionsValue(), false),

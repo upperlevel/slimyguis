@@ -22,7 +22,7 @@ public class BackGuiAction extends Action<BackGuiAction> {
     public static class BackGuiActionType extends BaseActionType<BackGuiAction> {
 
         public BackGuiActionType() {
-            super("backGui");
+            super("back-gui");
             setParameters();
         }
 

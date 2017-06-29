@@ -94,9 +94,6 @@ public class ConfigHotbar {
 
     @SuppressWarnings("unchecked")
     public static void load(Config config, String id) {
-        String permission = (String) config.get("permission");
-        List<ConfigItem> items = ConfigItem.deserialize(config.getConfigList("items"));
-        hotbars.put(id, new ConfigHotbar(id, permission, items, config.getBool("onJoin", true)));
     }
 
     public static ConfigHotbar get(String id) {
@@ -105,34 +102,7 @@ public class ConfigHotbar {
 
     public static void loadFolder(File folder) {
         hotbars.clear();
-        if (folder.exists()) {
-            if (folder.isDirectory()) {
-                File[] files = folder.listFiles();
-                if (files == null) {
-                    SlimyGuis.logger().severe("Error while reading " + folder + " files");
-                    return;
-                }
-                for (File file : files) {
-                    FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                    final String id = file.getName().replaceFirst("[.][^.]+$", "");
-                    try {
-                        load(Config.wrap(config), id);
-                    } catch (InvalidGuiConfigurationException e) {
-                        SlimyGuis.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-                    } catch (Exception e) {
-                        SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-                    }
-                }
-            } else {
-                SlimyGuis.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
-            }
-        } else {
-            try {
-                folder.mkdirs();
-            } catch (Exception e) {
-                SlimyGuis.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
-            }
-        }
+
     }
 
     @RequiredArgsConstructor

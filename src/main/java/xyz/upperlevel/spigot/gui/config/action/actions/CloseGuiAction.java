@@ -22,7 +22,7 @@ public class CloseGuiAction extends Action<CloseGuiAction> {
     public static class CloseGuiActionType extends BaseActionType<CloseGuiAction> {
 
         public CloseGuiActionType() {
-            super("closeGui");
+            super("close-gui");
             setParameters();
         }
 

@@ -37,7 +37,7 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
     public static class VaultGiveActionType extends BaseActionType<VaultGiveAction> {
 
         public VaultGiveActionType() {
-            super("vaultGive");
+            super("vault-give");
             setParameters(
                     Parameter.of("value", Parser.strValue(), true)//TODO: better Placeholder support
             );
