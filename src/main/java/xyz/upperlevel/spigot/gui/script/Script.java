@@ -2,6 +2,7 @@ package xyz.upperlevel.spigot.gui.script;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 
@@ -16,12 +17,19 @@ public interface Script {
     Object run(ScriptContext context) throws ScriptException;
 
     default Object execute(Player player) throws ScriptException {
-        Bindings b = createBindings();
-        b.put("player", player);
-        b.put("placeholder", (Function<String, String>) str -> PlaceHolderUtil.resolvePlaceholders(player, str));
-        b.put("balance", EconomyManager.get(player));
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader oldLoader = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(SlimyGuis.getScriptSystem().getClassLoader());
+            Bindings b = createBindings();
+            b.put("player", player);
+            b.put("placeholder", (Function<String, String>) str -> PlaceHolderUtil.resolvePlaceholders(player, str));
+            b.put("balance", EconomyManager.get(player));
 
-        return run(b);
+            return run(b);
+        } finally {
+            currentThread.setContextClassLoader(oldLoader);
+        }
     }
 
     Bindings createBindings();

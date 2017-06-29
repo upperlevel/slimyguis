@@ -82,7 +82,7 @@ public abstract class Command implements CommandExecutor {
             return;
         }
         if (getArgumentsCount() != UNLIMITED && getArgumentsCount() != args.size()) {
-            sender.sendMessage("Invalid args count. /" + getAbsUsage(sender));
+            sender.sendMessage("Invalid args count, " + getAbsUsage(sender));
             return;
         }
         run(sender, args);
