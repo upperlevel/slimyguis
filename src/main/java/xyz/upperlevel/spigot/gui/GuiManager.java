@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- * This manager is the class that manages the player histories in a stack-like system
+ * This manager is the class that manages the player chronology in a stack-like system
  * it has multiple operations for interacting with the Gui stack:
  * open: appends the gui to the stack
  * close: clears the stack
@@ -31,9 +31,8 @@ import java.util.logging.Level;
  */
 public class GuiManager {
 
-    private static Map<String, Gui> guis = new HashMap<>();
-
-    private static Map<Player, LinkedList<Gui>> histories = new HashMap<>();
+    private static final Map<String, Gui> guis = new HashMap<>();
+    private static final Map<Player, LinkedList<Gui>> chronology = new HashMap<>();
 
     @Getter
     private static boolean called = false;
@@ -43,16 +42,16 @@ public class GuiManager {
      *
      * @param file loads the given file
      */
-    public static void load(File file) {
+    public static Gui load(File file) {
         FileConfiguration config = new YamlConfiguration();
         try {
             config.load(file);
         } catch (IOException e) {
             SlimyGuis.logger().log(Level.SEVERE, "Error while loading the file \"" + file + "\"", e);
-            return;
+            return null;
         } catch (InvalidConfigurationException e) {
             SlimyGuis.logger().log(Level.SEVERE, "Invalid configuration in file \"" + file + "\":", e);
-            return;
+            return null;
         }
         String id = file.getName().replaceFirst("[.][^.]+$", "");
         CustomGui gui;
@@ -60,13 +59,14 @@ public class GuiManager {
             gui = CustomGui.deserialize(id, Config.wrap(config));
         } catch (InvalidGuiConfigurationException e) {
             SlimyGuis.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-            return;
+            return null;
         } catch (Exception e) {
             SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-            return;
+            return null;
         }
         register(id, gui);
         SlimyGuis.logger().log(Level.INFO, "Successfully loaded gui " + id);
+        return gui;
     }
 
     /**
@@ -160,7 +160,7 @@ public class GuiManager {
      *
      * @param player      the player that is opening the api
      * @param gui         the gui to be opened
-     * @param closeOthers if set to true the GUI history would be cleaned
+     * @param closeOthers if give to true the GUI history would be cleaned
      */
     public static void open(Player player, Gui gui, boolean closeOthers) {
         if (called) return;
@@ -173,7 +173,7 @@ public class GuiManager {
             Bukkit.getPluginManager().callEvent(e);
             if (e.isCancelled()) {
                 if (g.isEmpty())
-                    histories.remove(player);
+                    chronology.remove(player);
                 return;
             }
             closeOthers = e.isCloseOthers();
@@ -209,7 +209,7 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = histories.remove(player);
+            LinkedList<Gui> g = chronology.remove(player);
             if (g == null || g.isEmpty())
                 return;
 
@@ -219,7 +219,7 @@ public class GuiManager {
             Bukkit.getPluginManager().callEvent(e);
 
             if (e.isCancelled()) {
-                histories.put(player, g);
+                chronology.put(player, g);
                 return;
             }
 
@@ -235,9 +235,9 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            for (Player player : histories.keySet())
+            for (Player player : chronology.keySet())
                 player.closeInventory();
-            histories.clear();
+            chronology.clear();
         } finally {
             called = false;
         }
@@ -252,7 +252,7 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = histories.get(player);
+            LinkedList<Gui> g = chronology.get(player);
             if (g == null || g.isEmpty())
                 return;
 
@@ -320,7 +320,7 @@ public class GuiManager {
         HumanEntity h = event.getWhoClicked();
         if (!(h instanceof Player))
             return;
-        LinkedList<Gui> g = histories.get(h);
+        LinkedList<Gui> g = chronology.get(h);
         if (g != null && !g.isEmpty()) {
             Gui gui = g.peek();
             GuiClickEvent e = new GuiClickEvent(event, (Player) h, gui);
@@ -344,10 +344,10 @@ public class GuiManager {
      * @return the player's Gui history
      */
     public static LinkedList<Gui> get(Player player) {
-        return histories.get(player);
+        return chronology.get(player);
     }
 
     private static LinkedList<Gui> getOrCreate(Player player) {
-        return histories.computeIfAbsent(player, (pl) -> new LinkedList<>());
+        return chronology.computeIfAbsent(player, (pl) -> new LinkedList<>());
     }
 }

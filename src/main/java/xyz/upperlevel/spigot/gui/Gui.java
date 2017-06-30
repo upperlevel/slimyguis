@@ -39,7 +39,7 @@ public interface Gui extends Link {
 
 
     /**
-     * The action that this does when called as an action (from links)
+     * The action that this does when called as an action (from items)
      * @param player the player that executes this link
      */
     @Override

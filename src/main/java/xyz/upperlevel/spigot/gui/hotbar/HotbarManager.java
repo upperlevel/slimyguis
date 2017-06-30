@@ -4,27 +4,103 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.spigot.gui.ItemLink;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class HotbarManager {
 
-    private static Map<String, Hotbar> hotbars = new HashMap<>();
-    private static Map<Player, Hotbar> players = new HashMap<>();
+    private static final Map<String, Hotbar> hotbars = new HashMap<>();
+    private static final Map<Player, Hotbar> players = new HashMap<>();
 
-    public static void load(File file) {
-
+    /**
+     * Registers the given hotbar with the associated id.
+     *
+     * @param id     the id of the hotbar to register
+     * @param hotbar the hotbar to register
+     */
+    public static void register(String id, Hotbar hotbar) {
+        hotbars.put(id, hotbar);
     }
 
+    /**
+     * Registers the given hotbar.
+     *
+     * @param hotbar the hotbar to register
+     */
+    public static void register(Hotbar hotbar) {
+        hotbars.put(hotbar.getId(), hotbar);
+    }
+
+    /**
+     * Unregisters the hotbar by its id.
+     *
+     * @param id the id of the hotbar to remove
+     * @return the hotbar removed
+     */
+    public static Hotbar unregister(String id) {
+        return hotbars.remove(id);
+    }
+
+    public static Hotbar unregister(Hotbar hotbar) {
+        return hotbars.remove(hotbar.getId());
+    }
+
+    /**
+     * Gets an hotbar by its id.
+     *
+     * @param id the id of the hotbar
+     * @return the hotbar fetched
+     */
+    public static Hotbar get(String id) {
+        return hotbars.get(id);
+    }
+
+    /**
+     * Gets the hotbar held by the given player.
+     *
+     * @param player the player
+     * @return the hotbar held by the player
+     */
+    public static Hotbar get(Player player) {
+        return players.get(player);
+    }
+
+    /**
+     * Loads a new hotbar from the given file.
+     *
+     * @param file the file where to load the hotbar
+     * @return the hotbar loaded
+     */
+    public static Hotbar load(File file) {
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        final String id = file.getName().replaceFirst("[.][^.]+$", "");
+        Hotbar hotbar;
+        try {
+            hotbar = Hotbar.deserialize(id, Config.wrap(config));
+        } catch (InvalidGuiConfigurationException e) {
+            SlimyGuis.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
+            return null;
+        } catch (Exception e) {
+            SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
+            return null;
+        }
+        return hotbar;
+    }
+
+    /**
+     * Loads all hotbars found in the given folder.
+     *
+     * @param folder the folder where to load the hotbars
+     */
     public static void loadFolder(File folder) {
         if (folder.exists()) {
             if (folder.isDirectory()) {
@@ -33,165 +109,93 @@ public class HotbarManager {
                     SlimyGuis.logger().severe("Error while reading " + folder + " files");
                     return;
                 }
-                for (File file : files) {
-                    FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                    final String id = file.getName().replaceFirst("[.][^.]+$", "");
-                    try {
-                        load(id, Config.wrap(config));
-                    } catch (InvalidGuiConfigurationException e) {
-                        SlimyGuis.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-                    } catch (Exception e) {
-                        SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-                    }
-                }
-            } else {
+                for (File file : files)
+                    load(file);
+            } else
                 SlimyGuis.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
-            }
         } else {
             try {
                 folder.mkdirs();
             } catch (Exception e) {
                 SlimyGuis.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
             }
-        }ù
-    }
-
-    /**
-     * Adds the passed HotbarLinks to the player, reprinting the inventory
-     *
-     * @param player the player
-     * @param links  the links to add to the player's hotbar
-     */
-    public static void add(Player player, HotbarLink... links) {
-        getOrCreate(player).add(links);
-        player.updateInventory();
-    }
-
-    /**
-     * Adds the passed HotbarLinks to the player, reprinting the inventory
-     *
-     * @param player the player
-     * @param links  the links to add to the player's hotbar
-     */
-    public static void add(Player player, Collection<HotbarLink> links) {
-        getOrCreate(player).add(links);
-        player.updateInventory();
-    }
-
-
-    /**
-     * Adds the passed HotbarLinks to the player, reprinting the inventory
-     *
-     * @param player the player
-     * @param links  the links to add to the player's hotbar
-     */
-    public static void remove(Player player, HotbarLink... links) {
-        Hotbar h = get(player);
-        if (h != null) {
-            h.remove(links);
-            player.updateInventory();
         }
     }
 
     /**
-     * Adds the passed HotbarLinks to the player, reprinting the inventory
+     * Gets a list of all hotbars with onJoin field set on true.
      *
-     * @param player the player
-     * @param links  the links to add to the player's hotbar
+     * @return a list of hotbars with onJoin set to true
      */
-    public static void remove(Player player, Collection<HotbarLink> links) {
-        Hotbar h = get(player);
-        if (h != null) {
-            h.remove(links);
-            player.updateInventory();
-        }
+    public static List<Hotbar> getJoinHotbars() {
+        return hotbars.values().stream()
+                .filter(Hotbar::isOnJoin)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Sets the passed Hotbar as the ONLY hotbar that the player has, removing the others set before
+     * Gives an hotbar to a player.
      *
      * @param player the player
-     * @param links  the links to set
+     * @param hotbar the hotbar
      */
-    public static void set(Player player, HotbarLink... links) {
-        Hotbar hotbar = getOrCreate(player);
-        hotbar.clear();
-        hotbar.add(links);
-        player.updateInventory();
+    public static void give(Player player, Hotbar hotbar) {
+        players.put(player, hotbar);
+        hotbar.give(player);
     }
 
     /**
-     * Sets the passed Hotbar as the ONLY hotbar that the player has, removing the others set before
+     * Checks if the given player is holding any hotbar.
      *
      * @param player the player
-     * @param links  the links to set
+     * @return true if is holding any hotbar, otherwise false
      */
-    public static void set(Player player, Collection<HotbarLink> links) {
-        Hotbar hotbar = getOrCreate(player);
-        hotbar.clear();
-        hotbar.add(links);
-        player.updateInventory();
+    public static boolean isHolding(Player player) {
+        return players.containsKey(player);
     }
 
     /**
-     * Removes every Hotbar for the player (and their respective inventory links)
+     * Checks if the given player is holding the given hotbar.
      *
      * @param player the player
+     * @param hotbar the hotbar
+     * @return true if is holding the passed hotbar, otherwise false
      */
-    public static void clear(Player player) {
-        Hotbar data = players.remove(player);
-        if (data != null)
-            data.clear();
-        player.updateInventory();
-    }
-
-
-    public static void clearAll() {
-        for (Map.Entry<Player, Hotbar> e : players.entrySet()) {
-            e.getValue().clear();
-            e.getKey().updateInventory();
-        }
-        players.clear();
+    public static boolean isHolding(Player player, Hotbar hotbar) {
+        Hotbar h = players.get(player);
+        return h != null && h.equals(hotbar);
     }
 
     /**
-     * Reprints the player's inventory with the Hotbar links, this should be used only for visual bugs, please report them instead of brute-reprinting the inventory
+     * Removes an hotbar from a player.
      *
      * @param player the player
      */
-    public static void reprint(Player player) {
-        Hotbar data = players.get(player);
-        if (data != null)
-            data.reprint();
-        player.updateInventory();
+    public static void remove(Player player) {
+        Hotbar h = players.remove(player);
+        if (h != null)
+            h.remove(player);
     }
 
-    public static void onClick(PlayerInteractEvent event) {
-        if (onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot()))
+    public static boolean onClick(PlayerInteractEvent event) {
+        if (onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot())) {
             event.setCancelled(true);
+            return true;
+        }
+        return false;
     }
 
     public static boolean onClick(Player player, int slot) {
         Hotbar data = players.get(player);
         if (data == null) return false;
-        HotbarLink link = data.getLink(slot);
-        if (link == null) return false;
-        link.getAction().run(player);
+        ItemLink item = data.getLink(slot);
+        if (item == null) return false;
+        item.getLink().run(player);
         return true;
     }
 
     /**
-     * Gets the HotbarData for the passed player
-     *
-     * @param player the player
-     * @return the player's HotbarData
-     */
-    public static Hotbar get(Player player) {
-        return players.get(player);
-    }
-
-    /**
-     * Checks if the item held by the player is a link
+     * Checks if the item held by the player is a link.
      *
      * @param player the player
      * @return true only if the item he's holding is a link
@@ -199,56 +203,6 @@ public class HotbarManager {
     public static boolean hasLinkInHand(Player player) {
         System.out.println(player.getInventory().getHeldItemSlot());
         return isInventorySlotLink(player, player.getInventory().getHeldItemSlot());
-    }
-
-    /**
-     * Gets all the links in the player's inventory
-     *
-     * @param player the player
-     * @return a stream of ItemStacks representing the link's display item
-     */
-    public static Stream<ItemStack> linkStream(Player player) {
-        final Hotbar data = players.get(player);
-        if (data == null) return Stream.empty();
-        return data.linkStream();
-    }
-
-    /**
-     * Returns true only if the player has a link that is similar to the passed item
-     *
-     * @param player the player
-     * @param item   the item to check if is similar to any of the links
-     * @return true only if the passed item is similar to the any of the link display items
-     */
-    public static boolean isItemSimilarToLink(Player player, ItemStack item) {
-        return item != null && linkStream(player).anyMatch(item::isSimilar);
-    }
-
-    /**
-     * Returns true only if the passed item is the same as one (or more) of the link's display items
-     *
-     * @param player the player
-     * @param item   the item to check if is the same as any of the links
-     * @return true only if the passed item is the same to any of the link display items
-     */
-    public static boolean isItemLink(Player player, ItemStack item) {
-        return item != null && linkStream(player).anyMatch(item::equals);
-    }
-
-    /**
-     * Returns true if any of the passed items is the same to any of the links
-     *
-     * @param player the player
-     * @param items  the items
-     * @return true if any of the passed items is the same to any of the links
-     */
-    public static boolean anyItemLink(Player player, ItemStack... items) {
-        return linkStream(player).anyMatch(i -> {
-            for (ItemStack s : items)
-                if (s.equals(i))
-                    return true;
-            return false;
-        });
     }
 
     /**
@@ -263,7 +217,9 @@ public class HotbarManager {
         return data != null && data.isSlotLink(slot);
     }
 
-    public static Hotbar getOrCreate(Player p) {
-        return players.computeIfAbsent(p, Hotbar::new);
+    public static void clearAll() {
+        for (Player p : players.keySet())
+            remove(p);
+        players.clear();
     }
 }

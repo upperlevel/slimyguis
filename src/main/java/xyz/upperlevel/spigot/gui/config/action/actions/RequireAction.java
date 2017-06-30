@@ -5,11 +5,12 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
-import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 import xyz.upperlevel.spigot.gui.config.action.Parser;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.script.Script;
 
 import javax.script.ScriptException;
@@ -59,8 +60,7 @@ public class RequireAction extends Action<RequireAction> {
 
     private boolean hasHotbar(Player player, PlaceholderValue<String> hotbar) {
         final String id = hotbar.get(player);
-        ConfigHotbar h = ConfigHotbar.get(id);
-        return h != null && h.isPrinted(player);
+        return HotbarManager.isHolding(player, HotbarManager.get(id));
     }
 
     private boolean testScript(Player player, String id) {

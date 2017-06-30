@@ -5,19 +5,15 @@ import org.bstats.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.gui.commands.impl.GuiCommand;
-import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
 import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
-import xyz.upperlevel.spigot.gui.script.Script;
 import xyz.upperlevel.spigot.gui.script.ScriptSystem;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -55,7 +51,7 @@ public class SlimyGuis extends JavaPlugin implements Listener {
         }
 
         GuiManager.loadFolder(new File(getDataFolder(), "guis"));
-        ConfigHotbar.onLoad(new File(getDataFolder(), "hotbars"));
+        HotbarManager.loadFolder(new File(getDataFolder(), "hotbars"));
 
         new GuiCommand(null).registerBukkit();
 

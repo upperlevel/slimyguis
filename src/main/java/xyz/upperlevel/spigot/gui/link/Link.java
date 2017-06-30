@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.link.impl.CommandLink;
 import xyz.upperlevel.spigot.gui.link.impl.ConsoleCommandLink;
 
+import java.util.function.Consumer;
+
 public interface Link {
     Link EMPTY = new Link() {
         @Override
@@ -25,7 +27,7 @@ public interface Link {
      * Joins this link with another one.
      * The operation a.and(b) is different from b.and(a) only for the execution order
      * @param after the other link in the fusion (that will be executed after)
-     * @return a new link that runs both of the links
+     * @return a new link that runs both of the items
      */
     default Link and(Link after) {
         return (p) -> {
@@ -53,9 +55,9 @@ public interface Link {
     }
 
     /**
-     * Joins two or more links together maintaining the array's order as the execution order
-     * @param links the links to be joined
-     * @return a new link that runs all of the links in th array's order
+     * Joins two or more items together maintaining the array's order as the execution order
+     * @param links the items to be joined
+     * @return a new link that runs all of the items in th array's order
      */
     static Link and(Link... links) {
         return (p) -> {

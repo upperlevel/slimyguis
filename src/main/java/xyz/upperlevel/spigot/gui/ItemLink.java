@@ -23,7 +23,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Data
-public class GuiItem {
+public class ItemLink {
 
     public static class ItemClick implements Link {
 
@@ -111,28 +111,28 @@ public class GuiItem {
         }
     }
 
-    private CustomItem item;
+    private CustomItem display;
     private Link link;
 
-    public GuiItem() {
+    public ItemLink() {
     }
 
-    public GuiItem(ItemStack item) {
-        this.item = new CustomItem(item);
+    public ItemLink(ItemStack display) {
+        this.display = new CustomItem(display);
     }
 
-    public GuiItem(ItemStack item, Link link) {
-        this.item = new CustomItem(item);
+    public ItemLink(ItemStack display, Link link) {
+        this.display = new CustomItem(display);
         this.link = link;
     }
 
-    public GuiItem(CustomItem item, Link link) {
-        this.item = item;
+    public ItemLink(CustomItem display, Link link) {
+        this.display = display;
         this.link = link;
     }
 
-    public void setItem(ItemStack item) {
-        this.item = new CustomItem(item);
+    public void setDisplay(ItemStack display) {
+        this.display = new CustomItem(display);
     }
 
     public void onClick(InventoryClickEvent e) {
@@ -140,19 +140,19 @@ public class GuiItem {
             link.run((Player) e.getWhoClicked());
     }
 
-    public static GuiItem deserialize(Config config) {
-        GuiItem result = new GuiItem();
+    public static ItemLink deserialize(Config config) {
+        ItemLink result = new ItemLink();
 
         try {
             if (config.has("item"))
-                result.item = CustomItem.deserialize(config.getConfig("item"));
+                result.display = CustomItem.deserialize(config.getConfig("item"));
 
             if (config.has("click"))
                 result.link = ItemClick.deserialize(config.getConfig("click"));
 
             return result;
         } catch (InvalidGuiConfigurationException e) {
-            e.addLocalizer("in gui item");
+            e.addLocalizer("in gui display");
             throw e;
         }
     }
@@ -163,23 +163,23 @@ public class GuiItem {
 
     public static class Builder {
 
-        private final GuiItem item;
+        private final ItemLink item;
 
         public Builder() {
-            item = new GuiItem();
+            item = new ItemLink();
         }
 
-        public Builder(GuiItem item) {
+        public Builder(ItemLink item) {
             this.item = item;
         }
 
         public Builder item(ItemStack item) {
-            this.item.setItem(item);
+            this.item.setDisplay(item);
             return this;
         }
 
         public Builder item(CustomItem item) {
-            this.item.item = item;
+            this.item.display = item;
             return this;
         }
 
@@ -188,7 +188,7 @@ public class GuiItem {
             return this;
         }
 
-        public GuiItem build() {
+        public ItemLink build() {
             return item;
         }
     }

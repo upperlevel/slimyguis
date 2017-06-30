@@ -4,11 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
-import xyz.upperlevel.spigot.gui.config.ConfigHotbar;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 import xyz.upperlevel.spigot.gui.config.action.Parser;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
     @Override
     public void run(Player player) {
         final String pid = id.get(player);
-        final ConfigHotbar hotbar = ConfigHotbar.get(pid);
+        final Hotbar hotbar = HotbarManager.get(pid);
         if(hotbar == null) {
             SlimyGuis.logger().severe("Cannot find hotbar \"" + pid + "\"");
             return;
