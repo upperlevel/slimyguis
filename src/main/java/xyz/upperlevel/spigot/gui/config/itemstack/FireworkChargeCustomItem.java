@@ -60,7 +60,7 @@ public class FireworkChargeCustomItem extends CustomItem {
                 .stream()
                 .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
-        FireworkEffect.Type type = parseFireworkEffectType(config.getStringRequired("explosion-type"));
+        FireworkEffect.Type type = parseFireworkEffectType(config.getStringRequired("type"));
         return FireworkEffect.builder()
                 .flicker(flicker)
                 .trail(trail)
