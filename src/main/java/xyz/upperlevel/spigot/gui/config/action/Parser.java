@@ -8,6 +8,7 @@ import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public interface Parser<T> {
@@ -197,14 +198,34 @@ public interface Parser<T> {
                 if(o instanceof Sound)
                     return (Sound) o;
                 else if(o instanceof String)
-                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase());
+                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 else
                     throw new IllegalArgumentException("Cannot parse " + o + " as sound");
             }
 
             @Override
             public Object save(Sound sound) {
-                return sound.name();
+                return sound.name().toLowerCase(Locale.ENGLISH).replace('_', ' ');
+            }
+        };
+    }
+
+    static <T extends Enum<T>> Parser<T> enumValue(Class<T> clazz) {
+        return new Parser<T>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public T load(Object o) {
+                if(clazz.isInstance(o)) {
+                    return (T) o;
+                } else if(o instanceof String) {
+                    return Enum.valueOf(clazz, ((String) o).replace(' ', '_').toUpperCase(Locale.ENGLISH));
+                } else
+                    throw new IllegalArgumentException("Cannot parse " + o + " as " + clazz.getSimpleName());
+            }
+
+            @Override
+            public Object save(T t) {
+                return t.name().toLowerCase(Locale.ENGLISH).replace('_', ' ');
             }
         };
     }

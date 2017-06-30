@@ -1,16 +1,22 @@
 package xyz.upperlevel.spigot.gui.link.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.link.Link;
 
-@RequiredArgsConstructor
 public class CommandLink implements Link {
-    private final String command;
+    private final PlaceholderValue<String> command;
+
+    public CommandLink(PlaceholderValue<String> command) {
+        this.command = command;
+    }
+
+    public CommandLink(String command) {
+        this(PlaceholderValue.strValue(command));
+    }
 
     @Override
     public void run(Player player) {
-        Bukkit.dispatchCommand(player, command.replace("<player>", player.getName()));
+        player.performCommand(command.get(player));
     }
 }

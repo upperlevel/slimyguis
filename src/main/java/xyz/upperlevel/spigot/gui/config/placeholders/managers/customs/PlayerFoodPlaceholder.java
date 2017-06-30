@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 public class PlayerFoodPlaceholder implements CustomPlaceholder {
     @Override
     public String id() {
-        return "player_food";
+        return "player_food_level";
     }
 
     @Override

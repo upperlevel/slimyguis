@@ -14,18 +14,14 @@ import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 
 import java.util.Map;
 
-public class OpenGuiAction extends Action<OpenGuiAction> {
-    public static final OpenGuiActionType TYPE = new OpenGuiActionType();
+public class GuiChangeAction extends Action<GuiChangeAction> {
+    public static final GuiChangeActionType TYPE = new GuiChangeActionType();
     @Getter
     private final PlaceholderValue<String> guiId;
 
-    @Getter
-    private final boolean clearStack;
-
-    public OpenGuiAction(PlaceholderValue<String> guiId, boolean clearStack) {
+    public GuiChangeAction(PlaceholderValue<String> guiId) {
         super(TYPE);
         this.guiId = guiId;
-        this.clearStack = clearStack;
     }
 
     @Override
@@ -35,33 +31,31 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
             SlimyGuis.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
-        GuiManager.open(player, gui, clearStack);
+
+        GuiManager.change(player, gui);
     }
 
 
-    public static class OpenGuiActionType extends BaseActionType<OpenGuiAction> {
+    public static class GuiChangeActionType extends BaseActionType<GuiChangeAction> {
 
-        public OpenGuiActionType() {
-            super("open-gui");
+        public GuiChangeActionType() {
+            super("gui-change");
             setParameters(
-                    Parameter.of("id", Parser.strValue(), true),
-                    Parameter.of("remove-history", Parser.boolValue(), false, false)
+                    Parameter.of("id", Parser.strValue(), true)
             );
         }
 
         @Override
-        public OpenGuiAction create(Map<String, Object> pars) {
-            return new OpenGuiAction(
-                    PlaceHolderUtil.process((String) pars.get("id")),
-                    (Boolean) pars.get("remove-history")
+        public GuiChangeAction create(Map<String, Object> pars) {
+            return new GuiChangeAction(
+                    PlaceHolderUtil.process((String) pars.get("id"))
             );
         }
 
         @Override
-        public Map<String, Object> read(OpenGuiAction action) {
+        public Map<String, Object> read(GuiChangeAction action) {
             return ImmutableMap.of(
-                    "id", action.guiId.toString(),
-                    "remove-history", action.clearStack
+                    "id", action.guiId.toString()
             );
         }
     }

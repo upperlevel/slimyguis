@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.commands;
 
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +26,17 @@ public enum Sender {
         @Override
         public String toString() {
             return "Console";
+        }
+    },
+    BLOCK {
+        @Override
+        public boolean isCorrect(CommandSender sender) {
+            return sender instanceof BlockCommandSender;
+        }
+
+        @Override
+        public String toString() {
+            return "Block";
         }
     },
     ALL {

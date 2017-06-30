@@ -7,10 +7,10 @@ import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 
 import java.util.Map;
 
-public class CloseGuiAction extends Action<CloseGuiAction> {
-    public static final CloseGuiActionType TYPE = new CloseGuiActionType();
+public class GuiCloseAction extends Action<GuiCloseAction> {
+    public static final GuiCloseActionType TYPE = new GuiCloseActionType();
 
-    public CloseGuiAction() {
+    public GuiCloseAction() {
         super(TYPE);
     }
 
@@ -19,20 +19,20 @@ public class CloseGuiAction extends Action<CloseGuiAction> {
         GuiManager.back(player);
     }
 
-    public static class CloseGuiActionType extends BaseActionType<CloseGuiAction> {
+    public static class GuiCloseActionType extends BaseActionType<GuiCloseAction> {
 
-        public CloseGuiActionType() {
-            super("close-gui");
+        public GuiCloseActionType() {
+            super("gui-close");
             setParameters();
         }
 
         @Override
-        public CloseGuiAction create(Map<String, Object> parameters) {
-            return new CloseGuiAction();
+        public GuiCloseAction create(Map<String, Object> parameters) {
+            return new GuiCloseAction();
         }
 
         @Override
-        public Map<String, Object> read(CloseGuiAction action) {
+        public Map<String, Object> read(GuiCloseAction action) {
             return null;
         }
     }

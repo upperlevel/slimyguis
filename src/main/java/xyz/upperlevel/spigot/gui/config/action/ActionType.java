@@ -38,19 +38,27 @@ public abstract class ActionType<T extends Action> {
     }
 
     private static void registerDefaults() {
-        addActionType(BackGuiAction.TYPE);
-        addActionType(BroadcastAction.TYPE);
-        addActionType(CloseGuiAction.TYPE);
-        addActionType(MessageAction.TYPE);
-        addActionType(OpenGuiAction.TYPE);
-        addActionType(RequireAction.TYPE);
-        addActionType(VaultGiveAction.TYPE);
-        addActionType(VaultTakeAction.TYPE);
+        //Guis
+        addActionType(GuiOpenAction.TYPE);
+        addActionType(GuiBackAction.TYPE);
+        addActionType(GuiCloseAction.TYPE);
+        addActionType(GuiChangeAction.TYPE);
+        addActionType(GuiReloadAction.TYPE);
+        //Hotbars
         addActionType(HotbarGiveAction.TYPE);
         addActionType(HotbarRemoveAction.TYPE);
-        addActionType(ScriptAction.TYPE);
-        addActionType(GiveItemAction.TYPE);
+        //Vault
+        addActionType(VaultGiveAction.TYPE);
+        addActionType(VaultTakeAction.TYPE);
+        //Player interaction
+        addActionType(BroadcastAction.TYPE);
+        addActionType(MessageAction.TYPE);
         addActionType(PlaySoundAction.TYPE);
+        addActionType(GiveItemAction.TYPE);
+        //Misc
+        addActionType(RequireAction.TYPE);
+        addActionType(ScriptAction.TYPE);
+        addActionType(CommandAction.TYPE);
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {

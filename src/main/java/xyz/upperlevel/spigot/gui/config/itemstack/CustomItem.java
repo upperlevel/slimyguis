@@ -84,6 +84,7 @@ public class CustomItem {
         if (config.has("flags")) {
             flags = ((Collection<String>) config.getCollection("flags"))
                     .stream()
+                    .map(s -> s.replace(' ', '_').toUpperCase(Locale.ENGLISH))
                     .map(ItemFlag::valueOf)
                     .collect(Collectors.toList());
         } else
@@ -93,21 +94,15 @@ public class CustomItem {
 
         enchantments = new HashMap<>();
         if (config.has("enchantments")) {
-            Collection<String> enchList = (Collection<String>) config.getCollection("enchantments");
-            for (String e : enchList) {
-                String[] parts = e.split(":");
-                if (parts.length != 2)
-                    throw new InvalidGuiConfigurationException("Invalid enchantment, correct version: <Enchantment>:<Level>");
-                else {
-                    Enchantment ench = Enchantment.getByName(parts[0].toUpperCase());
-                    if (ench == null)
-                        SlimyGuis.logger().severe("Cannot find enchantment: " + parts[0]);
-                    else
-                        enchantments.put(ench, PlaceholderValue.intValue(parts[1]));
-                }
+            Map<String, Object> stEnch = config.getSection("enchantments");
+            for(Map.Entry<String, Object> e : stEnch.entrySet()) {
+                Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
+                if (ench == null)
+                    SlimyGuis.logger().severe("Cannot find enchantment: " + e.getKey());
+                else
+                    enchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
             }
         }
-
 
         switch (mat) {
             case BANNER:
@@ -138,6 +133,7 @@ public class CustomItem {
             case POTION:
             case LINGERING_POTION:
             case SPLASH_POTION:
+            case TIPPED_ARROW:
                 return PotionCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
                         config

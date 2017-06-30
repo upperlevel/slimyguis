@@ -7,10 +7,10 @@ import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 
 import java.util.Map;
 
-public class BackGuiAction extends Action<BackGuiAction> {
-    public static final BackGuiActionType TYPE = new BackGuiActionType();
+public class GuiBackAction extends Action<GuiBackAction> {
+    public static final GuiBackActionType TYPE = new GuiBackActionType();
 
-    public BackGuiAction() {
+    public GuiBackAction() {
         super(TYPE);
     }
 
@@ -19,20 +19,20 @@ public class BackGuiAction extends Action<BackGuiAction> {
         GuiManager.back(player);
     }
 
-    public static class BackGuiActionType extends BaseActionType<BackGuiAction> {
+    public static class GuiBackActionType extends BaseActionType<GuiBackAction> {
 
-        public BackGuiActionType() {
-            super("back-gui");
+        public GuiBackActionType() {
+            super("gui-back");
             setParameters();
         }
 
         @Override
-        public BackGuiAction create(Map<String, Object> parameters) {
-            return new BackGuiAction();
+        public GuiBackAction create(Map<String, Object> parameters) {
+            return new GuiBackAction();
         }
 
         @Override
-        public Map<String, Object> read(BackGuiAction action) {
+        public Map<String, Object> read(GuiBackAction action) {
             return null;
         }
     }
