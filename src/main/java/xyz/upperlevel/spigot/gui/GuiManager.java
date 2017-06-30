@@ -337,6 +337,21 @@ public class GuiManager {
         }
     }
 
+    public static void reprint(Player player) {
+        if (called) return;
+        called = true;
+        try {
+            LinkedList<Gui> g = get(player);
+            if(g == null)
+                return;
+            Gui gui = g.peek();
+            if(gui != null)
+                gui.show(player);
+        } finally {
+            called = false;
+        }
+    }
+
     /**
      * Gets the Gui history (also called stack) of the player. If
      *
@@ -349,5 +364,9 @@ public class GuiManager {
 
     private static LinkedList<Gui> getOrCreate(Player player) {
         return chronology.computeIfAbsent(player, (pl) -> new LinkedList<>());
+    }
+
+    public static Map<Player, LinkedList<Gui>> getChronology() {
+        return Collections.unmodifiableMap(chronology);
     }
 }

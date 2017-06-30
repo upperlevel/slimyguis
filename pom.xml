@@ -5,17 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.upperlevel.spigot.gui</groupId>
-    <artifactId>spigot-gui-api</artifactId>
-    <version>1.2</version>
+    <artifactId>spigot-slimy-guis</artifactId>
+    <version>1.3</version>
 
-    <name>GuiApi</name>
-    <description>An API for GUIs on Spigot</description>
+    <name>SlimyGuis</name>
+    <description>An API for GUI loading from files for Spigot</description>
     <url>https://github.com/upperlevel/spigot-gui-api</url>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <mcVersion>1.11.2-R0.1-SNAPSHOT</mcVersion>
+        <mainClass>xyz.upperlevel.spigot.gui.SlimyGuis</mainClass>
     </properties>
 
     <repositories>
@@ -225,5 +226,11 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 </project>

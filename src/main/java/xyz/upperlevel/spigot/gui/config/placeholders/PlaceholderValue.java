@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.util.ConfigUtils;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface PlaceholderValue<T> {
@@ -58,9 +58,11 @@ public interface PlaceholderValue<T> {
         try {
             parsed = parser.apply(i);
         } catch (Exception e) {
-            if(!PlaceHolderUtil.hasPlaceholders(i))
+            if(!PlaceHolderUtil.hasPlaceholders(i)) {
                 SlimyGuis.logger().severe("Invalid value: " + i);
-            return new SimplePlaceholderValue<>(i, parser, exc -> SlimyGuis.logger().severe("Cannot parse value: \"" + i + "\""), onError);
+                return new FalsePlaceholderValue<>(onError);
+            }
+            return new SimplePlaceholderValue<>(i, parser, (str, exc) -> SlimyGuis.logger().severe("Cannot parse value: '" + str + "' (from '" + i + "')"), onError);
         }
         return new FalsePlaceholderValue<>(parsed);
     }
@@ -86,16 +88,17 @@ public interface PlaceholderValue<T> {
         private final String value;
         @Getter
         private final Function<String, T> parser;
-        private final Consumer<Exception> exceptionHandler;
+        private final BiConsumer<String, Exception> exceptionHandler;
         @Getter
         private final T onError;
 
         @Override
         public T get(Player player) {
+            final String real = PlaceHolderUtil.resolvePlaceholders(player, value);
             try {
-                return parser.apply(PlaceHolderUtil.resolvePlaceholders(player, value));
+                return parser.apply(real);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                exceptionHandler.accept(real, e);
             }
             return onError;
         }

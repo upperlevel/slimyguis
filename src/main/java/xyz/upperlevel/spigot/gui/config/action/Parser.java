@@ -3,10 +3,8 @@ package xyz.upperlevel.spigot.gui.config.action;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import xyz.upperlevel.spigot.gui.config.ConfigItem;
 import xyz.upperlevel.spigot.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.spigot.gui.config.util.Config;
-import xyz.upperlevel.spigot.gui.script.Script;
 
 import java.util.Collection;
 import java.util.List;

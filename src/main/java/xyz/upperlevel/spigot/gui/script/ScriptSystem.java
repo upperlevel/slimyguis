@@ -1,6 +1,7 @@
 package xyz.upperlevel.spigot.gui.script;
 
 import com.google.common.io.Files;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,14 +24,15 @@ import java.util.logging.Level;
 
 public class ScriptSystem {
     private final File classPath;
-    private final ClassLoader loader;
+    @Getter
+    private final ClassLoader classLoader;
     private final ScriptEngineManager engineManager;
     private Map<String, String> extensionsToEngineName;
     private Map<String, Script> scripts = new HashMap<>();
 
     public ScriptSystem(File classPath, File scriptEngineConfig) {
         this.classPath = classPath;
-        {//Create loader
+        {//Create classLoader
             File[] files = classPath.listFiles();
             URL[] urls;
             if (files == null)
@@ -48,9 +50,9 @@ public class ScriptSystem {
                         .filter(Objects::nonNull)
                         .toArray(URL[]::new);
 
-            loader = new URLClassLoader(urls, getClass().getClassLoader());
+            classLoader = new URLClassLoader(urls, getClass().getClassLoader());
         }
-        engineManager = new ScriptEngineManager(loader);
+        engineManager = new ScriptEngineManager(classLoader);
         {//Print found engines
             List<ScriptEngineFactory> factories = engineManager.getEngineFactories();
             SlimyGuis.logger().info("Engines found: " + factories.size());
@@ -70,8 +72,11 @@ public class ScriptSystem {
         }
         engineManager.put("Bukkit", Bukkit.getServer());
         try {
+            final ClassLoader old = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classLoader);
             ScriptEngine engine = engineManager.getEngineByName("js");
             engine.eval("Java.type(\"xyz.upperlevel.spigot.gui.SlimyGuis\").logger().info(\"JS engine works!\")");
+            Thread.currentThread().setContextClassLoader(old);
         } catch (ScriptException e) {
             e.printStackTrace();
         }
@@ -96,7 +101,17 @@ public class ScriptSystem {
         final String engineName = extensionsToEngineName.get(ext);
         if(engineName == null)
             throw new IllegalArgumentException("Cannot find engine for \"" + ext + "\"");
-        final ScriptEngine engine = engineManager.getEngineByName(engineName);
+        ScriptEngine engine;
+        {//Load the engine
+            final Thread currentThread = Thread.currentThread();
+            final ClassLoader oldLoader = currentThread.getContextClassLoader();
+            try {
+                currentThread.setContextClassLoader(SlimyGuis.getScriptSystem().getClassLoader());
+                engine = engineManager.getEngineByName(engineName);
+            } finally {
+                currentThread.setContextClassLoader(oldLoader);
+            }
+        }
         if(engine == null)
             throw new IllegalStateException("Cannot find engine \"" + engineName + "\"");
         Script s = Script.of(engine, script);
