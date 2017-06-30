@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.action.actions.*;
-import xyz.upperlevel.spigot.gui.events.GuiChangeEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,23 +38,27 @@ public abstract class ActionType<T extends Action> {
     }
 
     private static void registerDefaults() {
+        //Guis
         addActionType(GuiOpenAction.TYPE);
         addActionType(GuiBackAction.TYPE);
         addActionType(GuiCloseAction.TYPE);
         addActionType(GuiChangeAction.TYPE);
         addActionType(GuiReloadAction.TYPE);
-
+        //Hotbars
         addActionType(HotbarGiveAction.TYPE);
         addActionType(HotbarRemoveAction.TYPE);
-
-        addActionType(BroadcastAction.TYPE);
-        addActionType(MessageAction.TYPE);
-        addActionType(RequireAction.TYPE);
+        //Vault
         addActionType(VaultGiveAction.TYPE);
         addActionType(VaultTakeAction.TYPE);
-        addActionType(ScriptAction.TYPE);
-        addActionType(GiveItemAction.TYPE);
+        //Player interaction
+        addActionType(BroadcastAction.TYPE);
+        addActionType(MessageAction.TYPE);
         addActionType(PlaySoundAction.TYPE);
+        addActionType(GiveItemAction.TYPE);
+        //Misc
+        addActionType(RequireAction.TYPE);
+        addActionType(ScriptAction.TYPE);
+        addActionType(CommandAction.TYPE);
     }
 
     public static List<Action> deserialize(Collection<Map<String, Object>> config) {
