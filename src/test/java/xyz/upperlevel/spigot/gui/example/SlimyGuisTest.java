@@ -18,6 +18,7 @@ import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.events.*;
 import xyz.upperlevel.spigot.gui.hotbar.Hotbar;
 import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
+import xyz.upperlevel.spigot.gui.hotbar.HotbarView;
 import xyz.upperlevel.spigot.gui.impl.anvil.AnvilInputGui;
 import xyz.upperlevel.spigot.gui.impl.anvil.InputFilters;
 import xyz.upperlevel.spigot.gui.link.Link;
@@ -212,22 +213,9 @@ public class SlimyGuisTest extends JavaPlugin implements Listener {
         //HotbarManager.addLinks adds the Hotbar to the others already applied (if any)
         //were HotbarManager.give would replace the Hotbar without adding it
         //the addLinks-way is more suggested because it can support other plugins
-        HotbarManager.give(event.getPlayer(), hotbar);
-    }
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        // Opens up the gui when player break obsidian block
-        if (e.getBlock().getType() == Material.OBSIDIAN) {
-
-            // Gets a gui that may be loaded from the .yml file
-            Gui gui = GuiManager.get("test");
-            if (gui == null)
-                e.getPlayer().sendMessage("this gui has not been loaded");
-            else
-                // Opens the gui 'test' loaded
-                GuiManager.open(e.getPlayer(), gui);
-        }
+        HotbarView h = HotbarManager.get(event.getPlayer());
+        h.set(hotbar);
+        h.print();
     }
 
     @Override

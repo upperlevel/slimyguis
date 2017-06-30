@@ -66,7 +66,7 @@ public class CustomItem {
 
     @SuppressWarnings("unchecked")
     public static CustomItem deserialize(Config config) {
-        Material mat = config.getMaterialRequired("material");
+        Material mat = config.getMaterialRequired("type");
         PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         PlaceholderValue<Integer> amount = PlaceHolderUtil.parseInt(config.getString("amount", "1"));
 

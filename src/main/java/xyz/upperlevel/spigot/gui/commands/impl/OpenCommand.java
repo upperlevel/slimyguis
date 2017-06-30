@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.commands.impl;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.spigot.gui.Gui;
@@ -16,7 +17,7 @@ public class OpenCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "Opens the gui with the specified id";
+        return "Opens the gui with the specified id.";
     }
 
     @Override
@@ -43,9 +44,9 @@ public class OpenCommand extends Command {
     public void run(CommandSender sender, List<String> args) {
         String id = args.get(0);
         Gui gui = GuiManager.get(id);
-        if(gui == null)
-            sender.sendMessage("Cannot find gui \"" + id + "\"");
+        if (gui == null)
+            sender.sendMessage(ChatColor.RED + "Cannot find gui \"" + id + "\".");
         else
-            GuiManager.open((Player)sender, gui);
+            GuiManager.open((Player) sender, gui);
     }
 }

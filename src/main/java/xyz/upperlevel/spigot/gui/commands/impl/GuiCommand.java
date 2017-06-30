@@ -16,7 +16,7 @@ public class GuiCommand extends NodeCommand {
 
     @Override
     public String getDescription() {
-        return "Commands for SlimyGuis";
+        return "Commands for SlimyGuis.";
     }
 
     @Override

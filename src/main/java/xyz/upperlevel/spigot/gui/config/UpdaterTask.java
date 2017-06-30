@@ -12,7 +12,7 @@ public class UpdaterTask extends BukkitRunnable {
     private final Runnable updater;
 
     public void start() {
-        runTaskTimer(SlimyGuis.getInstance(), interval, interval);
+        runTaskTimer(SlimyGuis.get(), interval, interval);
     }
 
     public void stop() {

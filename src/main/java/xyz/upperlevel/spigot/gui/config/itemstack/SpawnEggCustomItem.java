@@ -37,7 +37,7 @@ public class SpawnEggCustomItem extends CustomItem {
                                         Config config) {
         return new SpawnEggCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
-                config.getEnum("type", EntityType.class)
+                config.getEnum("egg-type", EntityType.class)
         );
     }
 }

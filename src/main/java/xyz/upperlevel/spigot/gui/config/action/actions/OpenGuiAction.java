@@ -35,7 +35,6 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
             SlimyGuis.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
-
         GuiManager.open(player, gui, clearStack);
     }
 
@@ -46,7 +45,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
             super("open-gui");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true),
-                    Parameter.of("clear-history", Parser.boolValue(), false, false)
+                    Parameter.of("remove-history", Parser.boolValue(), false, false)
             );
         }
 
@@ -54,7 +53,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
         public OpenGuiAction create(Map<String, Object> pars) {
             return new OpenGuiAction(
                     PlaceHolderUtil.process((String) pars.get("id")),
-                    (Boolean) pars.get("clear-history")
+                    (Boolean) pars.get("remove-history")
             );
         }
 
@@ -62,7 +61,7 @@ public class OpenGuiAction extends Action<OpenGuiAction> {
         public Map<String, Object> read(OpenGuiAction action) {
             return ImmutableMap.of(
                     "id", action.guiId.toString(),
-                    "clear-history", action.clearStack
+                    "remove-history", action.clearStack
             );
         }
     }

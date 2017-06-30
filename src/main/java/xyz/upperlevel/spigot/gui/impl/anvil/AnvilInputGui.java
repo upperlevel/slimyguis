@@ -35,7 +35,7 @@ public class AnvilInputGui implements Gui {
     @Override
     public void show(Player player) {
         new AnvilGUI(
-                SlimyGuis.getInstance(),
+                SlimyGuis.get(),
                 player,
                 message,
                 this::onAnvilClick

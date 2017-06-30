@@ -20,8 +20,8 @@ public class Hotbar {
 
     private String id;
 
-    private ItemLink[] items = new ItemLink[9];
-    private List<ItemLink> unmodifiableView = Collections.unmodifiableList(Arrays.asList(items));
+    private ItemLink[] links = new ItemLink[9];
+    private List<ItemLink> unmodifiableView = Collections.unmodifiableList(Arrays.asList(links));
     private int nextFree = 0;
     private int size = 0;
 
@@ -47,22 +47,22 @@ public class Hotbar {
      * @return the link present at that slot
      */
     public ItemLink getLink(int slot) {
-        return items[slot];
+        return links[slot];
     }
 
     /**
-     * Returns an unmodifiable list of items.
+     * Returns an unmodifiable list of links.
      *
-     * @return the player's items
+     * @return the player's links
      */
-    public List<ItemLink> getItems() {
+    public List<ItemLink> getLinks() {
         return unmodifiableView;
     }
 
     /**
      * Checks if the hotbar is empty.
      *
-     * @return true only if the player has one or more items
+     * @return true only if the player has one or more links
      */
     public boolean isEmpty() {
         return size == 0;
@@ -78,9 +78,9 @@ public class Hotbar {
     }
 
     /**
-     * Returns the number of items in the hotbar.
+     * Returns the number of links in the hotbar.
      *
-     * @return the number of items in the hotbar
+     * @return the number of links in the hotbar
      */
     public int getSize() {
         return size;
@@ -101,7 +101,7 @@ public class Hotbar {
                 nextFree = -1;
                 break;
             }
-        } while (items[nextFree] != null);
+        } while (links[nextFree] != null);
     }
 
     /**
@@ -114,9 +114,9 @@ public class Hotbar {
     public boolean setLink(int slot, ItemLink link) {
         if (link == null)
             return remove(slot);
-        if (items[slot] != null)
+        if (links[slot] != null)
             return false;
-        items[slot] = link;
+        links[slot] = link;
         size++;
         if (nextFree == slot)
             findNextFree();
@@ -132,10 +132,10 @@ public class Hotbar {
     public boolean remove(Predicate<ItemLink> predicate) {
         int initialSize = size;
         for (int i = 0; i < 9; i++) {
-            if (predicate.test(items[i])) {
-                if (items[i] == null)
+            if (predicate.test(links[i])) {
+                if (links[i] == null)
                     size--;
-                items[i] = null;
+                links[i] = null;
             }
         }
         return size != initialSize;
@@ -144,7 +144,7 @@ public class Hotbar {
     /**
      * Removes any link that is contained in the collection.
      *
-     * @param links the collection with the items to remove
+     * @param links the collection with the links to remove
      */
     public void remove(Collection<ItemLink> links) {
         remove(links::contains);
@@ -153,7 +153,7 @@ public class Hotbar {
     /**
      * Removes any link contained in the array.
      *
-     * @param links the array containing the items to remove
+     * @param links the array containing the links to remove
      */
     public void remove(ItemLink[] links) {
         remove(Arrays.asList(links));
@@ -163,22 +163,22 @@ public class Hotbar {
      * Removes the link in that slot (if any is present).
      *
      * @param slot the slot with the link to remove
-     * @return true only if any items were in that slot
+     * @return true only if any links were in that slot
      */
     public boolean remove(int slot) {
-        if (items[slot] == null)
+        if (links[slot] == null)
             return false;
-        items[slot] = null;
+        links[slot] = null;
         size--;
         return true;
     }
 
     /**
-     * Removes all the items.
+     * Removes all the links.
      */
     public void clearLinks() {
-        for (int slot = 0; slot < items.length; slot++)
-            items[slot] = null;
+        for (int slot = 0; slot < links.length; slot++)
+            links[slot] = null;
         size = 0;
     }
 
@@ -187,9 +187,9 @@ public class Hotbar {
     }
 
     /**
-     * Adds all the items present in the collection, throws an exception if there isn't enough space.
+     * Adds all the links present in the collection, throws an exception if there isn't enough space.
      *
-     * @param links the collection with the items to add
+     * @param links the collection with the links to add
      * @throws HotbarOutOfSpaceException if toAdd.size &gt; free()
      */
     public void addLinks(Collection<ItemLink> links) {
@@ -197,7 +197,7 @@ public class Hotbar {
             throw new HotbarOutOfSpaceException(this, links.size());
 
         for (ItemLink link : links) {
-            this.items[nextFree] = link;
+            this.links[nextFree] = link;
             size++;
             findNextFree();
         }
@@ -214,26 +214,26 @@ public class Hotbar {
     public boolean addLink(ItemLink link) {
         if (isFull())
             return false;
-        items[nextFree] = link;
+        links[nextFree] = link;
         findNextFree();
         return true;
     }
 
     /**
-     * Returns true only if all the items in the collection are present
+     * Returns true only if all the links in the collection are present
      *
-     * @param links the collection with the items to check
-     * @return true only if the collection is contained in the items
+     * @param links the collection with the links to check
+     * @return true only if the collection is contained in the links
      */
     public boolean contains(Collection<ItemLink> links) {
         return unmodifiableView.containsAll(links);
     }
 
     /**
-     * Returns true only if all the items in the array are present
+     * Returns true only if all the links in the array are present
      *
-     * @param links the array with the items to check
-     * @return true only if the array is contained in the items
+     * @param links the array with the links to check
+     * @return true only if the array is contained in the links
      */
     public boolean contains(ItemLink[] links) {
         return contains(Arrays.asList(links));
@@ -257,53 +257,27 @@ public class Hotbar {
      * @return true only if the slot passed as argument contains a link
      */
     public boolean isSlotLink(int slot) {
-        return items[slot] != null;
+        return links[slot] != null;
     }
 
     /**
-     * Returns a stream of the items contained in the hotbar.
+     * Returns a stream of the links contained in the hotbar.
      *
-     * @return a stream of the items contained in the hotbar
+     * @return a stream of the links contained in the hotbar
      */
     public Stream<ItemLink> stream() {
         return unmodifiableView.stream().filter(Objects::nonNull);
     }
 
-    public void onGive() {
-    }
-
-    public void onClick(InventoryClickEvent e) {
-        ItemLink link = items[e.getSlot()];
-        if (link != null)
-            link.onClick(e);
-    }
-
-    public void onRemove() {
-    }
-
-    /**
-     * Prints the hotbar to the given player.
-     *
-     * @param player the player that receives the hotbar
-     * @return true if the player received the hotbar, otherwise false
-     */
     public boolean give(Player player) {
-        if (!player.hasPermission(permission))
+        if (permission != null && !player.hasPermission(permission))
             return false;
-        Inventory inv = player.getInventory();
-        for (int i = 0; i < 9; i++)
-            if (items[i] != null)
-                inv.setItem(i, items[i].getDisplay().toItemStack(player));
-        player.openInventory(inv);
+        HotbarManager.get(player).set(this);
         return true;
     }
 
-    public void remove(Player player) {
-        for (int slot = 0; slot < 9; slot++) {
-            if (items[slot] != null)
-                player.getInventory().setItem(slot, null);
-        }
-        player.updateInventory();
+    public boolean remove(Player player) {
+        return HotbarManager.get(player).remove(this);
     }
 
     /**
@@ -335,7 +309,7 @@ public class Hotbar {
         private final int toAdd;
 
         public HotbarOutOfSpaceException(Hotbar hotbar, int toAdd) {
-            super("Error adding items to hotbar: trying to add " + toAdd + " but only " + hotbar.getFree() + " empty!");
+            super("Error adding links to hotbar: trying to add " + toAdd + " but only " + hotbar.getFree() + " empty!");
             this.hotbar = hotbar;
             this.toAdd = toAdd;
         }

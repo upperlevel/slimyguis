@@ -45,8 +45,8 @@ public class MapCustomItem extends CustomItem {
                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                               Config config) {
         boolean scaling = config.getBool("scaling", false);
-        PlaceholderValue<String> displayLocName = PlaceholderValue.strValue(config.getString("locName"));
-        PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue(config.getString("mapColor"));
+        PlaceholderValue<String> displayLocName = PlaceholderValue.strValue(config.getString("location-name"));
+        PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue(config.getString("map-color"));
         return new MapCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 scaling, displayLocName, displayMapColor

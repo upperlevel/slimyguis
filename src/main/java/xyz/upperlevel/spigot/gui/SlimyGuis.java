@@ -14,12 +14,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class SlimyGuis extends JavaPlugin implements Listener {
     public static final String SCRIPT_CONFIG = "script_engine.yml";
-    @Getter
+
     private static SlimyGuis instance;
 
     private ScriptSystem scriptSystem;
@@ -27,7 +28,7 @@ public class SlimyGuis extends JavaPlugin implements Listener {
     private Metrics metrics;
 
     public SlimyGuis() {
-        if(instance == null)
+        if (instance == null)
             instance = this;
     }
 
@@ -40,9 +41,9 @@ public class SlimyGuis extends JavaPlugin implements Listener {
         PlaceHolderUtil.tryHook();
         EconomyManager.enable();
 
-        {//Script system
+        { // script system
             File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
-            if(!scriptsConfigFile.exists())
+            if (!scriptsConfigFile.exists())
                 saveResource(SCRIPT_CONFIG, false);
             scriptSystem = new ScriptSystem(new File(getDataFolder(), "engines"), scriptsConfigFile);
             File scriptsFolder = new File(getDataFolder(), "scripts");
@@ -50,8 +51,15 @@ public class SlimyGuis extends JavaPlugin implements Listener {
             scriptSystem.loadFolder(scriptsFolder);
         }
 
-        GuiManager.loadFolder(new File(getDataFolder(), "guis"));
-        HotbarManager.loadFolder(new File(getDataFolder(), "hotbars"));
+        File f = new File(getDataFolder(), "guis");
+        logger().log(Level.INFO, "Attempting to load guis at \"" + f.getPath() + "\"");
+        GuiManager.loadFolder(f);
+
+        f = new File(getDataFolder(), "hotbars");
+        logger().log(Level.INFO, "Attempting to load hotbars at \"" + f.getPath() + "\"...");
+        HotbarManager.loadFolder(f);
+
+        HotbarManager.initialize();
 
         new GuiCommand(null).registerBukkit();
 
@@ -82,6 +90,10 @@ public class SlimyGuis extends JavaPlugin implements Listener {
     public void onDisable() {
         HotbarManager.clearAll();
         GuiManager.closeAll();
+    }
+
+    public static SlimyGuis get() {
+        return instance;
     }
 
     public static ScriptSystem getScriptSystem() {

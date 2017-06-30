@@ -15,7 +15,7 @@ public class ListCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "Lists all the registered guis";
+        return "Lists all the registered guis.";
     }
 
     @Override

@@ -1,5 +1,6 @@
 package xyz.upperlevel.spigot.gui.commands.impl;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.commands.Command;
@@ -14,7 +15,7 @@ public class ScriptsCommand extends Command{
 
     @Override
     public String getDescription() {
-        return "Sends a list of all loaded scripts";
+        return "Sends a list of all loaded scripts.";
     }
 
     @Override
@@ -27,10 +28,10 @@ public class ScriptsCommand extends Command{
         Set<String> scripts = SlimyGuis.getScriptSystem().get().keySet();
         int size = scripts.size();
         if(size > 0) {
-            sender.sendMessage("Displaying " + size + " scripts:");
+            sender.sendMessage(ChatColor.GREEN + "Displaying " + size + " scripts:");
             for(String script : scripts)
-                sender.sendMessage("- " + script);
+                sender.sendMessage(ChatColor.GREEN + "- " + script);
         } else
-            sender.sendMessage("No script to registered");
+            sender.sendMessage(ChatColor.RED + "No script to registered.");
     }
 }

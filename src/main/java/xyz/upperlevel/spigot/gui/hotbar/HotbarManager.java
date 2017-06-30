@@ -1,9 +1,14 @@
 package xyz.upperlevel.spigot.gui.hotbar;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.spigot.gui.ItemLink;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
@@ -11,15 +16,45 @@ import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class HotbarManager {
 
     private static final Map<String, Hotbar> hotbars = new HashMap<>();
-    private static final Map<Player, Hotbar> players = new HashMap<>();
+    private static final Map<Player, HotbarView> views = new HashMap<>();
+
+    private static void joinPlayer(Player player) {
+        HotbarView v = new HotbarView(player);
+        views.put(player, v);
+        for (Hotbar hotbar : hotbars.values())
+            if (hotbar.isOnJoin())
+                v.set(hotbar);
+    }
+
+    private static void quitPlayer(Player player) {
+        HotbarView v = views.remove(player);
+        if (v != null) v.clear();
+    }
+
+    /**
+     * Must be called, initializes the plugin.
+     */
+    public static void initialize() {
+        Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
+
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onJoin(PlayerJoinEvent e) {
+                joinPlayer(e.getPlayer());
+            }
+
+            @EventHandler
+            public void onQuit(PlayerQuitEvent e) {
+                quitPlayer(e.getPlayer());
+            }
+        }, SlimyGuis.get());
+    }
 
     /**
      * Registers the given hotbar with the associated id.
@@ -55,7 +90,7 @@ public class HotbarManager {
     }
 
     /**
-     * Gets an hotbar by its id.
+     * Gets a hotbar by its id.
      *
      * @param id the id of the hotbar
      * @return the hotbar fetched
@@ -65,13 +100,13 @@ public class HotbarManager {
     }
 
     /**
-     * Gets the hotbar held by the given player.
+     * Gets a hotbar view by its player.
      *
-     * @param player the player
-     * @return the hotbar held by the player
+     * @param player the player holding the hotbar
+     * @return the hotbar held
      */
-    public static Hotbar get(Player player) {
-        return players.get(player);
+    public static HotbarView get(Player player) {
+        return views.computeIfAbsent(player, HotbarView::new);
     }
 
     /**
@@ -93,6 +128,8 @@ public class HotbarManager {
             SlimyGuis.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
             return null;
         }
+        register(id, hotbar);
+        SlimyGuis.logger().log(Level.INFO, "Successfully loaded hotbar " + id);
         return hotbar;
     }
 
@@ -123,38 +160,6 @@ public class HotbarManager {
     }
 
     /**
-     * Gets a list of all hotbars with onJoin field set on true.
-     *
-     * @return a list of hotbars with onJoin set to true
-     */
-    public static List<Hotbar> getJoinHotbars() {
-        return hotbars.values().stream()
-                .filter(Hotbar::isOnJoin)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gives an hotbar to a player.
-     *
-     * @param player the player
-     * @param hotbar the hotbar
-     */
-    public static void give(Player player, Hotbar hotbar) {
-        players.put(player, hotbar);
-        hotbar.give(player);
-    }
-
-    /**
-     * Checks if the given player is holding any hotbar.
-     *
-     * @param player the player
-     * @return true if is holding any hotbar, otherwise false
-     */
-    public static boolean isHolding(Player player) {
-        return players.containsKey(player);
-    }
-
-    /**
      * Checks if the given player is holding the given hotbar.
      *
      * @param player the player
@@ -162,8 +167,7 @@ public class HotbarManager {
      * @return true if is holding the passed hotbar, otherwise false
      */
     public static boolean isHolding(Player player, Hotbar hotbar) {
-        Hotbar h = players.get(player);
-        return h != null && h.equals(hotbar);
+        return get(player).isHolding(hotbar);
     }
 
     /**
@@ -172,9 +176,7 @@ public class HotbarManager {
      * @param player the player
      */
     public static void remove(Player player) {
-        Hotbar h = players.remove(player);
-        if (h != null)
-            h.remove(player);
+        get(player).clear();
     }
 
     public static boolean onClick(PlayerInteractEvent event) {
@@ -186,40 +188,14 @@ public class HotbarManager {
     }
 
     public static boolean onClick(Player player, int slot) {
-        Hotbar data = players.get(player);
-        if (data == null) return false;
-        ItemLink item = data.getLink(slot);
-        if (item == null) return false;
-        item.getLink().run(player);
+        ItemLink l = get(player).getLink(slot);
+        if (l == null) return false;
+        l.getLink().run(player);
         return true;
     }
 
-    /**
-     * Checks if the item held by the player is a link.
-     *
-     * @param player the player
-     * @return true only if the item he's holding is a link
-     */
-    public static boolean hasLinkInHand(Player player) {
-        System.out.println(player.getInventory().getHeldItemSlot());
-        return isInventorySlotLink(player, player.getInventory().getHeldItemSlot());
-    }
-
-    /**
-     * Returns true only if the slot passed is a Link. This works only with the Player's main Inventory (Hotbar: [0; 8])
-     *
-     * @param player the player
-     * @param slot   the slot to check
-     * @return true only if the slot passed is a link
-     */
-    public static boolean isInventorySlotLink(Player player, int slot) {
-        Hotbar data = players.get(player);
-        return data != null && data.isSlotLink(slot);
-    }
-
     public static void clearAll() {
-        for (Player p : players.keySet())
-            remove(p);
-        players.clear();
+        views.keySet().forEach(HotbarManager::remove);
+        views.clear();
     }
 }

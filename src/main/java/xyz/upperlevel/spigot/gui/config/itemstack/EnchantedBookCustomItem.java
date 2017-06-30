@@ -42,8 +42,8 @@ public class EnchantedBookCustomItem extends CustomItem {
         Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
         storedEnchantments = new HashMap<>();
-        if (config.has("storedEnchantments")) {
-            Map<String, Object> stEnch = config.getSection("storedEnchantments");
+        if (config.has("stored-enchantments")) {
+            Map<String, Object> stEnch = config.getSection("stored-enchantments");
             for(Map.Entry<String, Object> e : stEnch.entrySet()) {
                 Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 if (ench == null)

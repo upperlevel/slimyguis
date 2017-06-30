@@ -331,7 +331,7 @@ public class GuiManager {
             //Event cancelled BEFORE the method call to permit the un-cancelling
             event.setCancelled(true);
             gui.onClick(event);
-            //Creative idiots could copy the items
+            //Creative idiots could copy the links
             if (event.isShiftClick() && event.getWhoClicked().getGameMode() == GameMode.CREATIVE)
                 ((Player) event.getWhoClicked()).updateInventory();
         }

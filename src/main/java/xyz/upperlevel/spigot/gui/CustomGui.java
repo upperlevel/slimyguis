@@ -28,6 +28,7 @@ public class CustomGui implements Gui {
     private ItemLink[] items;
 
     public CustomGui() {
+        this(54, "");
     }
 
     public CustomGui(int size, String title) {
@@ -148,10 +149,10 @@ public class CustomGui implements Gui {
     }
 
     /**
-     * Adds the given items.
+     * Adds the given links.
      *
-     * @param items the items to addLinks
-     * @return true if all items have been added, otherwise false
+     * @param items the links to addLinks
+     * @return true if all links have been added, otherwise false
      */
     public boolean addItems(ItemStack... items) {
         for (ItemStack item : items)
@@ -161,7 +162,7 @@ public class CustomGui implements Gui {
     }
 
     /**
-     * Adds the given items.
+     * Adds the given links.
      *
      * @param items
      * @return
@@ -224,9 +225,9 @@ public class CustomGui implements Gui {
     }
 
     /**
-     * Gets a list of items non null.
+     * Gets a list of links non null.
      *
-     * @return items not null
+     * @return links not null
      */
     public List<ItemLink> getItems() {
         return Arrays.stream(items)
