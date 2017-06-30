@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.spigot.gui.Nms;
 import xyz.upperlevel.spigot.gui.config.action.Action;
 import xyz.upperlevel.spigot.gui.config.action.BaseActionType;
 import xyz.upperlevel.spigot.gui.config.action.Parser;
@@ -18,19 +19,34 @@ public class BroadcastAction extends Action<BroadcastAction> {
     private final PlaceholderValue<String> message;
     @Getter
     private final String permission;
+    @Getter
+    private final boolean raw;
 
-    public BroadcastAction(PlaceholderValue<String> message, String permission) {
+    public BroadcastAction(PlaceholderValue<String> message, String permission, boolean raw) {
         super(TYPE);
         this.message = message;
         this.permission = permission;
+        this.raw = raw;
     }
 
     @Override
     public void run(Player player) {
-        if(permission != null)
-            Bukkit.broadcast(message.get(player), permission);
-        else
-            Bukkit.broadcastMessage(message.get(player));
+        if(!raw) {
+            if (permission != null)
+                Bukkit.broadcast(message.get(player), permission);
+            else
+                Bukkit.broadcastMessage(message.get(player));
+        } else {
+            Object packet = Nms.jsonPacket(message.get(player));
+            if(permission != null) {
+                for(Player p : Bukkit.getOnlinePlayers())
+                    if(p.hasPermission(permission))
+                        Nms.sendPacket(p, packet);
+            } else {
+                for(Player p : Bukkit.getOnlinePlayers())
+                        Nms.sendPacket(p, packet);
+            }
+        }
     }
 
 
@@ -40,7 +56,8 @@ public class BroadcastAction extends Action<BroadcastAction> {
             super("broadcast");
             setParameters(
                     Parameter.of("message", Parser.strValue(), true),
-                    Parameter.of("permission", Parser.strValue(), false)
+                    Parameter.of("permission", Parser.strValue(), false),
+                    Parameter.of("raw", Parser.boolValue(), false, false)
             );
         }
 
@@ -48,7 +65,8 @@ public class BroadcastAction extends Action<BroadcastAction> {
         public BroadcastAction create(Map<String, Object> pars) {
             return new BroadcastAction(
                     PlaceHolderUtil.process((String) pars.get("message")),
-                    (String) pars.get("permission")
+                    (String) pars.get("permission"),
+                    (boolean) pars.get("raw")
             );
         }
 
@@ -56,7 +74,8 @@ public class BroadcastAction extends Action<BroadcastAction> {
         public Map<String, Object> read(BroadcastAction action) {
             return ImmutableMap.of(
                     "message", action.message.toString(),
-                    "permission", action.permission
+                    "permission", action.permission,
+                    "raw", action.raw
             );
         }
     }

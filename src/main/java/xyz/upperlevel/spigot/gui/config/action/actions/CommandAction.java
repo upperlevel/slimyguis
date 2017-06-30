@@ -34,7 +34,7 @@ public class CommandAction extends Action<CommandAction> {
     public static class CommandActionType extends BaseActionType<CommandAction> {
 
         public CommandActionType() {
-            super("gui-open");
+            super("command");
             setParameters(
                     Parameter.of("command", Parser.strValue(), true),
                     Parameter.of("executor", Parser.enumValue(Executor.class), Executor.PLAYER, false)
@@ -44,7 +44,7 @@ public class CommandAction extends Action<CommandAction> {
         @Override
         public CommandAction create(Map<String, Object> pars) {
             return new CommandAction(
-                    PlaceHolderUtil.process((String) pars.get("id")),
+                    PlaceHolderUtil.process((String) pars.get("command")),
                     (Executor) pars.get("executor")
             );
         }
