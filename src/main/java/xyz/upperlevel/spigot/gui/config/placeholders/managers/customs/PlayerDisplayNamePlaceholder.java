@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 public class PlayerDisplayNamePlaceholder implements CustomPlaceholder {
     @Override
     public String id() {
-        return "player_display_name";
+        return "player_displayname";
     }
 
     @Override

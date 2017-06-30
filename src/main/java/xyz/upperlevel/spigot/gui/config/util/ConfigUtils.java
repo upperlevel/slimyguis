@@ -30,7 +30,7 @@ public final class ConfigUtils {
         if(s == null)
             throw new InvalidGuiConfigurationException("Missing firework effect type!");
         try {
-            return FireworkEffect.Type.valueOf(s.replace(' ', '_').toUpperCase());
+            return FireworkEffect.Type.valueOf(s.replace(' ', '_').toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
             throw new InvalidGuiConfigurationException("Cannot find firework effect type: \"" + s + "\"");
         }

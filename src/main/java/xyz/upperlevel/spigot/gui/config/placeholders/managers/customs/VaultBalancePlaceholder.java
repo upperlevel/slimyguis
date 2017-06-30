@@ -7,7 +7,7 @@ import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
 public class VaultBalancePlaceholder implements CustomPlaceholder {
     @Override
     public String id() {
-        return "balance";
+        return "vault_eco_balance";
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.action.actions.*;
+import xyz.upperlevel.spigot.gui.events.GuiChangeEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,16 +39,20 @@ public abstract class ActionType<T extends Action> {
     }
 
     private static void registerDefaults() {
-        addActionType(BackGuiAction.TYPE);
+        addActionType(GuiOpenAction.TYPE);
+        addActionType(GuiBackAction.TYPE);
+        addActionType(GuiCloseAction.TYPE);
+        addActionType(GuiChangeAction.TYPE);
+        addActionType(GuiReloadAction.TYPE);
+
+        addActionType(HotbarGiveAction.TYPE);
+        addActionType(HotbarRemoveAction.TYPE);
+
         addActionType(BroadcastAction.TYPE);
-        addActionType(CloseGuiAction.TYPE);
         addActionType(MessageAction.TYPE);
-        addActionType(OpenGuiAction.TYPE);
         addActionType(RequireAction.TYPE);
         addActionType(VaultGiveAction.TYPE);
         addActionType(VaultTakeAction.TYPE);
-        addActionType(HotbarGiveAction.TYPE);
-        addActionType(HotbarRemoveAction.TYPE);
         addActionType(ScriptAction.TYPE);
         addActionType(GiveItemAction.TYPE);
         addActionType(PlaySoundAction.TYPE);

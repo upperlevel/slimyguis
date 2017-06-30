@@ -65,7 +65,6 @@ public class CustomPlaceholderManager implements PlaceholderManager {
         addPlaceholder(new PlayerNamePlaceholder());
         addPlaceholder(new PlayerSaturationPlaceholder());
         addPlaceholder(new VaultBalancePlaceholder());
-        addPlaceholder(new WorldNamePlaceholder());
-        addPlaceholder(new WorldSeedPlaceholder());
+        addPlaceholder(new PlayerWorldPlaceholder());
     }
 }

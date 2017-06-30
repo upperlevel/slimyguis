@@ -8,6 +8,7 @@ import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public interface Parser<T> {
@@ -197,7 +198,7 @@ public interface Parser<T> {
                 if(o instanceof Sound)
                     return (Sound) o;
                 else if(o instanceof String)
-                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase());
+                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 else
                     throw new IllegalArgumentException("Cannot parse " + o + " as sound");
             }

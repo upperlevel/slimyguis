@@ -56,7 +56,7 @@ public class FireworkChargeCustomItem extends CustomItem {
                 .stream()
                 .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
-        List<Color> fadeColors = ((Collection<String>)config.getCollectionRequired("fadeColors"))
+        List<Color> fadeColors = ((Collection<String>)config.getCollectionRequired("fade-colors"))
                 .stream()
                 .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
