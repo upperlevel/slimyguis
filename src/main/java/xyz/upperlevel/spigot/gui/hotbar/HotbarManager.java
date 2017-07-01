@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.spigot.gui.ItemLink;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.spigot.gui.config.UpdaterTask;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.io.File;
@@ -41,8 +42,9 @@ public class HotbarManager {
      * Must be called, initializes the plugin.
      */
     public static void initialize() {
+        // registers a hotbar for all players online and registers a listener
+        // to register or remove join and quit players
         Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
-
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent e) {

@@ -27,6 +27,7 @@ public class Hotbar {
 
     private String permission;
     private boolean onJoin;
+    private int updateInterval = -1;
 
     public Hotbar() {
         this(null);

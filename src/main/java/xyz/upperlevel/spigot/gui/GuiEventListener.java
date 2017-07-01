@@ -68,7 +68,12 @@ public class GuiEventListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if (e.getHand() == EquipmentSlot.HAND && e.getAction() != Action.PHYSICAL)
+        try {
+            if (e.getHand() != EquipmentSlot.HAND)
+                return;
+        } catch (Error ignored) {
+        }
+        if (e.getAction() != Action.PHYSICAL)
             HotbarManager.onClick(e); // this method cancels the event by himself
     }
 

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @Data
@@ -46,23 +47,24 @@ public class ItemLink {
                 if (noPermissionSound != null)
                     player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
                 return false;
-            } else return true;
+            } else
+                return true;
         }
 
         public boolean pay(Player player) {
             double c = cost.get(player);
             if (c > 0) {
-                final Economy economy = EconomyManager.getEconomy();
-                if (economy == null) {
+                Economy eco = EconomyManager.getEconomy();
+                if (eco == null) {
                     SlimyGuis.logger().severe("Cannot use economy: vault not found!");
                     return true;
                 }
-                EconomyResponse res = economy.withdrawPlayer(player, c);
+                EconomyResponse res = eco.withdrawPlayer(player, c);
                 if (!res.transactionSuccess()) {
                     player.sendMessage(noMoneyError.get(player));
                     if (noMoneySound != null)
                         player.playSound(player.getLocation(), noMoneySound, 1.0f, 1.0f);
-                    System.out.println(res.errorMessage);
+                    SlimyGuis.logger().log(Level.INFO, res.errorMessage);
                     return false;
                 } else return true;
             }

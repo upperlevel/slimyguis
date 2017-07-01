@@ -202,8 +202,8 @@ public class CustomGui implements Gui {
     }
 
     public void setUpdateInterval(int updateInterval) {//TODO: Optimize for the first run
-        if(this.updateInterval != updateInterval) {
-            if(updateInterval > 0) {//If this interval is valid
+        if (this.updateInterval != updateInterval) {
+            if (updateInterval > 0) {//If this interval is valid
                 if (updaters.size() > 0) {//And there are some players that are updating
                     updaters.replaceAll((player, old) -> {
                         old.stop();
@@ -211,7 +211,7 @@ public class CustomGui implements Gui {
                         task.start();
                         return task;
                     });
-                } else if(this.updateInterval < 0) {//If there isn't any updater because the old updateInterval wasn't valid
+                } else if (this.updateInterval < 0) {//If there isn't any updater because the old updateInterval wasn't valid
                     GuiManager.getChronology().entrySet()
                             .stream()
                             .filter(e -> e.getValue().peek() == this)
@@ -242,7 +242,7 @@ public class CustomGui implements Gui {
 
     @Override
     public void onOpen(Player player) {
-        if(updateInterval > 0)
+        if (updateInterval > 0)
             startUpdateTask(player);
     }
 
@@ -266,7 +266,7 @@ public class CustomGui implements Gui {
     @Override
     public void onClose(Player player) {
         UpdaterTask task = updaters.remove(player);
-        if(task != null)
+        if (task != null)
             task.stop();
     }
 

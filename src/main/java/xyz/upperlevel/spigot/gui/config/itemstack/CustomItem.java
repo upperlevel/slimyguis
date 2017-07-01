@@ -70,7 +70,6 @@ public class CustomItem {
         PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         PlaceholderValue<Integer> amount = PlaceHolderUtil.parseInt(config.getString("amount", "1"));
 
-
         PlaceholderValue<String> displayName = config.getMessage("name");
         List<PlaceholderValue<String>> lores;
         if (config.has("lore")) {
@@ -79,7 +78,6 @@ public class CustomItem {
                     .map(PlaceHolderUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
-
         List<ItemFlag> flags;
         if (config.has("flags")) {
             flags = ((Collection<String>) config.getCollection("flags"))
