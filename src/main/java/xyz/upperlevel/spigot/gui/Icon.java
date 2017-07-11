@@ -153,7 +153,7 @@ public class Icon {
             if (config.has("update-interval"))
                 result.updateInterval = config.getInt("update-interval", -1);
             if (config.has("item"))
-                result.display = CustomItem.deserialize(config.getConfig("item"));
+                result.display = CustomItem.deserialize(config.getConfigRequired("item"));
             if (config.has("click"))
                 result.link = IconClick.deserialize(config.getConfig("click"));
             return result;
