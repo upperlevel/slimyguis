@@ -25,7 +25,7 @@ public class CustomGui implements Gui {
     private PlaceholderValue<String> title;
     private int size;
     private InventoryType type;
-    private ItemLink[] items;
+    private Icon[] items;
 
     public CustomGui() {
         this(54, "");
@@ -70,7 +70,7 @@ public class CustomGui implements Gui {
         this.title = PlaceholderValue.strValue(title);
         this.size = size;
 
-        items = new ItemLink[size];
+        items = new Icon[size];
 
         onSetup();
     }
@@ -87,7 +87,7 @@ public class CustomGui implements Gui {
         this.type = type;
         this.title = PlaceholderValue.strValue(title);
 
-        items = new ItemLink[type.getDefaultSize()];
+        items = new Icon[type.getDefaultSize()];
 
         onSetup();
     }
@@ -112,7 +112,7 @@ public class CustomGui implements Gui {
      *
      * @param slot the slot to get the item in
      */
-    public ItemLink getItem(int slot) {
+    public Icon getItem(int slot) {
         return items[slot];
     }
 
@@ -127,19 +127,19 @@ public class CustomGui implements Gui {
     }
 
     public boolean addLink(ItemStack item, Link link) {
-        return addItem(new ItemLink(item, link));
+        return addItem(new Icon(item, link));
     }
 
     /**
      * Adds an item in the first slot empty.
      *
-     * @param item the item to addLinks
+     * @param item the item to addIcons
      */
     public boolean addItem(ItemStack item) {
-        return addItem(new ItemLink(item));
+        return addItem(new Icon(item));
     }
 
-    public boolean addItem(ItemLink item) {
+    public boolean addItem(Icon item) {
         int i = firstEmpty();
         if (i >= 0) {
             items[i] = item;
@@ -151,7 +151,7 @@ public class CustomGui implements Gui {
     /**
      * Adds the given links.
      *
-     * @param items the links to addLinks
+     * @param items the links to addIcons
      * @return true if all links have been added, otherwise false
      */
     public boolean addItems(ItemStack... items) {
@@ -167,19 +167,19 @@ public class CustomGui implements Gui {
      * @param items
      * @return
      */
-    public boolean addItems(ItemLink... items) {
-        for (ItemLink item : items)
+    public boolean addItems(Icon... items) {
+        for (Icon item : items)
             if (!addItem(item))
                 return false;
         return true;
     }
 
     private void setItem(int slot, ItemStack item, Link link) {
-        setItem(slot, new ItemLink(item, link));
+        setItem(slot, new Icon(item, link));
     }
 
     public void setItem(int slot, ItemStack item) {
-        setItem(slot, new ItemLink(item));
+        setItem(slot, new Icon(item));
     }
 
     /**
@@ -188,15 +188,15 @@ public class CustomGui implements Gui {
      * @param slot the slot where to give the item
      * @param item the item to give
      */
-    public void setItem(int slot, ItemLink item) {
+    public void setItem(int slot, Icon item) {
         items[slot] = item;
     }
 
     public void setItem(int[] slots, ItemStack item) {
-        setItem(slots, new ItemLink(item));
+        setItem(slots, new Icon(item));
     }
 
-    public void setItem(int[] slots, ItemLink item) {
+    public void setItem(int[] slots, Icon item) {
         for (int slot : slots)
             items[slot] = item;
     }
@@ -229,7 +229,7 @@ public class CustomGui implements Gui {
      *
      * @return links not null
      */
-    public List<ItemLink> getItems() {
+    public List<Icon> getItems() {
         return Arrays.stream(items)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -258,7 +258,7 @@ public class CustomGui implements Gui {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        ItemLink item = items[event.getSlot()];
+        Icon item = items[event.getSlot()];
         if (item != null)
             item.onClick(event);
     }
@@ -306,7 +306,7 @@ public class CustomGui implements Gui {
 
                 res.type = config.getEnum("type", InventoryType.class);
                 res.size = -1;
-                res.items = new ItemLink[res.type.getDefaultSize()];
+                res.items = new Icon[res.type.getDefaultSize()];
             } else if (config.has("size")) {
 
                 res.type = null;
@@ -315,7 +315,7 @@ public class CustomGui implements Gui {
                     SlimyGuis.logger().warning("In gui " + id + ": size must be a multiple of 9");
                     res.size = GuiSize.min(res.size);
                 }
-                res.items = new ItemLink[res.size];
+                res.items = new Icon[res.size];
             } else
                 throw new InvalidGuiConfigurationException("Both 'type' and 'size' are empty!");
 
@@ -324,7 +324,7 @@ public class CustomGui implements Gui {
             res.title = config.getMessageRequired("title");
 
             for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("items")) {
-                ItemLink item = ItemLink.deserialize(Config.wrap(data));
+                Icon item = Icon.deserialize(Config.wrap(data));
                 res.items[(int) data.get("slot")] = item;
             }
 
@@ -381,7 +381,7 @@ public class CustomGui implements Gui {
             return this;
         }
 
-        public Builder add(ItemLink link) {
+        public Builder add(Icon link) {
             gui.addItem(link);
             return this;
         }
@@ -391,7 +391,7 @@ public class CustomGui implements Gui {
             return this;
         }
 
-        public Builder addAll(ItemLink... items) {
+        public Builder addAll(Icon... items) {
             gui.addItems(items);
             return this;
         }
@@ -406,7 +406,7 @@ public class CustomGui implements Gui {
             return this;
         }
 
-        public Builder set(int slot, ItemLink item) {
+        public Builder set(int slot, Icon item) {
             gui.setItem(slot, item);
             return this;
         }
@@ -416,7 +416,7 @@ public class CustomGui implements Gui {
             return this;
         }
 
-        public Builder set(int[] slots, ItemLink item) {
+        public Builder set(int[] slots, Icon item) {
             gui.setItem(slots, item);
             return this;
         }

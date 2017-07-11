@@ -156,7 +156,7 @@ public class GuiManager {
     }
 
     /**
-     * Opens a Gui to a player, adding it to the stack. If the closeOthers parameter is specified it will remove the stack first
+     * Opens a Gui to a player, adding it to the stack. If the closeOthers parameter is specified it will removeHotbar the stack first
      *
      * @param player      the player that is opening the api
      * @param gui         the gui to be opened

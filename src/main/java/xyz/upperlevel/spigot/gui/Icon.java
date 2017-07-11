@@ -24,9 +24,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @Data
-public class ItemLink {
+public class Icon {
 
-    public static class ItemClick implements Link {
+    public static class IconClick implements Link {
 
         private String permission;
         private PlaceholderValue<String> noPermissionError;
@@ -38,7 +38,7 @@ public class ItemLink {
 
         private List<Action> actions = new ArrayList<>();
 
-        private ItemClick() {
+        private IconClick() {
         }
 
         public boolean checkPermission(Player player) {
@@ -72,8 +72,8 @@ public class ItemLink {
         }
 
         @SuppressWarnings("unchecked")
-        public static ItemClick deserialize(Config config) {
-            ItemClick res = new ItemClick();
+        public static IconClick deserialize(Config config) {
+            IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
             res.noPermissionSound = config.getSound("no-permission-sound");
@@ -115,20 +115,21 @@ public class ItemLink {
 
     private CustomItem display;
     private Link link;
+    private int updateInterval; // 0 or < 0 are considered null
 
-    public ItemLink() {
+    public Icon() {
     }
 
-    public ItemLink(ItemStack display) {
+    public Icon(ItemStack display) {
         this.display = new CustomItem(display);
     }
 
-    public ItemLink(ItemStack display, Link link) {
+    public Icon(ItemStack display, Link link) {
         this.display = new CustomItem(display);
         this.link = link;
     }
 
-    public ItemLink(CustomItem display, Link link) {
+    public Icon(CustomItem display, Link link) {
         this.display = display;
         this.link = link;
     }
@@ -137,21 +138,24 @@ public class ItemLink {
         this.display = new CustomItem(display);
     }
 
+    public boolean needUpdate() {
+        return updateInterval > 0;
+    }
+
     public void onClick(InventoryClickEvent e) {
         if (link != null)
             link.run((Player) e.getWhoClicked());
     }
 
-    public static ItemLink deserialize(Config config) {
-        ItemLink result = new ItemLink();
-
+    public static Icon deserialize(Config config) {
+        Icon result = new Icon();
         try {
+            if (config.has("update-interval"))
+                result.updateInterval = config.getInt("update-interval", -1);
             if (config.has("item"))
                 result.display = CustomItem.deserialize(config.getConfig("item"));
-
             if (config.has("click"))
-                result.link = ItemClick.deserialize(config.getConfig("click"));
-
+                result.link = IconClick.deserialize(config.getConfig("click"));
             return result;
         } catch (InvalidGuiConfigurationException e) {
             e.addLocalizer("in gui display");
@@ -165,13 +169,13 @@ public class ItemLink {
 
     public static class Builder {
 
-        private final ItemLink item;
+        private final Icon item;
 
         public Builder() {
-            item = new ItemLink();
+            item = new Icon();
         }
 
-        public Builder(ItemLink item) {
+        public Builder(Icon item) {
             this.item = item;
         }
 
@@ -190,7 +194,7 @@ public class ItemLink {
             return this;
         }
 
-        public ItemLink build() {
+        public Icon build() {
             return item;
         }
     }

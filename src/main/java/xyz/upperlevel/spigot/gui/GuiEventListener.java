@@ -23,9 +23,9 @@ public class GuiEventListener implements Listener {
     protected void onPlayerClick(InventoryClickEvent e) {
         HotbarView h = HotbarManager.get((Player) e.getWhoClicked());
         if (e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
-            //isSlotLink is really fast but it only works with the main player inventory where the first 9 indexes are
+            //isIconSlot is really fast but it only works with the main player inventory where the first 9 indexes are
             //for the hotbar. this isn't exactly the main inventory but it works as well
-            if (h != null && h.isSlotLink(e.getHotbarButton())) {
+            if (h != null && h.isIconSlot(e.getHotbarButton())) {
                 e.setCancelled(true);
                 return;
             }
@@ -34,7 +34,7 @@ public class GuiEventListener implements Listener {
         if (e.getClickedInventory() == e.getInventory())  //getInventory returns always the top inv. so it's like saying that the clicked inventory must be the top one
             GuiManager.onClick(e);
 
-        if (h != null && (h.isLink(e.getCurrentItem()) || h.isLink((e.getCursor())))) {//TODO use normal slots
+        if (h != null && (h.isIcon(e.getCurrentItem()) || h.isIcon((e.getCursor())))) {//TODO use normal slots
             e.setCancelled(true);
             ((Player) e.getWhoClicked()).updateInventory();
         }
@@ -46,6 +46,7 @@ public class GuiEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onPlayerQuit(PlayerQuitEvent e) {
+        HotbarManager.get(e.getPlayer()).clear();
         GuiManager.close(e.getPlayer());
     }
 
@@ -80,7 +81,7 @@ public class GuiEventListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         HotbarView h = HotbarManager.get(e.getPlayer());
-        if (h != null && h.isSlotLink(e.getPlayer().getInventory().getHeldItemSlot()))
+        if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot()))
             e.setCancelled(true);
     }
 

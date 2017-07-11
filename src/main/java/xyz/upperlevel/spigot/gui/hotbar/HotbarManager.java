@@ -9,10 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import xyz.upperlevel.spigot.gui.ItemLink;
+import xyz.upperlevel.spigot.gui.Icon;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.spigot.gui.config.UpdaterTask;
 import xyz.upperlevel.spigot.gui.config.util.Config;
 
 import java.io.File;
@@ -30,7 +29,7 @@ public class HotbarManager {
         views.put(player, v);
         for (Hotbar hotbar : hotbars.values())
             if (hotbar.isOnJoin())
-                v.set(hotbar);
+                v.addHotbar(hotbar);
     }
 
     private static void quitPlayer(Player player) {
@@ -43,7 +42,7 @@ public class HotbarManager {
      */
     public static void initialize() {
         // registers a hotbar for all players online and registers a listener
-        // to register or remove join and quit players
+        // to register or removeHotbar join and quit players
         Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
@@ -80,7 +79,7 @@ public class HotbarManager {
     /**
      * Unregisters the hotbar by its id.
      *
-     * @param id the id of the hotbar to remove
+     * @param id the id of the hotbar to removeHotbar
      * @return the hotbar removed
      */
     public static Hotbar unregister(String id) {
@@ -190,9 +189,10 @@ public class HotbarManager {
     }
 
     public static boolean onClick(Player player, int slot) {
-        ItemLink l = get(player).getLink(slot);
-        if (l == null) return false;
-        l.getLink().run(player);
+        Icon icon = get(player).getIcon(slot);
+        if (icon == null || icon.getLink() == null)
+            return false;
+        icon.getLink().run(player);
         return true;
     }
 

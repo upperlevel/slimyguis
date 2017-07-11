@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
-import xyz.upperlevel.spigot.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
 import xyz.upperlevel.spigot.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.spigot.gui.config.util.Config;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CustomItem {
 
-    private Material material;
+    private Material type;
     private PlaceholderValue<Short> data;
     private PlaceholderValue<Integer> amount;
 
@@ -32,7 +31,7 @@ public class CustomItem {
     private Map<Enchantment, PlaceholderValue<Integer>> enchantments = new HashMap<>();
 
     public CustomItem(ItemStack item) {
-        material = item.getType();
+        type = item.getType();
         data = PlaceholderValue.shortValue(String.valueOf(item.getData().getData()));
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
 
@@ -44,9 +43,8 @@ public class CustomItem {
             enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
     }
 
-
     public ItemStack toItemStack(Player player) {
-        ItemStack item = new ItemStack(material, amount.get(player), data.get(player));
+        ItemStack item = new ItemStack(type, amount.get(player), data.get(player));
         ItemMeta meta = item.getItemMeta();
 
         processMeta(player, meta);
@@ -168,7 +166,7 @@ public class CustomItem {
     }
 
     protected void addStringDetails(StringJoiner joiner) {
-        joiner.add("material: " + material);
+        joiner.add("type: " + type);
         joiner.add("data: " + data);
         joiner.add("amount: " + amount);
         joiner.add("displayName: " + displayName);

@@ -25,9 +25,9 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
 
     @Override
     public void run(Player player) {
-        final String pid = id.get(player);
-        final Hotbar hotbar = HotbarManager.get(pid);
-        if(hotbar == null) {
+        String pid = id.get(player);
+        Hotbar hotbar = HotbarManager.get(pid);
+        if (hotbar == null) {
             SlimyGuis.logger().severe("Cannot find hotbar \"" + pid + "\"");
             return;
         }

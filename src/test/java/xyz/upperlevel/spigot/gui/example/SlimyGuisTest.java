@@ -210,12 +210,11 @@ public class SlimyGuisTest extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        //HotbarManager.addLinks adds the Hotbar to the others already applied (if any)
+        //HotbarManager.addIcons adds the Hotbar to the others already applied (if any)
         //were HotbarManager.give would replace the Hotbar without adding it
-        //the addLinks-way is more suggested because it can support other plugins
+        //the addIcons-way is more suggested because it can support other plugins
         HotbarView h = HotbarManager.get(event.getPlayer());
-        h.set(hotbar);
-        h.print();
+        h.addHotbar(hotbar);
     }
 
     @Override

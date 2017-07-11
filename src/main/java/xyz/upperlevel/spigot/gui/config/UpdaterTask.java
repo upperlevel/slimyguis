@@ -1,18 +1,25 @@
 package xyz.upperlevel.spigot.gui.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.upperlevel.spigot.gui.SlimyGuis;
 
-@RequiredArgsConstructor
+
 public class UpdaterTask extends BukkitRunnable {
-    @Getter
-    private final int interval;
-    private final Runnable updater;
+
+    private int interval;
+    private Runnable task;
+
+    public UpdaterTask(Runnable task) {
+        this.task = task;
+    }
+
+    public UpdaterTask(int interval, Runnable task) {
+        this.interval = interval;
+        this.task = task;
+    }
 
     public void start() {
-        runTaskTimer(SlimyGuis.get(), interval, interval);
+        runTaskTimer(SlimyGuis.get(), 0, interval);
     }
 
     public void stop() {
@@ -21,6 +28,6 @@ public class UpdaterTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        updater.run();
+        task.run();
     }
 }
