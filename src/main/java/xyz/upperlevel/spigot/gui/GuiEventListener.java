@@ -37,7 +37,7 @@ public class GuiEventListener implements Listener {
 
         if (h != null && (h.isIcon(e.getCurrentItem()) || h.isIcon((e.getCursor())))) {//TODO use normal slots
             e.setCancelled(true);
-            Bukkit.getScheduler().runTask(SlimyGuis.get(), player::updateInventory)
+            Bukkit.getScheduler().runTask(SlimyGuis.get(), player::updateInventory);
         }
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             if (GuiManager.get(player) != null && !GuiManager.get(player).isEmpty())
