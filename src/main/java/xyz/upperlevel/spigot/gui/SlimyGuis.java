@@ -2,15 +2,7 @@ package xyz.upperlevel.spigot.gui;
 
 import lombok.Getter;
 import org.bstats.Metrics;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.spigot.gui.commands.impl.GuiCommand;
 import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
@@ -19,7 +11,9 @@ import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
 import xyz.upperlevel.spigot.gui.script.ScriptSystem;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;

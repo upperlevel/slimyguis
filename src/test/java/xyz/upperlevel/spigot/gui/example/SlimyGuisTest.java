@@ -44,7 +44,7 @@ public class SlimyGuisTest extends JavaPlugin implements Listener {
     private static final Hotbar hotbar = Hotbar.builder()
             .add(
                     wool(DyeColor.BLUE, ChatColor.BLUE + "Kick"),
-                    Link.consoleCommand("kick <player>"))
+                    Link.consoleCommand("kick %player_name%"))
             .add(
                     wool(DyeColor.ORANGE, ChatColor.GOLD + "Ping"),
                     p -> p.sendMessage("pong"))
@@ -60,15 +60,15 @@ public class SlimyGuisTest extends JavaPlugin implements Listener {
                                     // example of confirmation gui!
                                     .title("Sure to ban?")
                                     .size(9)
-                                    .set(0, wool(DyeColor.GREEN, ChatColor.GREEN + "YES"), p -> Link.consoleCommand("ban <player>"))
+                                    .set(0, wool(DyeColor.GREEN, ChatColor.GREEN + "YES"), p -> Link.consoleCommand("ban %player_name%"))
                                     .set(8, wool(DyeColor.RED, ChatColor.RED + "NO"), p -> p.sendMessage(ChatColor.RED + p.getName() + " not banned!"))
                                     .build())
                             .add(
                                     wool(DyeColor.YELLOW, "Kick"),
-                                    GuiAction.close().and(Link.consoleCommand("kick <player>")))
+                                    GuiAction.close().and(Link.consoleCommand("kick %player_name%")))
                             .add(
                                     wool(DyeColor.GREEN, "Poke"),
-                                    close().and(Link.consoleCommand("say <player> is STUPID!")))
+                                    close().and(Link.consoleCommand("say %player_name% is STUPID!")))
                             .add(
                                     wool(DyeColor.LIGHT_BLUE, "Rainbow :)"),
                                     change(new RainbowGui()))
