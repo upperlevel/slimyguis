@@ -1,41 +1,38 @@
-package xyz.upperlevel.spigot.gui;
+package xyz.upperlevel.slimyguis;
 
 import lombok.Getter;
 import org.bstats.Metrics;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.spigot.gui.commands.impl.GuiCommand;
-import xyz.upperlevel.spigot.gui.config.economy.EconomyManager;
-import xyz.upperlevel.spigot.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.spigot.gui.hotbar.HotbarManager;
-import xyz.upperlevel.spigot.gui.script.ScriptSystem;
+import xyz.upperlevel.uppercore.gui.commands.GuiCommand;
+import xyz.upperlevel.uppercore.gui.GuiEventListener;
+import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiRegistry;
+import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
+import xyz.upperlevel.uppercore.gui.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.gui.hotbar.HotbarRegistry;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import java.io.File;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Getter
 public class SlimyGuis extends JavaPlugin implements Listener {
+
     public static final String SCRIPT_CONFIG = "script_engine.yml";
 
     private static SlimyGuis instance;
 
-    private ScriptSystem scriptSystem;
-    @Getter
     private Metrics metrics;
+    private GuiRegistry guiRegistry;
+    private HotbarRegistry hotbarRegistry;
+    private ScriptSystem scriptSystem;
 
     public SlimyGuis() {
-        if (instance == null)
-            instance = this;
+        instance = this;
     }
 
     @Override
@@ -44,7 +41,7 @@ public class SlimyGuis extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(new GuiEventListener(), this);
 
-        PlaceHolderUtil.tryHook();
+        PlaceholderUtil.tryHook();
         EconomyManager.enable();
 
         { // script system
@@ -57,17 +54,19 @@ public class SlimyGuis extends JavaPlugin implements Listener {
             scriptSystem.loadFolder(scriptsFolder);
         }
 
-        File f = new File(getDataFolder(), "guis");
-        logger().log(Level.INFO, "Attempting to load guis at \"" + f.getPath() + "\"");
-        GuiManager.loadFolder(f);
+        guiRegistry = new GuiRegistry(this);
+        hotbarRegistry = new HotbarRegistry(this);
 
-        f = new File(getDataFolder(), "hotbars");
-        logger().log(Level.INFO, "Attempting to load hotbars at \"" + f.getPath() + "\"...");
-        HotbarManager.loadFolder(f);
+        File folder;
+        folder = new File(getDataFolder(), "guis");
+        logger().info("Attempting to load guis at \"" + folder.getPath() + "\"");
+        guiRegistry.loadFolder(folder);
 
-        HotbarManager.initialize();
+        folder = new File(getDataFolder(), "hotbars");
+        logger().info("Attempting to load hotbars at \"" + folder.getPath() + "\"");
+        hotbarRegistry.loadFolder(folder);
 
-        new GuiCommand(null).registerBukkit();
+        new GuiCommand().subscribe();
 
         setupCustomDatas();
     }
