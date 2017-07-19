@@ -12,6 +12,8 @@ import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.scoreboard.ScoreboardRegistry;
+import xyz.upperlevel.uppercore.scoreboard.ScoreboardSystem;
 import xyz.upperlevel.uppercore.script.ScriptRegistry;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
 
@@ -53,7 +55,7 @@ public class SlimyGuis extends JavaPlugin implements Listener {
                 saveResource(SCRIPT_CONFIG, false);
             File scriptsFolder = new File(getDataFolder(), "scripts");
             scriptsFolder.mkdir();
-            scriptRegistry.loadFolder(scriptsFolder);
+            scriptRegistry.loadDefaultFolder(scriptsFolder);
         }
         */
 
@@ -65,6 +67,9 @@ public class SlimyGuis extends JavaPlugin implements Listener {
 
         hotbarRegistry = HotbarSystem.subscribe(this);
         hotbarRegistry.loadDefaultFolder();
+
+        ScoreboardRegistry a = ScoreboardSystem.subscribe(this);
+        a.loadDefaultFolder();
 
         new GuiCommand().subscribe();
 
