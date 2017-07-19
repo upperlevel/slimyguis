@@ -252,27 +252,34 @@ public class GuiManager {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = chronology.get(player);
-            if (g == null || g.isEmpty())
-                return;
+            chronology.computeIfPresent(player, (p, g) -> {
+                //computeIfPresent is a method that, if the entry is found permits to the code to replace
+                //the value with another one or, to remove it if the replaced value is null
+                //In this code is used as a removeIf: if(the history is empty) remove /*return null*/ else don't remove /*return history*
 
-            Gui oldGui = g.pop();
-            Gui gui = g.peek();
+                if (g.isEmpty())//This should never be true
+                    return null;//remove the history from the map
+                Gui oldGui = g.pop();
+                Gui gui = g.peek();
 
-            GuiBackEvent event = new GuiBackEvent(player, gui, oldGui);
-            Bukkit.getPluginManager().callEvent(event);
+                GuiBackEvent event = new GuiBackEvent(player, gui, oldGui);
+                Bukkit.getPluginManager().callEvent(event);
 
-            if (event.isCancelled()) {
-                g.push(oldGui);
-                return;
-            }
+                if (event.isCancelled()) {
+                    g.push(oldGui);
+                    return g;//Don't remove
+                }
 
-            oldGui.onClose(player);
-            if (!g.isEmpty()) {
-                gui.onOpen(player);
-                gui.show(player);
-            } else
-                player.closeInventory();
+                oldGui.onClose(player);
+                if (!g.isEmpty()) {
+                    gui.onOpen(player);
+                    gui.show(player);
+                    return g;//Don't remove
+                } else {
+                    player.closeInventory();
+                    return null;//Remove
+                }
+            });
         } finally {
             called = false;
         }

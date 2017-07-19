@@ -306,7 +306,7 @@ public class CustomGui implements Gui {
                 throw new InvalidGuiConfigurationException("Both 'type' and 'size' are empty!");
             res.updateInterval = config.getInt("update-interval", -1);
             res.title = config.getMessageRequired("title");
-            for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons")) {
+            for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollectionRequired("icons")) {
                 Icon item = Icon.deserialize(Config.wrap(data));
                 res.icons[(int) data.get("slot")] = item;
             }

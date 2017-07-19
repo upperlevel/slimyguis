@@ -16,7 +16,7 @@ public class GuiCloseAction extends Action<GuiCloseAction> {
 
     @Override
     public void run(Player player) {
-        GuiManager.back(player);
+        GuiManager.close(player);
     }
 
     public static class GuiCloseActionType extends BaseActionType<GuiCloseAction> {

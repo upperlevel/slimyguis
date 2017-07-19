@@ -150,10 +150,8 @@ public class Icon {
     public static Icon deserialize(Config config) {
         Icon result = new Icon();
         try {
-            if (config.has("update-interval"))
-                result.updateInterval = config.getInt("update-interval", -1);
-            if (config.has("item"))
-                result.display = CustomItem.deserialize(config.getConfigRequired("item"));
+            result.updateInterval = config.getInt("update-interval", -1);
+            result.display = CustomItem.deserialize(config.getConfigRequired("item"));
             if (config.has("click"))
                 result.link = IconClick.deserialize(config.getConfig("click"));
             return result;

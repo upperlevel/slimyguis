@@ -214,7 +214,7 @@ public class Hotbar {
     public static Hotbar deserialize(String id, Config config) {
         Hotbar hotbar = new Hotbar(id);
         hotbar.permission = (String) config.get("permission");
-        for (Config section : config.getConfigList("icons")) {
+        for (Config section : config.getConfigListRequired("icons")) {
             Icon icon = Icon.deserialize(section);
             int slot = section.getInt("slot", -1);
             if (slot == -1)
