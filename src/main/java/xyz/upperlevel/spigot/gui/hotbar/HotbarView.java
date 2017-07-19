@@ -32,18 +32,17 @@ public class HotbarView {
 
     public void printSlot(int slot) {
         Icon icon = icons[slot];
-        ItemStack item;
-        if (icon != null)
-            item = icon.getDisplay().toItemStack(player);
-        else
-            item = null;
-        items[slot] = item;
-        player.getInventory().setItem(slot, item);
+        if (icon != null) {
+            items[slot] = icon.getDisplay().toItemStack(player);
+            player.getInventory().setItem(slot, items[slot]);
+        }
     }
 
     private void wipeSlot(int slot) {
-        player.getInventory().setItem(slot, null);
-        items[slot] = null;
+        if (items[slot] != null) {
+            player.getInventory().setItem(slot, null);
+            items[slot] = null;
+        }
     }
 
     public void printIcon(Icon icon) {
@@ -72,10 +71,12 @@ public class HotbarView {
     public void clear() {
         hotbars.clear();
         for (int slot = 0; slot < 9; slot++) {
-            player.getInventory().setItem(slot, null);
-            icons[slot] = null;
-            items[slot] = null;
-            hotbarsBySlot[slot] = null;
+            if (icons[slot] != null) {
+                player.getInventory().setItem(slot, null);
+                icons[slot] = null;
+                items[slot] = null;
+                hotbarsBySlot[slot] = null;
+            }
         }
         slotsByHotbar.clear();
         updaters.values().forEach(UpdaterTask::stop);
