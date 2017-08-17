@@ -2,4 +2,4 @@ name: GuiApiExample
 main: xyz.upperlevel.spigot.gui.example.SlimyGuisTest
 version: 1.0
 author: upperlevel
-depend: [SlimyGuis]
+depend: [SlimyGuisCmd]
